@@ -1,0 +1,105 @@
+{
+  "id": "aoi",
+  "name": "葵",
+  "role": "maid",
+  "tier": "S",
+  "tier_confirmed": false,
+  "bible_revision": 0,
+  "appearance_status": "unconfirmed",
+  "appearance_lock_hash": "",
+  "appearance": {
+    "summary": "TBD",
+    "age_look": "TBD",
+    "hair": {
+      "style": "TBD",
+      "color": "TBD"
+    },
+    "eyes": {
+      "color": "TBD"
+    },
+    "body": {
+      "height_cm": "TBD",
+      "build": "TBD",
+      "proportion_note": "TBD"
+    },
+    "outfits": {
+      "maid": {
+        "design": "TBD"
+      },
+      "casual": {
+        "design": "TBD"
+      }
+    },
+    "accessories": "TBD",
+    "signature_colors": "TBD",
+    "expression_traits": "TBD"
+  },
+  "personality": {
+    "source": "godot/scripts/core/data.gd, godot/scripts/core/life_data.gd",
+    "summary": "從廣場旁的連鎖咖啡店辭職的咖啡師。做事俐落、標準很高，想泡出讓人記住的咖啡。",
+    "traits": [
+      "perfectionist",
+      "impatient"
+    ],
+    "growth": "specialist",
+    "speech_samples": [
+      "歡迎光臨。今天想喝什麼？",
+      "這杯，及格了。",
+      "是我的錯，重新做一杯。"
+    ]
+  },
+  "art": {
+    "owner": "aoi",
+    "expressions": [
+      "neutral",
+      "smile",
+      "laugh",
+      "surprised",
+      "embarrassed",
+      "sad",
+      "angry",
+      "tired"
+    ],
+    "poses": [
+      "stand",
+      "greet",
+      "serve"
+    ],
+    "outfits": [
+      "maid",
+      "casual"
+    ],
+    "default": {
+      "pose": "stand",
+      "outfit": "maid",
+      "expression": "neutral"
+    },
+    "cg": [
+      "aoi-story-01"
+    ],
+    "display": {
+      "scale": 1.0,
+      "y_offset": 0.0
+    }
+  },
+  "prototype_hints": {
+    "_doc": "3D 佔位模型使用的顏色，僅供參考，並非已確認的美術設定。",
+    "hair_hex": "#2a6a5a"
+  },
+  "references": [],
+  "open_questions": [
+    "外貌（髮型、髮色、瞳色、身高與體型）尚未確認",
+    "服裝設計尚未確認",
+    "代表色與配件尚未確認",
+    "需要至少一張角色視覺參考圖",
+    "Tier S 為提案，請確認",
+    "姿勢（stand/greet/serve）與服裝（maid/casual）清單為提案，請確認"
+  ],
+  "changelog": [
+    {
+      "revision": 0,
+      "date": "2026-11-09",
+      "note": "建立空白設定。外貌全部待確認。"
+    }
+  ]
+}

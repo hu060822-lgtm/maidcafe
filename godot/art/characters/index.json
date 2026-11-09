@@ -22,6 +22,22 @@
       "bible": "characters/kaede/bible.json"
     },
     {
+      "id": "tsumugi",
+      "bible": "characters/tsumugi/bible.json"
+    },
+    {
+      "id": "chinatsu",
+      "bible": "characters/chinatsu/bible.json"
+    },
+    {
+      "id": "aoi",
+      "bible": "characters/aoi/bible.json"
+    },
+    {
+      "id": "hiyori",
+      "bible": "characters/hiyori/bible.json"
+    },
+    {
       "id": "sakura",
       "bible": "characters/sakura/bible.json"
     },
