@@ -974,7 +974,11 @@ func _show_portrait(who: String) -> void:
 
 func _hide_portrait() -> void:
 	if _portrait != null and is_instance_valid(_portrait):
-		_portrait.queue_free()
+		# let the portrait play its exit animation before freeing it
+		var p = _portrait
+		if p.has_method("clear"):
+			p.clear()
+		get_tree().create_timer(0.35).timeout.connect(func(): if is_instance_valid(p): p.queue_free())
 	_portrait = null
 
 func _enter_night_scene() -> void:
