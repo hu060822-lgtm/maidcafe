@@ -70,6 +70,23 @@ static func from_leisure(s: Dictionary, mid: String, lid: String, mode: String, 
 			var cid: String = extra.get("cust", "")
 			if cid != "" and can_fire(s, "remember_" + cid, true):
 				return _mk("remember_" + cid, "%s不用問就知道%s要坐哪裡、點什麼。%s愣了一下，然後笑了。" % [n, _n(cid), _n(cid)], [mid, cid], "記得你的老位子")
+		"photo":
+			var o: String = extra.get("with", "")
+			if o != "" and after and can_fire(s, "photo_" + St.pair_key(mid, o), true):
+				return _mk("photo_" + St.pair_key(mid, o), "打烊後，%s拉著%s在拍照區自拍。拍了十幾張，最後選了一張兩個人都在笑的。" % [n, _n(o)], [mid, o], "合照：%s和%s" % [n, _n(o)])
+		"practice":
+			if after and can_fire(s, "practice_" + mid):
+				var first := can_fire(s, "practice_album_" + mid, true) and float(m.skills.performance) >= 60
+				return _mk("practice_album_" + mid if first else "practice_" + mid, "大家都回去了，%s一個人站在小舞台上，對著空蕩蕩的座位小聲地唱歌。" % n, [mid], "沒有觀眾的舞台" if first else "")
+		"record":
+			if after and can_fire(s, "record_" + mid):
+				return _mk("record_" + mid, "%s放了一張黑膠唱片。沙沙的雜音裡，店裡的燈好像變得更暖了。" % n, [mid])
+		"nap":
+			if after and can_fire(s, "nap_" + mid):
+				return _mk("nap_" + mid, "%s在沙發座上睡著了。有人悄悄替她蓋上了一件外套。" % n, [mid])
+		"water":
+			if after and can_fire(s, "water_" + mid) and (mid == "hiyori" or float(m.habits.tidy) >= 40):
+				return _mk("water_" + mid, "%s一盆一盆地替植物澆水，還跟它們說話。" % n, [mid])
 		"concern":
 			if can_fire(s, "concern_" + mid):
 				return _mk("concern_" + mid, "%s%s。" % [n, m.concern.get("leisure", "一個人發呆")], [mid])

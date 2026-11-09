@@ -14,6 +14,7 @@ const Social = preload("res://scripts/core/social.gd")
 const Events = preload("res://scripts/core/events.gd")
 const Moments = preload("res://scripts/core/moments.gd")
 const Layout = preload("res://scripts/core/layout.gd")
+const Life = preload("res://scripts/core/life.gd")
 
 const CAUSE_TEXT := {
 	"longWaitDoor": "在門口等了好久", "longWaitOrder": "一直沒人來點餐", "longWaitFood": "餐點等太久",
@@ -86,6 +87,8 @@ static func begin_business(s: Dictionary) -> String:
 			var tr: Array = Data.MAIDS[m.id].traits
 			m.mood = St.clampf100(float(m.mood) + (15 if "lively" in tr else (-3 if "shy" in tr else 6)))
 	s.phase = "business"
+	# maids given the day off this morning still go out and live their day
+	Life.plan_offdays(s)
 	return ""
 
 # ---------------------------------------------------------------- settlement
@@ -322,7 +325,8 @@ static func settle(s: Dictionary, biz) -> Dictionary:
 			if int(st.get("complaints", 0)) >= 1:
 				m.yesterday.append("complaint")
 			m.fatigue = St.clampf100(float(m.fatigue) - (40 if s.upgrades.sofa else 30))
-		m.mood = St.clampf100(float(m.mood) + (60.0 - float(m.mood)) * 0.15)
+		# mood settles toward a baseline that depends on how much she trusts the manager (bond)
+		m.mood = St.clampf100(float(m.mood) + (52.0 + float(m.bond) * 0.16 - float(m.mood)) * 0.15)
 		# habits fade slowly toward their seed when not practised; reinforced ones stay
 		for h in m.habits:
 			var seed := float(def.get("seed_habits", {}).get(h, 0))
@@ -341,7 +345,8 @@ static func settle(s: Dictionary, biz) -> Dictionary:
 			m.low_mood_nights = int(m.low_mood_nights) + 1
 		else:
 			m.low_mood_nights = 0
-		if int(m.low_mood_nights) >= 3:
+		# a maid who trusts the manager holds on one night longer
+		if int(m.low_mood_nights) >= (4 if float(m.bond) >= 65 else 3):
 			m.quit = true
 			s.staff.erase(m.id)
 			St.add_album(s, "%s離開了" % def.name, "%s留下一封信：「對不起，我已經撐不下去了。」也許我太在意營業額了。" % def.name, [m.id])
@@ -381,6 +386,15 @@ static func settle(s: Dictionary, biz) -> Dictionary:
 		if m.id == "shizuku" and int(st.get("spills", 0)) > 0 and not m.flags.get("spill_event", false) and not "shizuku_solo" in s.pending_events:
 			Events.queue(s, "shizuku_spill")
 	_relationships(s, biz, working_ids, social_notes)
+	# ---------------- Living Hearts: personal lives (likes, days off, promises, pair events, customers' lives)
+	var lctx := Life.make_ctx(s, served, World.dominant_style(s).key, working_ids)
+	for t in Life.day_feelings(s, lctx):
+		social_notes.append("💗 " + t)
+	Life.offday_settle(s, social_notes)
+	Life.check_promises(s, lctx, social_notes)
+	Life.pair_events(s, working_ids, biz.helps)
+	Life.customer_visit_events(s, results)
+	Life.customers_daily(s, results, biz.co_present, social_notes)
 	if _active(s, "koharu") and _active(s, "rin") and float(St.rel(s, "koharu", "rin").close) >= 50 and not s.flags.get("rin_teaches", false) and int(s.day) >= 3:
 		Events.queue(s, "rin_teaches")
 	if _active(s, "yukino") and came.has("shiraishi") and not s.flags.get("yukino_reader", false):
@@ -397,6 +411,7 @@ static func settle(s: Dictionary, biz) -> Dictionary:
 	crng.seed = int(s.seed) * 31 + int(s.day) * 101
 	for t in Social.daily(s, biz.maid_stats, crng):
 		social_notes.append("💭 " + t)
+	Life.daily(s, crng, social_notes)
 	var closing_moments: Array = Moments.closing(s, biz)
 
 	# ---------------- advice (staff suggestions & flow analysis)
@@ -527,8 +542,10 @@ static func _relationships(s: Dictionary, biz, working_ids: Array, notes: Array)
 		counted[k] = int(counted.get(k, 0)) + 1
 	for k in counted:
 		var p: PackedStringArray = k.split(">")
-		St.rel_change(s, p[0], p[1], "trust", minf(8.0, 2.5 * counted[k]), "%s忙不過來時%s去幫忙" % [Data.MAIDS[p[1]].name, Data.MAIDS[p[0]].name])
-		St.rel_change(s, p[0], p[1], "close", 1.5, "互相幫忙")
+		# the one who was helped trusts the helper more; the helper only grows a little closer
+		St.rel_change(s, p[1], p[0], "trust", minf(8.0, 2.5 * counted[k]), "忙不過來時%s來幫忙" % Data.MAIDS[p[0]].name, false)
+		St.rel_change(s, p[0], p[1], "close", 1.0, "去幫%s的忙" % Data.MAIDS[p[1]].name, false)
+		St.rel_change(s, p[1], p[0], "close", 2.0, "被%s幫忙" % Data.MAIDS[p[0]].name, false)
 		s.maids[p[0]].habits["help"] = minf(100.0, float(s.maids[p[0]].habits.help) + 1.5 * counted[k])
 		if counted[k] >= 2:
 			St.rel_share(s, p[0], p[1], "忙到不行的時候，%s過來幫忙" % Data.MAIDS[p[0]].name)
@@ -548,14 +565,16 @@ static func _relationships(s: Dictionary, biz, working_ids: Array, notes: Array)
 				var y: String = pair[1]
 				if pair[2] > 6.0 and pair[2] > pair[3] * 2.2:
 					var amt := 4.0 if "impatient" in Data.MAIDS[x].traits else 2.0
-					St.rel_change(s, x, y, "friction", amt, "%s覺得工作都落在自己身上" % Data.MAIDS[x].name)
+					# only the overloaded one resents it; the other may not even notice
+					St.rel_change(s, x, y, "friction", amt, "%s覺得工作都落在自己身上" % Data.MAIDS[x].name, false)
 					if "impatient" in Data.MAIDS[x].traits and x == "kaede" and float(St.rel(s, x, y).friction) >= 25 and not s.flags.get("kaede_impatient", false):
 						Events.queue(s, "kaede_impatient:" + y)
 			St.rel_change(s, a, b, "close", 0.6, "同一天上班")
 	# mistakes on handoffs (wrong orders) strain trust a bit; friction fades with time
+	# friction fades with time (faster when she trusts the other one); closeness needs upkeep
 	for k in s.maid_rel:
 		var r: Dictionary = s.maid_rel[k]
-		r.friction = maxf(0.0, float(r.friction) - 1.5)
+		r.friction = maxf(0.0, float(r.friction) - (2.5 if float(r.trust) >= 55 else 1.5))
 		r.close = maxf(0.0, float(r.close) - 0.2)
 
 static func _story_pudding(s: Dictionary, r: Dictionary) -> void:
@@ -637,6 +656,12 @@ static func next_day(s: Dictionary) -> void:
 		elif m.role in ["off", "stage"] or (m.role == "support" and m.flags.get("support_once", false)):
 			m.flags.erase("support_once")
 			m.role = Data.MAIDS[m.id].default_role if m.get("preferred_role", "") in ["", "stage"] else m.preferred_role
+	Life.plan_offdays(s)
+	# seasonal decoration comes down when the season ends
+	if s.get("decor", "") != "" and s.decor != season:
+		s.decor = ""
+	if s.street.get("event", "") == "new_shop":
+		s.flags["new_shop_seen"] = true
 	# street residents remember being visited
 	for rid in s.street.residents:
 		var r: Dictionary = s.street.residents[rid]

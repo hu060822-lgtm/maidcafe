@@ -10,6 +10,8 @@ const Biz = preload("res://scripts/core/business.gd")
 const Settle = preload("res://scripts/core/settlement.gd")
 const Events = preload("res://scripts/core/events.gd")
 const Social = preload("res://scripts/core/social.gd")
+const Life = preload("res://scripts/core/life.gd")
+const LD = preload("res://scripts/core/life_data.gd")
 const CafeView = preload("res://scripts/view/cafe_view.gd")
 const PORTRAIT_SCRIPT := "res://scripts/art/portrait_stage.gd"
 
@@ -481,6 +483,19 @@ func _build_explore_side() -> void:
 					con.append(Data.MAIDS[m.id].name)
 			if not con.is_empty():
 				txt += "\n　　💭 %s好像有心事" % "、".join(con)
+			var talk := []
+			for m in St.active_maids(s):
+				if not m.want_talk.is_empty():
+					talk.append(Data.MAIDS[m.id].name)
+			if not talk.is_empty():
+				txt += "\n　　💬 %s有話想說" % "、".join(talk)
+		else:
+			var off := []
+			for m in St.active_maids(s):
+				if m.role == "off" and not m.offday.is_empty() and m.offday.loc == loc:
+					off.append(Data.MAIDS[m.id].name)
+			if not off.is_empty():
+				txt += "\n　　☕ 休假的%s可能在這裡" % "、".join(off)
 		var b := _wbtn(txt, _on_visit.bind(loc), int(s.action_points) <= 0)
 		b.tooltip_text = Data.LOCATIONS[loc].desc
 		side.add_child(b)
@@ -490,7 +505,7 @@ func _build_explore_side() -> void:
 		if s.flags.get("recruit_" + mid, false):
 			recruits.append(mid)
 	for mid in recruits:
-		side.add_child(_wbtn("✨ 邀請%s加入（店裡最多 5 人）" % Data.MAIDS[mid].name, _on_hire.bind(mid)))
+		side.add_child(_wbtn("✨ 邀請%s加入（店裡最多 %d 人，現在 %d 人）" % [Data.MAIDS[mid].name, Data.MAX_STAFF, s.staff.size()], _on_hire.bind(mid)))
 	side.add_child(_wbtn("🏠 回店裡準備開店 →", enter_prepare))
 
 func _on_visit(loc: String) -> void:
@@ -499,7 +514,9 @@ func _on_visit(loc: String) -> void:
 		var btns := []
 		for m in ms:
 			var t: String = Data.MAIDS[m.id].name
-			if not m.concern.is_empty():
+			if not m.want_talk.is_empty():
+				t += "（💬 有話想說）"
+			elif not m.concern.is_empty():
 				t += "（💭 好像有心事）"
 			btns.append([t, _visit_cafe.bind(m.id)])
 		btns.append(["算了", close_modal])
@@ -519,6 +536,10 @@ func _show_encounter(enc: Dictionary) -> void:
 	if enc.has("concern"):
 		for o in Social.options(s, enc.concern):
 			btns.append(["💭 " + o.label, _on_concern.bind(enc.concern, o.id)])
+	if enc.has("talk"):
+		var tv := Life.talk_view(s, enc.talk)
+		for o in tv.get("options", []):
+			btns.append(["💬 " + o.label, _on_talk_opt.bind(enc.talk, o.id)])
 	btns.append(["離開", _close_and_refresh_explore])
 	show_modal(enc.title, "\n".join(enc.lines), btns)
 	_build_explore_side()
@@ -554,6 +575,29 @@ func _on_hire(mid: String) -> void:
 	show_modal("%s加入了 Maiden Parade！" % Data.MAIDS[mid].name, Data.MAIDS[mid].intro + "\n\n特質：" + "、".join(Data.MAIDS[mid].traits.map(func(x): return Data.TRAITS[x].name)), [["歡迎！", _close_and_refresh_explore]])
 	view.set_sim(sim)
 	_set_sim(Biz.new(s, "offhours"))
+
+## She came to talk: what the manager answers becomes a promise, a memory, a day off...
+func _open_talk(mid: String) -> void:
+	var tv := Life.talk_view(s, mid)
+	if tv.is_empty():
+		return
+	var btns := []
+	for o in tv.options:
+		btns.append([o.label, _on_talk_opt.bind(mid, o.id)])
+	_show_portrait(mid)
+	show_modal("💬 " + tv.title, "\n".join(tv.lines), btns)
+
+func _on_talk_opt(mid: String, opt: String) -> void:
+	var r := Life.talk_resolve(s, mid, opt)
+	_hide_portrait()
+	show_modal("💬 %s" % Data.MAIDS[mid].name, r, [["好", _after_talk]])
+
+func _after_talk() -> void:
+	close_modal()
+	if s.phase == "explore":
+		_build_explore_side()
+	elif s.phase == "night":
+		_enter_night_scene()
 
 func _on_concern(mid: String, opt: String) -> void:
 	var r := Social.resolve(s, mid, opt)
@@ -752,6 +796,21 @@ func _prep_activity() -> void:
 		lf.add_child(_btn(("● " if s.lighting == k else "") + Data.LIGHTING[k], _set_lighting.bind(k)))
 	side.add_child(lf)
 	side.add_child(_label("音樂和燈光會影響店的風格，以及喜歡不同氣氛的客人。", 12, "#a898b0"))
+	var season := Data.season(int(s.day))
+	var dc: Dictionary = LD.DECOR[season]
+	side.add_child(_label("季節裝飾", 15, "#ffc8dc"))
+	if s.get("decor", "") == season:
+		side.add_child(_label("● 已經掛上了「%s」。季節結束時會收起來。" % dc.name, 13))
+	else:
+		var db := _wbtn("🎐 掛上「%s」 ¥%d\n　%s喜歡新奇的客人更容易上門，喜歡季節裝飾的女僕心情會變好。" % [dc.name, int(dc.price), dc.desc], _set_decor)
+		db.add_theme_font_size_override("font_size", 13)
+		side.add_child(db)
+
+func _set_decor() -> void:
+	var e := World.set_decor(s)
+	toast(e if e != "" else "掛上了季節裝飾！")
+	view.rebuild_room()
+	_build_prepare_side()
 
 func _set_activity(id: String) -> void:
 	toast(World.set_activity(s, id, s.menu[0] if id == "limited" and not s.menu.is_empty() else ""))
@@ -997,6 +1056,9 @@ func _enter_night_scene() -> void:
 		for o in Social.options(s, m.id):
 			fl.add_child(_btn(o.label, _night_concern.bind(m.id, o.id)))
 		side.add_child(fl)
+	for m in St.active_maids(s):
+		if not m.want_talk.is_empty():
+			side.add_child(_wbtn("💬 %s好像有話想說：「%s」" % [Data.MAIDS[m.id].name, m.want_talk.get("short", "")], _open_talk.bind(m.id)))
 	side.add_child(HSeparator.new())
 	side.add_child(_wbtn("📒 打開筆記本", _open_notebook))
 	side.add_child(_wbtn("📷 回憶相簿", _open_album))
@@ -1116,6 +1178,11 @@ func _inspect_worker(w) -> String:
 		t += "[color=#ffb080]上次放棄：%s[/color]\n" % w.last_fail
 	if not m.concern.is_empty():
 		t += "[color=#ffc8e8]💭 %s[/color]\n" % m.concern.sign
+	t += "對店長的信賴 %d\n" % int(m.bond)
+	if not m.want_talk.is_empty():
+		t += "[color=#ffe0a0]💬 有話想說：%s[/color]\n" % m.want_talk.get("short", "")
+		if s.phase != "business":
+			inspector_buttons.add_child(_btn("💬 聽她說", _open_talk.bind(w.maid_id)))
 	var habits := []
 	for h in m.habits:
 		if float(m.habits[h]) >= 20:
@@ -1197,7 +1264,7 @@ func _open_notebook() -> void:
 
 func _notebook_page(page: String) -> void:
 	var tabs := HFlowContainer.new()
-	for p in [["maids", "女僕"], ["rel", "關係"], ["cust", "顧客"], ["street", "商店街"], ["moments", "每日瞬間"]]:
+	for p in [["maids", "女僕"], ["rel", "關係"], ["promise", "約定"], ["cust", "顧客"], ["street", "商店街"], ["moments", "每日瞬間"]]:
 		tabs.add_child(_btn(("● " if p[0] == page else "") + p[1], _notebook_page.bind(p[0])))
 	var body := ""
 	match page:
@@ -1214,19 +1281,38 @@ func _notebook_page(page: String) -> void:
 				body += "[b][color=#ffc8dc]%s[/color][/b]　%s　生日：%s\n%s\n習慣：%s\n心情 %d　疲勞 %d　工作 %d 天%s\n\n" % [def.name, "、".join(def.traits.map(func(x): return Data.TRAITS[x].name)),
 					Data.date_label(int(def.birthday)).split("（")[0], "、".join(sk), "、".join(hb) if not hb.is_empty() else "（還沒有明顯的習慣）", int(m.mood), int(m.fatigue), int(m.days_worked),
 					("\n💭 " + m.concern.sign) if not m.concern.is_empty() else ""]
+				body = body.trim_suffix("\n\n") + "\n" + _maid_life_text(m) + "\n\n"
 		"rel":
+			body += "[color=#a898b0]每個人對別人的感覺不一定一樣：「A → B」是 A 怎麼看 B。[/color]\n\n"
 			var ms := St.active_maids(s)
 			for i in ms.size():
 				for k in range(i + 1, ms.size()):
 					var a: String = ms[i].id
 					var b: String = ms[k].id
 					var r := St.rel(s, a, b)
-					body += "[b]%s × %s[/b]　親近 %d．信任 %d．默契 %d．摩擦 %d\n" % [Data.MAIDS[a].name, Data.MAIDS[b].name, int(r.close), int(r.trust), int(r.synergy), int(r.friction)]
+					var r2 := St.rel(s, b, a)
+					body += "[b]%s → %s[/b]　親近 %d．信任 %d．默契 %d．摩擦 %d\n" % [Data.MAIDS[a].name, Data.MAIDS[b].name, int(r.close), int(r.trust), int(r.synergy), int(r.friction)]
+					body += "[b]%s → %s[/b]　親近 %d．信任 %d．默契 %d．摩擦 %d\n" % [Data.MAIDS[b].name, Data.MAIDS[a].name, int(r2.close), int(r2.trust), int(r2.synergy), int(r2.friction)]
 					for sh in r.shared:
 						body += "　[color=#ffc8e8]・D%d %s[/color]\n" % [sh.day, sh.text]
 			body += "\n[b]最近的變化與原因[/b]\n"
 			for r in s.rel_log.slice(maxi(0, s.rel_log.size() - 12)):
-				body += "D%d %s—%s %s %+.1f：%s\n" % [r.day, Data.MAIDS[r.a].name, Data.MAIDS[r.b].name, {"close": "親近", "trust": "信任", "synergy": "默契", "friction": "摩擦"}.get(r.dim, r.dim), r.amount, r.reason]
+				body += "D%d %s%s%s %s %+.1f：%s\n" % [r.day, Data.MAIDS[r.a].name, "↔" if r.get("mutual", true) else "→", Data.MAIDS[r.b].name, {"close": "親近", "trust": "信任", "synergy": "默契", "friction": "摩擦"}.get(r.dim, r.dim), r.amount, r.reason]
+		"promise":
+			var open := []
+			var closed := []
+			for pr in s.promises:
+				(open if pr.status == "open" else closed).append(pr)
+			body += "[b]還沒完成的約定[/b]\n"
+			for pr in open:
+				body += "・%s：%s　[color=#a898b0]（%s）[/color]\n" % [Data.MAIDS[pr.maid].name, pr.text, ("第 %d 天" % int(pr.target)) if pr.kind == "dayoff_on" else ("到第 %d 天前" % int(pr.due))]
+			if open.is_empty():
+				body += "[color=#a898b0]（目前沒有）[/color]\n"
+			body += "\n[b]過去的約定[/b]\n"
+			closed.reverse()
+			for pr in closed.slice(0, 15):
+				body += "%s D%d %s：%s\n" % [{"kept": "🤝", "broken": "💔", "void": "・"}.get(pr.status, "・"), int(pr.get("closed", pr.day)), Data.MAIDS[pr.maid].name, pr.text]
+			body += "\n[color=#a898b0]約定不需要另外回報：只要真的做到（擺了家具、放了那種音樂、讓她放假……），當天晚上她就會發現。[/color]"
 		"cust":
 			for cid in Data.CUSTOMERS:
 				var mem: Dictionary = s.customers[cid]
@@ -1258,6 +1344,16 @@ func _notebook_page(page: String) -> void:
 					if cr.type != "" and cid in String(k).split("|"):
 						var other: String = String(k).replace(cid, "").replace("|", "")
 						body += "　🤝 和%s：%s\n" % [Data.CUSTOMERS[other].name, Data.RELATION_NAMES.get(cr.type, cr.type)]
+				if mem.life.state != "" and mem.life.note != "":
+					body += "　📖 最近：%s\n" % mem.life.note
+				var imp := Life.impression_text(mem)
+				if imp != "":
+					body += "　💭 對店的印象：%s\n" % imp
+				for k in s.cust_rel:
+					var cr: Dictionary = s.cust_rel[k]
+					if cid in String(k).split("|") and not cr.get("memories", []).is_empty():
+						var other: String = String(k).replace(cid, "").replace("|", "")
+						body += "　🫖 和%s：%s\n" % [Data.CUSTOMERS[other].name, cr.memories[cr.memories.size() - 1].text]
 				for l in mem.log.slice(maxi(0, mem.log.size() - 3)):
 					body += "　[color=#a898b0]D%d %s[/color]\n" % [l.day, l.text]
 				body += "\n"
@@ -1290,44 +1386,125 @@ func _notebook_page(page: String) -> void:
 	box.add_child(sc)
 	show_modal("📒 店長的筆記本", "", [["關閉", _close_notebook]], box, 900)
 
+func _maid_life_text(m: Dictionary) -> String:
+	var L := Life.life_of(m.id)
+	var t := "對店長的信賴 %d" % int(m.bond)
+	if not L.is_empty():
+		t += "\n喜歡：%s\n不喜歡：%s\n興趣：%s" % ["、".join(L.likes.map(func(x): return Life.tag_name(x))), "、".join(L.dislikes.map(func(x): return Life.tag_name(x))), L.hobby]
+	var feel: Array = m.flags.get("feel", [])
+	if not feel.is_empty():
+		t += "\n最近一天的心情：%s（%+.0f）" % ["、".join(feel), float(m.flags.get("feel_delta", 0.0))]
+	if not m.want_talk.is_empty():
+		t += "\n[color=#ffe0a0]💬 有話想說：%s[/color]" % m.want_talk.get("short", "")
+	if m.role == "off" and not m.offday.is_empty():
+		t += "\n☕ 今天休假：%s" % Data.LOCATIONS[m.offday.loc].name.split("「")[0]
+	var mems: Array = m.memories.duplicate()
+	mems.reverse()
+	for mm in mems.slice(0, 3):
+		t += "\n　[color=#ffc8e8]・D%d %s[/color]" % [int(mm.day), mm.text]
+	return t
+
 func _close_notebook() -> void:
 	close_modal()
 	if s.phase == "night":
 		_enter_night_scene()
 
 # ======================================================================== album & screenshots
-func _open_album() -> void:
+var album_filter := ""
+
+## The album: every important event once (deduplicated by key), filterable by kind or by person.
+## When a photo is missing (not taken yet, or the file is gone) a drawn card stands in for it.
+func _open_album(filter := "") -> void:
+	album_filter = filter
+	var tabs := HFlowContainer.new()
+	for f in [["", "全部"], ["maid", "女僕"], ["pair", "兩個人"], ["customer", "客人"], ["cafe", "店裡"]]:
+		tabs.add_child(_btn(("● " if filter == f[0] else "") + f[1], _open_album.bind(f[0])))
+	var people := {}
+	for a in s.album:
+		for id in a.get("who", []):
+			people[id] = true
+	for id in people:
+		if Data.MAIDS.has(id) or Data.CUSTOMERS.has(id):
+			tabs.add_child(_btn(("● " if filter == "who:" + id else "") + _who_name(id), _open_album.bind("who:" + id)))
 	var grid := GridContainer.new()
 	grid.columns = 3
 	grid.add_theme_constant_override("h_separation", 10)
 	grid.add_theme_constant_override("v_separation", 10)
-	var items: Array = s.album.duplicate()
+	var items: Array = []
+	for a in s.album:
+		if filter == "" or a.get("cat", "cafe") == filter or (filter.begins_with("who:") and filter.substr(4) in a.get("who", [])):
+			items.append(a)
 	items.reverse()
 	for a in items:
 		var card := VBoxContainer.new()
 		card.custom_minimum_size = Vector2(280, 0)
-		var img: String = a.get("image", "")
-		if img != "" and img != "pending" and FileAccess.file_exists(img):
-			var im := Image.load_from_file(img)
-			if im != null:
-				var tr := TextureRect.new()
-				tr.texture = ImageTexture.create_from_image(im)
-				tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-				tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-				tr.custom_minimum_size = Vector2(280, 160)
-				card.add_child(tr)
+		card.add_child(_album_picture(a))
 		var who := []
 		for id in a.get("who", []):
-			who.append(Data.MAIDS[id].name if Data.MAIDS.has(id) else Data.CUSTOMERS.get(id, {}).get("name", id))
+			who.append(_who_name(id))
 		var info := _rich("")
 		info.custom_minimum_size.x = 280
 		card.add_child(info)
 		info.text = ("[b][color=#ffc8dc]%s[/color][/b]\n[color=#a898b0]%s%s[/color]\n%s" % [a.title, a.date, ("．" + "、".join(who)) if not who.is_empty() else "", a.text])
 		grid.add_child(card)
 	var sc := ScrollContainer.new()
-	sc.custom_minimum_size = Vector2(900, 580)
+	sc.custom_minimum_size = Vector2(900, 540)
 	sc.add_child(grid)
-	show_modal("📷 Cafe Memories（%d）" % s.album.size(), "", [["關閉", _close_notebook]], sc, 920)
+	var box := VBoxContainer.new()
+	box.add_child(tabs)
+	if items.is_empty():
+		box.add_child(_label("這個分類還沒有回憶。", 14, "#a898b0"))
+	box.add_child(sc)
+	show_modal("📷 Cafe Memories（%d）" % s.album.size(), "", [["關閉", _close_notebook]], box, 920)
+
+func _who_name(id: String) -> String:
+	return Data.MAIDS[id].name if Data.MAIDS.has(id) else Data.CUSTOMERS.get(id, {}).get("name", id)
+
+static func album_has_photo(a: Dictionary) -> bool:
+	var img: String = a.get("image", "")
+	return img != "" and img != "pending" and FileAccess.file_exists(img)
+
+func _album_picture(a: Dictionary) -> Control:
+	if album_has_photo(a):
+		var im := Image.load_from_file(a.image)
+		if im != null:
+			var tr := TextureRect.new()
+			tr.texture = ImageTexture.create_from_image(im)
+			tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+			tr.custom_minimum_size = Vector2(280, 160)
+			return tr
+	# fallback card: the people in it (hair colours), the date and a note on why there is no photo
+	var pc := PanelContainer.new()
+	pc.custom_minimum_size = Vector2(280, 160)
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = Color("3a2c44")
+	sb.set_corner_radius_all(8)
+	sb.border_color = Color("ffc8dc")
+	sb.set_border_width_all(1)
+	pc.add_theme_stylebox_override("panel", sb)
+	var v := VBoxContainer.new()
+	v.alignment = BoxContainer.ALIGNMENT_CENTER
+	var dots := HBoxContainer.new()
+	dots.alignment = BoxContainer.ALIGNMENT_CENTER
+	for id in a.get("who", []).slice(0, 4):
+		var hex: String = Data.MAIDS[id].hair if Data.MAIDS.has(id) else Data.CUSTOMERS.get(id, {}).get("color", "a898b0")
+		var cr := ColorRect.new()
+		cr.color = Color(hex)
+		cr.custom_minimum_size = Vector2(34, 34)
+		dots.add_child(cr)
+	if a.get("who", []).is_empty():
+		dots.add_child(_label({"cafe": "☕", "customer": "🫖", "pair": "🤝", "maid": "🎀"}.get(a.get("cat", "cafe"), "☕"), 30))
+	v.add_child(dots)
+	var why: String = "照片沖洗中……" if a.get("image", "") == "pending" else ("這天沒有留下照片" if a.get("image", "") == "" else "照片找不到了")
+	var l1 := _label(a.title, 15, "#ffd0e0")
+	l1.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(l1)
+	var l2 := _label("%s．%s" % [a.date.split("（")[0], why], 12, "#a898b0")
+	l2.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	v.add_child(l2)
+	pc.add_child(v)
+	return pc
 
 func _check_pending_screenshots() -> void:
 	if capturing or s.is_empty():
@@ -1421,6 +1598,34 @@ func _run_playtest_shots() -> void:
 	_open_album()
 	await _wait(0.5)
 	await _shot(dir + "/12_album.png")
+	# ---- Living Hearts screens
+	_notebook_page("maids")
+	await _shot(dir + "/13_notebook_maid_life.png")
+	close_modal()
+	s.maids.koharu.want_talk = {"topic": "request", "short": "在店裡擺一隻大型絨毛熊", "line": LD.MAID_LIFE.koharu.wants[0].ask, "day": int(s.day), "want": Life._pick_request(s, "koharu")}
+	_enter_night_scene()
+	_set_sim(Biz.new(s, "offhours"))
+	await _wait(5.0)
+	await _shot(dir + "/14_maid_seeks_manager.png")
+	_open_talk("koharu")
+	await _wait(0.4)
+	await _shot(dir + "/15_talk.png")
+	_on_talk_opt("koharu", "promise")
+	close_modal()
+	_notebook_page("promise")
+	await _shot(dir + "/16_promises.png")
+	close_modal()
+	s.money = 99999.0
+	World.buy_furniture(s, "plush", 3, 7)
+	World.set_decor(s)
+	view.rebuild_room()
+	_set_sim(Biz.new(s, "offhours"))
+	await _wait(8.0)
+	await _shot(dir + "/17_decor_and_furniture.png")
+	St.add_album(s, "沒有照片的一天", "（自動測試：照片遺失時的替代卡片）", ["koharu", "rin"], "user://memories/missing.png", "test_missing", "pair")
+	_open_album("pair")
+	await _wait(0.5)
+	await _shot(dir + "/18_album_filter_fallback.png")
 	get_tree().quit()
 
 func _wait(sec: float) -> void:

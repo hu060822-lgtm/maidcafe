@@ -3,6 +3,7 @@ extends Node3D
 
 const Data = preload("res://scripts/core/data.gd")
 const Layout = preload("res://scripts/core/layout.gd")
+const LD = preload("res://scripts/core/life_data.gd")
 
 signal cell_clicked(cell: Vector2i, button: int)
 signal agent_clicked(kind: String, id: String)
@@ -120,6 +121,7 @@ func _furniture_sig() -> String:
 	parts.append(str(s.upgrades))
 	parts.append(str(s.vase_water))
 	parts.append(s.lighting)
+	parts.append(String(s.get("decor", "")))
 	return "|".join(parts)
 
 func rebuild_room() -> void:
@@ -174,7 +176,30 @@ func rebuild_room() -> void:
 	# furniture
 	for f in s.furniture:
 		_furniture_mesh(f, lay)
+	_decor_meshes()
 	_apply_lighting()
+
+## Seasonal decoration: a garland along the back wall and small ornaments by the windows (purely visual).
+func _decor_meshes() -> void:
+	var d: String = s.get("decor", "")
+	if d == "" or not LD.DECOR.has(d):
+		return
+	var col: String = LD.DECOR[d].color
+	for i in 15:
+		var x := 1.5 + i
+		var y := 2.05 - absf(sin(i * 0.9)) * 0.18
+		sphere(room, 0.09, Vector3(x, y, 0.6), col if i % 2 == 0 else "fff4e0", true)
+	for x in [3, 8, 14]:
+		match d:
+			"spring":
+				for k in 3:
+					sphere(room, 0.07, Vector3(x - 0.5 + k * 0.5, 1.95, 0.58), "f8c0d0", true)
+			"summer":
+				cyl(room, 0.07, 0.18, Vector3(x, 1.85, 0.62), "80c8e8", true)
+			"autumn":
+				sphere(room, 0.14, Vector3(x + 0.9, 0.12, 0.8), "e08040", true)
+			"winter":
+				box(room, Vector3(0.18, 0.18, 0.04), Vector3(x, 2.0, 0.58), "f0e8a0", true)
 
 func _furniture_mesh(f: Dictionary, lay) -> void:
 	var x := float(f.x)

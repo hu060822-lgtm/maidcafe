@@ -3,6 +3,7 @@ extends RefCounted
 
 const Data = preload("res://scripts/core/data.gd")
 const St = preload("res://scripts/core/state.gd")
+const Life = preload("res://scripts/core/life.gd")
 
 static func _m(s: Dictionary, id: String) -> Dictionary:
 	return s.maids[id]
@@ -40,6 +41,12 @@ static func build(s: Dictionary, id: String) -> Dictionary:
 	var base: String = parts[0]
 	var arg: String = parts[1] if parts.size() > 1 else ""
 	match base:
+		"arc":
+			return Life.arc_event(s, arg)
+		"pair":
+			return Life.pair_event(s, arg)
+		"carc":
+			return Life.carc_event(s, arg)
 		"koharu_fan":
 			var n := "客人"
 			for cid in s.customers:
@@ -130,6 +137,12 @@ static func resolve(s: Dictionary, id: String, idx: int) -> String:
 	var base: String = parts[0]
 	var arg: String = parts[1] if parts.size() > 1 else ""
 	match base:
+		"arc":
+			return Life.arc_resolve(s, arg, idx)
+		"pair":
+			return Life.pair_resolve(s, arg, idx)
+		"carc":
+			return Life.carc_resolve(s, arg, idx)
 		"koharu_fan":
 			var m := _m(s, "koharu")
 			m.flags["fan_event"] = true
