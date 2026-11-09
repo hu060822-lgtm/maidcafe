@@ -1,0 +1,1432 @@
+## Game entry: owns the state, drives the daily loop and builds the UI in code.
+##   explore (daytime street) -> prepare -> business (evening shift) -> night (report, events, after-hours scene) -> next day
+extends Node
+
+const Data = preload("res://scripts/core/data.gd")
+const St = preload("res://scripts/core/state.gd")
+const Layout = preload("res://scripts/core/layout.gd")
+const World = preload("res://scripts/core/world.gd")
+const Biz = preload("res://scripts/core/business.gd")
+const Settle = preload("res://scripts/core/settlement.gd")
+const Events = preload("res://scripts/core/events.gd")
+const Social = preload("res://scripts/core/social.gd")
+const CafeView = preload("res://scripts/view/cafe_view.gd")
+const PORTRAIT_SCRIPT := "res://scripts/art/portrait_stage.gd"
+
+var s: Dictionary = {}
+var view
+var sim = null
+var speed := 1.0
+var paused := false
+var sel_kind := ""
+var sel_id := ""
+var placing := ""
+var moving_fid := ""
+var hover_cell := Vector2i(-1, -1)
+var night_step := ""
+var report: Dictionary = {}
+var briefing_shown_day := -1
+var notes_seen := 0
+var prep_tab := 0
+var capturing := false
+var autoshot := ""   # set by --shot to take screenshots for playtests
+
+# UI
+var ui: CanvasLayer
+var theme := Theme.new()
+var top_label: RichTextLabel
+var top_buttons: HBoxContainer
+var side: VBoxContainer
+var side_panel: PanelContainer
+var inspector: RichTextLabel
+var inspector_panel: PanelContainer
+var inspector_buttons: VBoxContainer
+var log_label: RichTextLabel
+var log_panel: PanelContainer
+var debug_label: RichTextLabel
+var debug_panel: PanelContainer
+var modal: Control
+var modal_box: VBoxContainer
+var modal_title: Label
+var modal_body: RichTextLabel
+var modal_buttons: VBoxContainer
+var modal_extra: Control
+var toast_label: Label
+var toast_t := 0.0
+var refresh_t := 0.0
+
+func _ready() -> void:
+	_build_theme()
+	view = CafeView.new()
+	add_child(view)
+	view.cell_clicked.connect(_on_cell_clicked)
+	view.agent_clicked.connect(_on_agent_clicked)
+	_build_ui()
+	for a in OS.get_cmdline_user_args():
+		if a.begins_with("--shot="):
+			autoshot = a.substr(7)
+	if autoshot != "":
+		_run_playtest_shots()
+		return
+	_title()
+
+# ======================================================================== theme & widgets
+func _build_theme() -> void:
+	var f := SystemFont.new()
+	f.font_names = PackedStringArray(["Noto Sans CJK TC", "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", "Heiti TC", "WenQuanYi Zen Hei", "Noto Sans CJK JP", "sans-serif"])
+	f.antialiasing = TextServer.FONT_ANTIALIASING_GRAY
+	var emoji := SystemFont.new()
+	emoji.font_names = PackedStringArray(["Noto Color Emoji", "Segoe UI Emoji", "Apple Color Emoji", "Noto Emoji"])
+	f.fallbacks = [emoji]
+	theme.default_font = f
+	theme.default_font_size = 15
+	var panel := StyleBoxFlat.new()
+	panel.bg_color = Color(0.13, 0.1, 0.15, 0.9)
+	panel.border_color = Color("e8b4c8")
+	panel.set_border_width_all(1)
+	panel.set_corner_radius_all(8)
+	panel.set_content_margin_all(10)
+	theme.set_stylebox("panel", "PanelContainer", panel)
+	var btn := StyleBoxFlat.new()
+	btn.bg_color = Color("4a3550")
+	btn.set_corner_radius_all(6)
+	btn.set_content_margin_all(6)
+	var btn_h := btn.duplicate()
+	btn_h.bg_color = Color("6a4a72")
+	var btn_p := btn.duplicate()
+	btn_p.bg_color = Color("8a5a8a")
+	var btn_d := btn.duplicate()
+	btn_d.bg_color = Color("2e2632")
+	theme.set_stylebox("normal", "Button", btn)
+	theme.set_stylebox("hover", "Button", btn_h)
+	theme.set_stylebox("pressed", "Button", btn_p)
+	theme.set_stylebox("disabled", "Button", btn_d)
+	theme.set_color("font_color", "Button", Color("fff4f8"))
+	theme.set_color("font_disabled_color", "Button", Color("8a7a8a"))
+	theme.set_color("default_color", "RichTextLabel", Color("f4eef2"))
+	theme.set_color("font_color", "Label", Color("f4eef2"))
+
+func _build_ui() -> void:
+	ui = CanvasLayer.new()
+	add_child(ui)
+	var root := Control.new()
+	root.theme = theme
+	root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ui.add_child(root)
+	# top bar
+	var top := PanelContainer.new()
+	top.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	top.offset_bottom = 46
+	root.add_child(top)
+	var th := HBoxContainer.new()
+	top.add_child(th)
+	top_label = RichTextLabel.new()
+	top_label.bbcode_enabled = true
+	top_label.fit_content = true
+	top_label.scroll_active = false
+	top_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	top_label.autowrap_mode = TextServer.AUTOWRAP_OFF
+	th.add_child(top_label)
+	top_buttons = HBoxContainer.new()
+	th.add_child(top_buttons)
+	for b in [["筆記本 (N)", _open_notebook], ["回憶相簿 (M)", _open_album], ["除錯 (F3)", _toggle_debug], ["存檔", _save]]:
+		top_buttons.add_child(_btn(b[0], b[1]))
+	# side panel
+	side_panel = PanelContainer.new()
+	side_panel.position = Vector2(8, 54)
+	side_panel.size = Vector2(390, 600)
+	side_panel.anchor_bottom = 1.0
+	side_panel.offset_bottom = -8
+	side_panel.offset_top = 54
+	side_panel.offset_left = 8
+	side_panel.offset_right = 398
+	root.add_child(side_panel)
+	var sc := ScrollContainer.new()
+	sc.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	side_panel.add_child(sc)
+	side = VBoxContainer.new()
+	side.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	side.add_theme_constant_override("separation", 6)
+	sc.add_child(side)
+	# inspector (right)
+	inspector_panel = PanelContainer.new()
+	inspector_panel.anchor_left = 1.0
+	inspector_panel.anchor_right = 1.0
+	inspector_panel.offset_left = -380
+	inspector_panel.offset_right = -8
+	inspector_panel.offset_top = 54
+	inspector_panel.offset_bottom = 470
+	root.add_child(inspector_panel)
+	var iv := VBoxContainer.new()
+	inspector_panel.add_child(iv)
+	inspector = RichTextLabel.new()
+	inspector.bbcode_enabled = true
+	inspector.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	iv.add_child(inspector)
+	inspector_buttons = VBoxContainer.new()
+	iv.add_child(inspector_buttons)
+	inspector_panel.visible = false
+	# log (bottom)
+	log_panel = PanelContainer.new()
+	log_panel.anchor_top = 1.0
+	log_panel.anchor_bottom = 1.0
+	log_panel.anchor_right = 1.0
+	log_panel.offset_left = 408
+	log_panel.offset_right = -390
+	log_panel.offset_top = -170
+	log_panel.offset_bottom = -8
+	root.add_child(log_panel)
+	log_label = RichTextLabel.new()
+	log_label.bbcode_enabled = true
+	log_label.scroll_following = true
+	log_panel.add_child(log_label)
+	# debug (right, below inspector)
+	debug_panel = PanelContainer.new()
+	debug_panel.anchor_left = 1.0
+	debug_panel.anchor_right = 1.0
+	debug_panel.anchor_bottom = 1.0
+	debug_panel.offset_left = -520
+	debug_panel.offset_right = -8
+	debug_panel.offset_top = 478
+	debug_panel.offset_bottom = -8
+	root.add_child(debug_panel)
+	debug_label = RichTextLabel.new()
+	debug_label.bbcode_enabled = true
+	debug_label.add_theme_font_size_override("normal_font_size", 12)
+	debug_panel.add_child(debug_label)
+	debug_panel.visible = false
+	# toast
+	toast_label = Label.new()
+	toast_label.anchor_left = 0.5
+	toast_label.anchor_right = 0.5
+	toast_label.offset_left = -300
+	toast_label.offset_right = 300
+	toast_label.offset_top = 60
+	toast_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	toast_label.add_theme_color_override("font_color", Color("ffe6a0"))
+	toast_label.add_theme_color_override("font_outline_color", Color("2a1a2a"))
+	toast_label.add_theme_constant_override("outline_size", 6)
+	toast_label.add_theme_font_size_override("font_size", 18)
+	root.add_child(toast_label)
+	# modal
+	modal = ColorRect.new()
+	modal.color = Color(0, 0, 0, 0.55)
+	modal.set_anchors_preset(Control.PRESET_FULL_RECT)
+	root.add_child(modal)
+	var center := CenterContainer.new()
+	center.set_anchors_preset(Control.PRESET_FULL_RECT)
+	modal.add_child(center)
+	var mp := PanelContainer.new()
+	mp.custom_minimum_size = Vector2(760, 200)
+	center.add_child(mp)
+	modal_box = VBoxContainer.new()
+	modal_box.add_theme_constant_override("separation", 8)
+	mp.add_child(modal_box)
+	modal_title = Label.new()
+	modal_title.add_theme_font_size_override("font_size", 22)
+	modal_title.add_theme_color_override("font_color", Color("ffc8dc"))
+	modal_box.add_child(modal_title)
+	modal_body = RichTextLabel.new()
+	modal_body.bbcode_enabled = true
+	modal_body.custom_minimum_size = Vector2(740, 120)
+	modal_body.fit_content = true
+	modal_box.add_child(modal_body)
+	modal_extra = VBoxContainer.new()
+	modal_box.add_child(modal_extra)
+	modal_buttons = VBoxContainer.new()
+	modal_box.add_child(modal_buttons)
+	modal.visible = false
+
+func _btn(text: String, cb: Callable, disabled := false) -> Button:
+	var b := Button.new()
+	b.text = text
+	b.disabled = disabled
+	b.pressed.connect(cb)
+	return b
+
+## Full-width button whose text wraps inside the side panel.
+func _wbtn(text: String, cb: Callable, disabled := false) -> Button:
+	var b := _btn(text, cb, disabled)
+	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	b.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
+	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	return b
+
+func _label(text: String, size := 15, color := "") -> Label:
+	var l := Label.new()
+	l.text = text
+	l.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
+	l.add_theme_font_size_override("font_size", size)
+	if color != "":
+		l.add_theme_color_override("font_color", Color(color))
+	return l
+
+func _rich(text: String) -> RichTextLabel:
+	var r := RichTextLabel.new()
+	r.bbcode_enabled = true
+	r.fit_content = true
+	r.scroll_active = false
+	r.text = text
+	return r
+
+func _clear(n: Node) -> void:
+	for c in n.get_children():
+		n.remove_child(c)
+		c.queue_free()
+
+func toast(text: String) -> void:
+	if text == "":
+		return
+	toast_label.text = text
+	toast_t = 3.0
+
+## Show a modal dialog. buttons: [[label, callable], ...]
+func show_modal(title: String, body: String, buttons: Array, extra: Control = null, width := 760) -> void:
+	modal.visible = true
+	modal_title.text = title
+	modal_body.text = body
+	modal_body.visible = body != ""
+	modal_body.custom_minimum_size.x = width - 20
+	(modal_box.get_parent() as PanelContainer).custom_minimum_size.x = width
+	_clear(modal_extra)
+	if extra != null:
+		modal_extra.add_child(extra)
+	_clear(modal_buttons)
+	for b in buttons:
+		var bt := _wbtn(b[0], b[1], b.size() > 2 and b[2])
+		bt.alignment = HORIZONTAL_ALIGNMENT_CENTER
+		modal_buttons.add_child(bt)
+
+func close_modal() -> void:
+	modal.visible = false
+	_clear(modal_extra)
+
+# ======================================================================== title & save
+func _title() -> void:
+	s = St.new_game()
+	view.set_state(s)
+	sim = Biz.new(s, "offhours")
+	view.set_sim(sim)
+	var buttons := [["開始新的營業", _new_game]]
+	if St.has_save():
+		buttons.push_front(["繼續上次的進度", _continue])
+	show_modal("MAIDEN PARADE — A Living Cafe", "在老商店街的一角，有一間快要撐不下去的女僕咖啡廳。\n\n白天逛商店街、認識街坊；傍晚準備開店；晚上看著店裡的人們，慢慢過起自己的生活。\n\n[color=#b8a8c0]操作：左鍵點選角色或家具．右鍵指揮店長移動或處理工作．中鍵拖曳旋轉鏡頭（Shift＋中鍵平移）．滾輪縮放．Q/E 旋轉．F3 除錯面板．空白鍵暫停[/color]", buttons)
+
+func _new_game() -> void:
+	s = St.new_game()
+	_start_loaded()
+
+func _continue() -> void:
+	var l := St.load_game()
+	if l.is_empty():
+		toast("讀檔失敗，開始新遊戲。")
+		l = St.new_game()
+	s = l
+	_start_loaded()
+
+func _start_loaded() -> void:
+	close_modal()
+	view.set_state(s)
+	match s.phase:
+		"explore":
+			enter_explore()
+		"prepare":
+			enter_prepare()
+		_:
+			s.phase = "explore"
+			enter_explore()
+
+func _save() -> void:
+	if s.phase in ["business"]:
+		toast("營業中不能存檔。")
+		return
+	St.save_game(s)
+	toast("已存檔。")
+
+# ======================================================================== frame loop
+func _process(dt: float) -> void:
+	if toast_t > 0:
+		toast_t -= dt
+		if toast_t <= 0:
+			toast_label.text = ""
+	if s.is_empty():
+		return
+	if sim != null and not paused and not capturing:
+		var mul := speed if s.phase == "business" else 1.0
+		sim.update(dt * mul)
+		if s.phase == "business" and sim.ended:
+			_end_business()
+	refresh_t -= dt
+	if refresh_t <= 0:
+		refresh_t = 0.25
+		_refresh_top()
+		_refresh_log()
+		if inspector_panel.visible:
+			_refresh_inspector()
+		if debug_panel.visible:
+			_refresh_debug()
+		if s.phase == "business":
+			_refresh_business_side_live()
+	_check_pending_screenshots()
+
+func _unhandled_input(ev: InputEvent) -> void:
+	if ev is InputEventKey and ev.pressed and not ev.echo:
+		match ev.keycode:
+			KEY_F3:
+				_toggle_debug()
+			KEY_N:
+				if not modal.visible:
+					_open_notebook()
+			KEY_M:
+				if not modal.visible:
+					_open_album()
+			KEY_SPACE:
+				if s.phase == "business":
+					paused = not paused
+					toast("暫停" if paused else "繼續")
+			KEY_ESCAPE:
+				if placing != "" or moving_fid != "":
+					placing = ""
+					moving_fid = ""
+					view.set_ghost("", Vector2i.ZERO, false)
+				elif modal.visible and s.phase != "night":
+					close_modal()
+	elif ev is InputEventMouseMotion and (placing != "" or moving_fid != ""):
+		var c: Vector2i = view.screen_to_cell(ev.position)
+		if c != hover_cell:
+			hover_cell = c
+			var type := placing
+			var lay = Layout.new(s.furniture, s.upgrades)
+			if moving_fid != "":
+				var rest: Array = s.furniture.filter(func(f): return f.id != moving_fid)
+				for f in s.furniture:
+					if f.id == moving_fid:
+						type = f.type
+				lay = Layout.new(rest, s.upgrades)
+			view.set_ghost(type, c, lay.can_place(type, c.x, c.y) == "")
+
+func _refresh_top() -> void:
+	var phase_name: String = {"explore": "白天．商店街", "prepare": "開店準備", "business": "營業中", "night": "打烊後"}.get(s.phase, s.phase)
+	var t := "[b]%s[/b]  %s  %s   ¥%s   人氣 %d   口碑 %d" % [Data.date_label(int(s.day)), World.WEATHER_NAMES.get(s.weather, s.weather), phase_name,
+		_money(float(s.money)), int(s.popularity), int(s.reputation)]
+	if s.phase == "explore":
+		t += "   行動 %d／%d（%s）" % [int(s.action_points), Data.DAY_ACTION_POINTS, Data.SLOTS[World.slot_index(s)]]
+	if s.phase == "business" and sim != null:
+		t += "   🕐 %s   指揮點數 %d／%d   %s" % [sim.clock(), sim.command_points, Biz.MAX_CP, ("⏸" if paused else "▶ x%d" % int(speed))]
+	var ev: String = s.street.get("event", "")
+	if ev != "":
+		t += "   🏮 " + World.STREET_EVENT_NAMES.get(ev, ev)
+	top_label.text = t
+
+static func _money(v: float) -> String:
+	var n := int(v)
+	var neg := n < 0
+	var a := str(absi(n))
+	var out := ""
+	while a.length() > 3:
+		out = "," + a.substr(a.length() - 3) + out
+		a = a.substr(0, a.length() - 3)
+	return ("-" if neg else "") + a + out
+
+func _refresh_log() -> void:
+	if sim == null:
+		return
+	if sim.notes.size() == notes_seen:
+		return
+	for i in range(notes_seen, sim.notes.size()):
+		var n: Dictionary = sim.notes[i]
+		var col: String = {"warn": "#ffb080", "good": "#a0f0a0", "moment": "#ffc8e8", "album": "#ffe080"}.get(n.kind, "#e0d8e8")
+		log_label.append_text("[color=#8a7a9a]%s[/color] [color=%s]%s[/color]\n" % [sim.clock() if s.phase == "business" else "", col, n.text])
+	notes_seen = sim.notes.size()
+
+func _set_sim(p_sim) -> void:
+	sim = p_sim
+	notes_seen = 0
+	log_label.clear()
+	view.set_sim(sim)
+	sel_id = ""
+	inspector_panel.visible = false
+
+# ======================================================================== explore
+func enter_explore() -> void:
+	s.phase = "explore"
+	close_modal()
+	_set_sim(Biz.new(s, "offhours"))
+	log_label.append_text("[color=#c8b8d8]早上的咖啡廳。女僕們在店裡做著自己的事。[/color]\n")
+	_build_explore_side()
+	if briefing_shown_day != int(s.day):
+		briefing_shown_day = int(s.day)
+		show_modal("早安！%s" % Data.date_label(int(s.day)), "\n".join(World.morning_briefing(s)), [["出門吧", close_modal]])
+
+func _build_explore_side() -> void:
+	_clear(side)
+	side.add_child(_label("☀ 白天：商店街", 20, "#ffd0e0"))
+	if int(s.action_points) > 0:
+		side.add_child(_label("現在是 %s。每去一個地方會花掉一段時間（剩 %d 次）。街坊們會依照作息出現在不同地方。" % [Data.SLOTS[World.slot_index(s)], int(s.action_points)], 13, "#c8b8d0"))
+	else:
+		side.add_child(_label("已經傍晚了，該回店裡準備開店。", 13, "#c8b8d0"))
+	for loc in Data.LOCATION_ORDER:
+		var here := World.residents_at(s, loc)
+		var names := []
+		for rid in here:
+			names.append(Data.RESIDENTS[rid].name)
+		var txt := "📍 %s" % Data.LOCATIONS[loc].name
+		if not names.is_empty():
+			txt += "\n　　👤 " + "、".join(names)
+		if loc == "cafe":
+			var con := []
+			for m in St.active_maids(s):
+				if not m.concern.is_empty():
+					con.append(Data.MAIDS[m.id].name)
+			if not con.is_empty():
+				txt += "\n　　💭 %s好像有心事" % "、".join(con)
+		var b := _wbtn(txt, _on_visit.bind(loc), int(s.action_points) <= 0)
+		b.tooltip_text = Data.LOCATIONS[loc].desc
+		side.add_child(b)
+	side.add_child(HSeparator.new())
+	var recruits := []
+	for mid in Data.MAIDS:
+		if s.flags.get("recruit_" + mid, false):
+			recruits.append(mid)
+	for mid in recruits:
+		side.add_child(_wbtn("✨ 邀請%s加入（店裡最多 5 人）" % Data.MAIDS[mid].name, _on_hire.bind(mid)))
+	side.add_child(_wbtn("🏠 回店裡準備開店 →", enter_prepare))
+
+func _on_visit(loc: String) -> void:
+	if loc == "cafe":
+		var ms := St.active_maids(s)
+		var btns := []
+		for m in ms:
+			var t: String = Data.MAIDS[m.id].name
+			if not m.concern.is_empty():
+				t += "（💭 好像有心事）"
+			btns.append([t, _visit_cafe.bind(m.id)])
+		btns.append(["算了", close_modal])
+		show_modal("回店裡", "要找誰聊聊？", btns)
+		return
+	var enc := World.visit_location(s, loc)
+	_show_encounter(enc)
+
+func _visit_cafe(mid: String) -> void:
+	var enc := World.visit_location(s, "cafe", mid)
+	_show_encounter(enc)
+
+func _show_encounter(enc: Dictionary) -> void:
+	var btns := []
+	for rid in enc.residents:
+		btns.append(["和%s聊聊" % Data.RESIDENTS[rid].name, _on_talk.bind(rid)])
+	if enc.has("concern"):
+		for o in Social.options(s, enc.concern):
+			btns.append(["💭 " + o.label, _on_concern.bind(enc.concern, o.id)])
+	btns.append(["離開", _close_and_refresh_explore])
+	show_modal(enc.title, "\n".join(enc.lines), btns)
+	_build_explore_side()
+
+func _close_and_refresh_explore() -> void:
+	close_modal()
+	_build_explore_side()
+
+func _on_talk(rid: String) -> void:
+	var t := World.talk_resident(s, rid)
+	var btns := []
+	if t.offer != "":
+		btns.append(["答應", _on_offer.bind(t.offer)])
+	btns.append(["道別", _close_and_refresh_explore])
+	var r := World.resident(s, rid)
+	show_modal("%s（%s）" % [Data.RESIDENTS[rid].name, Data.RESIDENTS[rid].role], "\n".join(t.lines) + "\n\n[color=#a898b0]熟悉度 %d[/color]" % int(r.aff), btns)
+
+func _on_offer(offer: String) -> void:
+	var e := World.accept_offer(s, offer)
+	if e != "":
+		toast(e)
+		return
+	show_modal("合作成立！", {"yamada_eggs": "山田家的放牧蛋可以在山田生鮮買到了。新料理「放牧蛋特製蛋包飯」解鎖！",
+		"sweets_collab": "糖霜屋的食材八折，「糖霜屋聯名蛋糕」解鎖！展示櫃的商品也更好賣了。",
+		"tsukimi_collab": "新活動「手作小市集」可以舉辦了。", "kanade_collab": "新活動「街頭音樂之夜」可以舉辦了（需要小舞台）。"}.get(offer, ""),
+		[["太好了", _close_and_refresh_explore]])
+
+func _on_hire(mid: String) -> void:
+	var e := World.hire_maid(s, mid)
+	if e != "":
+		toast(e)
+		return
+	show_modal("%s加入了 Maiden Parade！" % Data.MAIDS[mid].name, Data.MAIDS[mid].intro + "\n\n特質：" + "、".join(Data.MAIDS[mid].traits.map(func(x): return Data.TRAITS[x].name)), [["歡迎！", _close_and_refresh_explore]])
+	view.set_sim(sim)
+	_set_sim(Biz.new(s, "offhours"))
+
+func _on_concern(mid: String, opt: String) -> void:
+	var r := Social.resolve(s, mid, opt)
+	show_modal("💭 %s" % Data.MAIDS[mid].name, r, [["好", _close_and_refresh_explore]])
+
+# ======================================================================== prepare
+func enter_prepare() -> void:
+	s.phase = "prepare"
+	close_modal()
+	if sim == null or sim.mode != "offhours":
+		_set_sim(Biz.new(s, "offhours"))
+	_build_prepare_side()
+
+func _build_prepare_side() -> void:
+	_clear(side)
+	side.add_child(_label("🧹 開店準備", 20, "#ffd0e0"))
+	var tabs := HFlowContainer.new()
+	var names := ["菜單", "採購", "人員", "家具", "活動．氛圍", "特別日"]
+	for i in names.size():
+		var b := _btn(names[i], _set_prep_tab.bind(i))
+		if i == prep_tab:
+			b.add_theme_color_override("font_color", Color("ffd84a"))
+		tabs.add_child(b)
+	side.add_child(tabs)
+	side.add_child(HSeparator.new())
+	match prep_tab:
+		0:
+			_prep_menu()
+		1:
+			_prep_shop()
+		2:
+			_prep_staff()
+		3:
+			_prep_furniture()
+		4:
+			_prep_activity()
+		5:
+			_prep_special()
+	side.add_child(HSeparator.new())
+	var open := _wbtn("🔔 開始營業（17:00）", _start_business)
+	open.add_theme_font_size_override("font_size", 18)
+	side.add_child(open)
+	side.add_child(_wbtn("← 回到商店街", enter_explore, int(s.action_points) <= 0))
+
+func _set_prep_tab(i: int) -> void:
+	prep_tab = i
+	placing = ""
+	moving_fid = ""
+	view.set_ghost("", Vector2i.ZERO, false)
+	_build_prepare_side()
+
+func _prep_menu() -> void:
+	side.add_child(_label("菜單 %d／%d　（括號是材料夠做幾份）" % [s.menu.size(), Data.MAX_MENU], 13, "#c8b8d0"))
+	for cat in ["drink", "dessert", "main"]:
+		side.add_child(_label(Data.CAT_NAMES[cat], 15, "#ffc8dc"))
+		for id in s.unlocked_dishes:
+			var d: Dictionary = Data.DISHES[id]
+			if d.cat != cat:
+				continue
+			var avail := World.dish_available(s, id)
+			var on: bool = id in s.menu
+			var tag := ""
+			if d.get("signature", false):
+				tag = "★招牌 "
+			elif d.get("collab", false):
+				tag = "🤝聯名 "
+			elif d.has("season"):
+				tag = "🍃季節 "
+			var buzz := float(s.dish_buzz.get(id, 0.0))
+			var t := "%s %s%s ¥%d（%d）%s" % ["☑" if on else "☐", tag, d.name, int(d.price), World.servings(s.inventory, id), "  📣%d" % int(buzz) if buzz >= 3 else ""]
+			side.add_child(_wbtn(t, _toggle_dish.bind(id), not avail))
+
+func _toggle_dish(id: String) -> void:
+	toast(World.toggle_menu(s, id))
+	_build_prepare_side()
+
+func _prep_shop() -> void:
+	var by_shop := {}
+	for id in Data.INGREDIENTS:
+		var ing: Dictionary = Data.INGREDIENTS[id]
+		if not World.ingredient_available(s, id) and int(s.inventory.get(id, 0)) == 0:
+			continue
+		if not by_shop.has(ing.shop):
+			by_shop[ing.shop] = []
+		by_shop[ing.shop].append(id)
+	var need := {}
+	for id in s.menu:
+		for ing in Data.DISHES[id].ing:
+			need[ing] = true
+	side.add_child(_label("★ = 今天菜單會用到的材料。", 12, "#a898b0"))
+	for shop in ["grocer", "general", "sweets"]:
+		side.add_child(_label(Data.LOCATIONS[shop].name + ("" if World.shop_open(s, shop) else "（今天公休）"), 15, "#ffc8dc"))
+		for id in by_shop.get(shop, []):
+			var h := HBoxContainer.new()
+			var l := _label("%s%s ¥%d　庫存 %d" % ["★" if need.has(id) else "　", Data.INGREDIENTS[id].name, World.ingredient_price(s, id), int(s.inventory.get(id, 0))], 14)
+			l.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+			h.add_child(l)
+			var ok := World.ingredient_available(s, id)
+			h.add_child(_btn("+1", _buy.bind(id, 1), not ok))
+			h.add_child(_btn("+5", _buy.bind(id, 5), not ok))
+			side.add_child(h)
+	side.add_child(_wbtn("🛒 自動補到每道菜 5 份", _auto_stock))
+
+func _buy(id: String, n: int) -> void:
+	toast(World.buy_ingredient(s, id, n))
+	_build_prepare_side()
+
+func _auto_stock() -> void:
+	var want := {}
+	for id in s.menu:
+		for ing in Data.DISHES[id].ing:
+			want[ing] = int(want.get(ing, 0)) + 5 * int(Data.DISHES[id].ing[ing])
+	var spent := 0
+	for ing in want:
+		var n := int(want[ing]) - int(s.inventory.get(ing, 0))
+		if n > 0 and World.ingredient_available(s, ing) and World.buy_ingredient(s, ing, n) == "":
+			spent += n * World.ingredient_price(s, ing)
+	toast("花了 ¥%d 補貨。" % spent)
+	_build_prepare_side()
+
+func _prep_staff() -> void:
+	for m in St.active_maids(s):
+		var def: Dictionary = Data.MAIDS[m.id]
+		var box := VBoxContainer.new()
+		var info := "[b]%s[/b]　%s\n心情 %d　疲勞 %d　%s" % [def.name, "、".join(def.traits.map(func(x): return Data.TRAITS[x].name)), int(m.mood), int(m.fatigue),
+			("💭 " + m.concern.sign) if not m.concern.is_empty() else ""]
+		if m.get("preferred_role", "") != "":
+			info += "\n（想做：%s）" % Data.ROLE_NAMES[m.preferred_role]
+		box.add_child(_rich(info))
+		var roles := HFlowContainer.new()
+		for r in ["reception", "kitchen", "floor", "support", "stage", "off"]:
+			var b := _btn(("● " if m.role == r else "") + Data.ROLE_NAMES[r], _set_role.bind(m.id, r))
+			roles.add_child(b)
+		box.add_child(roles)
+		side.add_child(box)
+		side.add_child(HSeparator.new())
+	var rest := 5 - St.active_maids(s).size()
+	if rest > 0:
+		side.add_child(_label("還可以再招募 %d 人。在商店街可能會遇到想打工的人。" % rest, 13, "#a898b0"))
+
+func _set_role(mid: String, r: String) -> void:
+	s.maids[mid].role = r
+	_build_prepare_side()
+
+func _prep_furniture() -> void:
+	var style := World.dominant_style(s)
+	side.add_child(_label("目前風格：%s　（左鍵放置，Esc 取消）" % style.name, 13, "#c8b8d0"))
+	if placing != "" or moving_fid != "":
+		side.add_child(_label("👉 在店內點選位置放置……", 15, "#ffd84a"))
+	for type in Data.FURNITURE:
+		var d: Dictionary = Data.FURNITURE[type]
+		var b := _wbtn("%s ¥%d\n　%s" % [d.name, int(d.price), d.desc], _start_place.bind(type), float(s.money) < float(d.price))
+		b.add_theme_font_size_override("font_size", 13)
+		side.add_child(b)
+	side.add_child(_label("設備升級", 15, "#ffc8dc"))
+	for id in Data.UPGRADES:
+		var u: Dictionary = Data.UPGRADES[id]
+		side.add_child(_wbtn("%s %s ¥%d\n　%s" % ["✔" if s.upgrades[id] else "", u.name, int(u.price), u.desc], _buy_upgrade.bind(id), s.upgrades[id]))
+	side.add_child(_label("點選店內的家具可以移動或賣掉。", 12, "#a898b0"))
+	var fm: Dictionary = Layout.new(s.furniture, s.upgrades).flow_metrics()
+	side.add_child(_label("📐 動線：出餐口→桌子平均 %.1f 步（最遠 %d），門口→桌子平均 %.1f 步，窄道 %d 格" % [fm.kitchen_avg, int(fm.kitchen_max), fm.door_avg, int(fm.narrow)], 13, "#b8d8c8"))
+
+func _start_place(type: String) -> void:
+	placing = type
+	moving_fid = ""
+	_build_prepare_side()
+
+func _buy_upgrade(id: String) -> void:
+	toast(World.buy_upgrade(s, id))
+	view.rebuild_room()
+	_set_sim(Biz.new(s, "offhours"))
+	_build_prepare_side()
+
+func _prep_activity() -> void:
+	side.add_child(_label("今天的活動", 15, "#ffc8dc"))
+	for id in Data.ACTIVITIES:
+		var a: Dictionary = Data.ACTIVITIES[id]
+		var req := World.activity_requirement(s, id) if id != "none" else ""
+		var b := _wbtn("%s%s ¥%d\n　%s%s" % ["● " if s.activity == id else "", a.name, int(a.cost), a.desc, ("\n　⚠ " + req) if req != "" else ""], _set_activity.bind(id), req != "")
+		b.add_theme_font_size_override("font_size", 13)
+		side.add_child(b)
+	if s.activity == "limited":
+		side.add_child(_label("限定料理：", 14))
+		var fl := HFlowContainer.new()
+		for id in s.menu:
+			fl.add_child(_btn(("● " if s.featured_dish == id else "") + Data.DISHES[id].name, _set_featured.bind(id)))
+		side.add_child(fl)
+	side.add_child(_label("音樂", 15, "#ffc8dc"))
+	var mf := HFlowContainer.new()
+	for k in Data.MUSIC:
+		mf.add_child(_btn(("● " if s.music == k else "") + Data.MUSIC[k], _set_music.bind(k)))
+	side.add_child(mf)
+	side.add_child(_label("燈光", 15, "#ffc8dc"))
+	var lf := HFlowContainer.new()
+	for k in Data.LIGHTING:
+		lf.add_child(_btn(("● " if s.lighting == k else "") + Data.LIGHTING[k], _set_lighting.bind(k)))
+	side.add_child(lf)
+	side.add_child(_label("音樂和燈光會影響店的風格，以及喜歡不同氣氛的客人。", 12, "#a898b0"))
+
+func _set_activity(id: String) -> void:
+	toast(World.set_activity(s, id, s.menu[0] if id == "limited" and not s.menu.is_empty() else ""))
+	_build_prepare_side()
+
+func _set_featured(id: String) -> void:
+	s.featured_dish = id
+	_build_prepare_side()
+
+func _set_music(k: String) -> void:
+	s.music = k
+	_build_prepare_side()
+
+func _set_lighting(k: String) -> void:
+	s.lighting = k
+	_build_prepare_side()
+
+func _prep_special() -> void:
+	var ups := World.upcoming_special_days(s, 3)
+	var bm := World.birthday_maid(s)
+	if bm != "":
+		side.add_child(_label("🎂 今天是%s的生日！可以舉辦「女僕生日會」。" % Data.MAIDS[bm].name, 15, "#ffd84a"))
+		ups.push_front({"kind": "birthday", "who": bm, "in": 0, "title": "%s的生日（今天）" % Data.MAIDS[bm].name})
+	if ups.is_empty():
+		side.add_child(_label("最近三天沒有特別的日子。", 14, "#a898b0"))
+	for u in ups:
+		side.add_child(_label("📅 %s%s" % [u.title, "" if u.in == 0 else "（%d 天後）" % u.in], 15, "#ffc8dc"))
+		if u.kind == "birthday":
+			var key: String = "birthday_" + u.who
+			var prep: Dictionary = s.special_prep.get(key, {})
+			for k in [["cake", "訂蛋糕 ¥250"], ["decor", "做裝飾 ¥300"], ["gift", "準備禮物 ¥400"], ["letter", "請大家寫卡片"]]:
+				side.add_child(_wbtn(("✔ " if prep.has(k[0]) else "") + k[1], _prep.bind(key, k[0]), prep.has(k[0])))
+			side.add_child(_label("準備得越用心，壽星越開心；同事感情好的話，她們也會自己準備。", 12, "#a898b0"))
+
+func _prep(key: String, kind: String) -> void:
+	toast(World.prepare_special(s, key, kind))
+	_build_prepare_side()
+
+# ======================================================================== business
+func _start_business() -> void:
+	var e := Settle.begin_business(s)
+	if e != "":
+		show_modal("還不能開店", e, [["好", close_modal]])
+		return
+	placing = ""
+	moving_fid = ""
+	view.set_ghost("", Vector2i.ZERO, false)
+	_set_sim(Biz.new(s, "business"))
+	paused = false
+	_build_business_side()
+
+var _biz_live: RichTextLabel
+
+func _build_business_side() -> void:
+	_clear(side)
+	side.add_child(_label("🍰 營業中", 20, "#ffd0e0"))
+	var sp := HBoxContainer.new()
+	for v in [[1.0, "x1"], [2.0, "x2"], [4.0, "x4"]]:
+		sp.add_child(_btn(v[1], _set_speed.bind(v[0])))
+	sp.add_child(_btn("⏸／▶", _toggle_pause))
+	side.add_child(sp)
+	_biz_live = _rich("")
+	side.add_child(_biz_live)
+	side.add_child(_label("指揮（消耗指揮點數，每 40 秒回復 1 點）", 13, "#c8b8d0"))
+	side.add_child(_wbtn("🏃 外場優先（送餐、整理優先 30 秒）", _cmd_boost.bind("floor", 30.0)))
+	side.add_child(_wbtn("⭐ 熟客優先（熟客先帶位、先上菜 40 秒）", _cmd_boost.bind("regulars", 40.0)))
+	var jf := HFlowContainer.new()
+	for jt in [["cook", "優先製作"], ["clean", "優先整理桌面"], ["greet", "優先帶位"], ["mess", "優先清地板"]]:
+		jf.add_child(_btn(jt[1], _cmd_boost.bind("job_" + jt[0], 30.0)))
+	side.add_child(jf)
+	side.add_child(_wbtn("🚪 暫停／恢復接待新客人", _cmd_door))
+	side.add_child(HSeparator.new())
+	side.add_child(_label("女僕（點選角色可以看詳情、指派工作）", 13, "#c8b8d0"))
+	for m in St.active_maids(s):
+		var box := VBoxContainer.new()
+		box.add_child(_label(Data.MAIDS[m.id].name, 15, "#ffc8dc"))
+		var fl := HFlowContainer.new()
+		for r in ["reception", "kitchen", "floor", "support"]:
+			fl.add_child(_btn(Data.ROLE_NAMES[r], _cmd_role.bind(m.id, r)))
+		fl.add_child(_btn("休息", _cmd_rest.bind(m.id)))
+		fl.add_child(_btn("暫停", _cmd_pause.bind(m.id)))
+		box.add_child(fl)
+		side.add_child(box)
+	side.add_child(_label("右鍵地板：店長移動．右鍵髒桌子／出餐口／壞掉的設備：店長親自處理．點客人可以讓店長去寒暄。", 12, "#a898b0"))
+
+func _refresh_business_side_live() -> void:
+	if _biz_live == null or not is_instance_valid(_biz_live) or sim == null:
+		return
+	var pc: Dictionary = sim.pending_counts()
+	var parts := []
+	for k in pc:
+		parts.append("%s %d" % [Biz.JOB_NAMES.get(k, k), int(pc[k])])
+	var t := "營收 ¥%s　接待 %d　流失 %d\n待辦：%s" % [_money(sim.revenue), sim.served_count, sim.lost, "、".join(parts) if not parts.is_empty() else "（無）"]
+	var lines := []
+	for w in sim.workers:
+		if w.kind == "maid":
+			var m: Dictionary = s.maids[w.maid_id]
+			lines.append("%s［%s］%s　😊%d 😮‍💨%d" % [w.name, Data.ROLE_NAMES.get(m.role, m.role), w.activity, int(m.mood), int(m.fatigue)])
+	t += "\n" + "\n".join(lines)
+	if sim.door_closed:
+		t += "\n[color=#ffb080]🚪 暫停接待中[/color]"
+	_biz_live.text = t
+
+func _set_speed(v: float) -> void:
+	speed = v
+	paused = false
+
+func _toggle_pause() -> void:
+	paused = not paused
+
+func _cmd_boost(n: String, secs: float) -> void:
+	toast(sim.order_boost(n, secs))
+
+func _cmd_door() -> void:
+	toast(sim.toggle_door())
+
+func _cmd_role(mid: String, r: String) -> void:
+	toast(sim.set_role(mid, r))
+
+func _cmd_rest(mid: String) -> void:
+	toast(sim.send_rest(mid))
+
+func _cmd_pause(mid: String) -> void:
+	toast(sim.toggle_pause(mid))
+
+func _end_business() -> void:
+	report = Settle.settle(s, sim)
+	_set_sim(Biz.new(s, "offhours"))
+	log_label.append_text("[color=#c8b8d8]打烊了。大家開始收拾，各自做著自己的事。[/color]\n")
+	night_step = "report"
+	_clear(side)
+	side.add_child(_label("🌙 打烊了", 20, "#ffd0e0"))
+	side.add_child(_label("看看今天的報告吧。", 13, "#c8b8d0"))
+	_show_report(0)
+
+# ======================================================================== night
+func _show_report(page: int) -> void:
+	var r := report
+	var body := ""
+	var btns := []
+	match page:
+		0:
+			var exp: Dictionary = r.expenses
+			body = "[b]營收[/b] ¥%s（含展示櫃商品 ¥%s）\n[b]支出[/b] ¥%s　（食材 %d、薪水 %d、房租 %d、水電 %d、維護 %d、活動 %d、宣傳 %d、家具 %d）\n[b]淨利[/b] ¥%s\n\n接待 %d 位．流失 %d 位．客訴 %d（處理 %d）．平均滿意度 %d\n人氣 %+d → %d．口碑 %d．店的風格：%s" % [
+				_money(r.revenue), _money(r.goods), _money(r.total_expenses), int(exp.ingredients), int(exp.wages), int(exp.get("rent", 0)), int(exp.utilities), int(exp.maintenance),
+				int(exp.activity), int(exp.promotion), int(exp.furniture), _money(float(r.revenue) - float(r.total_expenses)), r.served, r.lost, r.complaints, r.complaints_handled,
+				r.avg_sat, r.pop_delta, int(s.popularity), r.reputation, r.style]
+			if not r.incidents.is_empty():
+				var inc := []
+				var names := {"aircon": "冷氣故障", "breakdown": "設備故障", "crowding": "擁擠", "dispute": "客人糾紛", "overwork": "過勞", "seat_change": "換座位", "spill": "打翻", "wrong_order": "送錯餐"}
+				for k in r.incidents:
+					inc.append("%s ×%d" % [names.get(k, k), int(r.incidents[k])])
+				body += "\n今天發生的事：" + "、".join(inc)
+		1:
+			var lines := []
+			for rv in r.reviews:
+				var why := ""
+				if not rv.reasons.is_empty():
+					why = "　[color=#9a8aa8]（來店原因：%s）[/color]" % "、".join(rv.reasons)
+				lines.append("[b]%s[/b]　%s%s" % [rv.customer, rv.text, why])
+			body = "\n".join(lines) if not lines.is_empty() else "今天沒有客人……"
+		2:
+			body = "\n".join(r.maid_notes.map(func(x): return x.text))
+			if not r.social.is_empty():
+				body += "\n\n" + "\n".join(r.social)
+			if not r.moments.is_empty():
+				body += "\n\n[color=#ffc8e8]🌸 " + "\n🌸 ".join(r.moments) + "[/color]"
+		3:
+			var fl: Dictionary = r.flow
+			body = "\n".join(r.advice)
+			body += "\n\n[b]📐 動線分析[/b]\n出餐口到桌子：平均 %.1f 步，最遠 %d 步\n門口到桌子：平均 %.1f 步\n窄道：%d 格．今天塞住 %d 秒" % [fl.kitchen_avg, int(fl.kitchen_max), fl.door_avg, int(fl.narrow), r.congestion]
+			if not r.hot.is_empty():
+				body += "\n最常卡住的位置：" + "、".join(r.hot.map(func(h): return "(%d,%d) %.0f秒" % [h.x, h.z, h.v]))
+			btns.append(["🔥 在店內顯示擁擠熱點", _toggle_heat])
+	var titles := ["今日營業報告", "客人的評價", "女僕們與店裡的關係", "建議與動線"]
+	if page > 0:
+		btns.append(["← 上一頁", _show_report.bind(page - 1)])
+	if page < 3:
+		btns.append(["下一頁 →", _show_report.bind(page + 1)])
+	else:
+		btns.append(["結束報告", _night_events])
+	show_modal("%s（%d/4）— %s" % [titles[page], page + 1, r.date], body, btns, null, 860)
+
+func _toggle_heat() -> void:
+	view.set_heat(not view.show_heat, report.get("heat_map", {}))
+
+var _portrait = null
+
+func _night_events() -> void:
+	var ev := Events.next_event(s)
+	if ev.is_empty():
+		_hide_portrait()
+		close_modal()
+		_enter_night_scene()
+		return
+	var btns := []
+	for i in ev.choices.size():
+		btns.append([ev.choices[i], _choose_event.bind(ev.id, i)])
+	_show_portrait(ev.who)
+	show_modal("🌙 " + ev.title, "\n\n".join(ev.lines), btns)
+
+func _choose_event(id: String, idx: int) -> void:
+	var res := Events.resolve(s, id, idx)
+	show_modal("🌙", res, [["繼續", _night_events]])
+
+func _show_portrait(who: String) -> void:
+	if not ResourceLoader.exists(PORTRAIT_SCRIPT) or who == "":
+		return
+	if _portrait == null:
+		var scr = load(PORTRAIT_SCRIPT)
+		if scr == null:
+			return
+		_portrait = scr.new()
+		ui.add_child(_portrait)
+		ui.move_child(_portrait, 0)
+	if _portrait.has_method("show_character"):
+		_portrait.show_character(who, {"expression": "smile", "position": "left"})
+	if _portrait.has_method("set_speaker"):
+		_portrait.set_speaker(who)
+
+func _hide_portrait() -> void:
+	if _portrait != null and is_instance_valid(_portrait):
+		# let the portrait play its exit animation before freeing it
+		var p = _portrait
+		if p.has_method("clear"):
+			p.clear()
+		get_tree().create_timer(0.35).timeout.connect(func(): if is_instance_valid(p): p.queue_free())
+	_portrait = null
+
+func _enter_night_scene() -> void:
+	s.phase = "night"
+	_clear(side)
+	side.add_child(_label("🌙 打烊後", 20, "#ffd0e0"))
+	side.add_child(_label("店裡只剩下女僕們。她們會依照自己的習慣和關係，做些營業時看不到的事。", 13, "#c8b8d0"))
+	var con := []
+	for m in St.active_maids(s):
+		if not m.concern.is_empty():
+			con.append(m)
+	for m in con:
+		var n: String = Data.MAIDS[m.id].name
+		side.add_child(_rich("[color=#ffc8e8]💭 %s[/color]%s" % [m.concern.sign, ("\n　%s：「%s」" % [n, m.concern.confide]) if m.concern.get("revealed", false) else "\n　[color=#a898b0]（白天回店裡找她聊聊，可能會知道原因）[/color]"]))
+		var fl := HFlowContainer.new()
+		for o in Social.options(s, m.id):
+			fl.add_child(_btn(o.label, _night_concern.bind(m.id, o.id)))
+		side.add_child(fl)
+	side.add_child(HSeparator.new())
+	side.add_child(_wbtn("📒 打開筆記本", _open_notebook))
+	side.add_child(_wbtn("📷 回憶相簿", _open_album))
+	side.add_child(_wbtn("🔥 顯示／隱藏今天的擁擠熱點", _toggle_heat))
+	var b := _wbtn("☀ 迎接明天（自動存檔）", _next_day)
+	b.add_theme_font_size_override("font_size", 18)
+	side.add_child(b)
+
+func _night_concern(mid: String, opt: String) -> void:
+	toast(Social.resolve(s, mid, opt))
+	_enter_night_scene()
+
+func _next_day() -> void:
+	view.set_heat(false, {})
+	Settle.next_day(s)
+	St.save_game(s)
+	view.rebuild_room()
+	enter_explore()
+
+# ======================================================================== picking
+func _on_agent_clicked(kind: String, id: String) -> void:
+	if placing != "" or moving_fid != "":
+		return
+	sel_kind = kind
+	sel_id = id
+	view.selected_id = id
+	inspector_panel.visible = true
+	_refresh_inspector()
+
+func _on_cell_clicked(c: Vector2i, button: int) -> void:
+	if modal.visible:
+		return
+	if s.phase == "prepare" and button == MOUSE_BUTTON_LEFT:
+		if placing != "":
+			var e := World.buy_furniture(s, placing, c.x, c.y)
+			toast(e if e != "" else "放好了：%s" % Data.FURNITURE[placing].name)
+			if e == "":
+				placing = ""
+				view.set_ghost("", Vector2i.ZERO, false)
+				_set_sim(Biz.new(s, "offhours"))
+			_build_prepare_side()
+			return
+		if moving_fid != "":
+			var e := World.move_furniture(s, moving_fid, c.x, c.y)
+			toast(e if e != "" else "移動好了。")
+			if e == "":
+				moving_fid = ""
+				view.set_ghost("", Vector2i.ZERO, false)
+				_set_sim(Biz.new(s, "offhours"))
+			_build_prepare_side()
+			return
+		var lay = Layout.new(s.furniture, s.upgrades)
+		var f = lay.furniture_at.get(Layout.key(c), null)
+		if f != null:
+			show_modal(Data.FURNITURE[f.type].name, Data.FURNITURE[f.type].desc, [["移動", _start_move.bind(f.id)], ["賣掉（半價）", _sell.bind(f.id)], ["取消", close_modal]])
+		return
+	if s.phase == "business" and sim != null and button == MOUSE_BUTTON_RIGHT:
+		var j = sim.job_at_cell(c)
+		if j != null:
+			toast(sim.manager_do(j.id))
+		elif not sim.manager_move(c):
+			toast("店長走不到那裡。")
+	if button == MOUSE_BUTTON_LEFT:
+		sel_id = ""
+		view.selected_id = ""
+		inspector_panel.visible = false
+
+func _start_move(fid: String) -> void:
+	close_modal()
+	moving_fid = fid
+	_build_prepare_side()
+
+func _sell(fid: String) -> void:
+	toast(World.sell_furniture(s, fid))
+	close_modal()
+	_set_sim(Biz.new(s, "offhours"))
+	_build_prepare_side()
+
+func _refresh_inspector() -> void:
+	if sim == null:
+		return
+	_clear(inspector_buttons)
+	var t := ""
+	var w = sim.worker(sel_id)
+	if w == null:
+		for x in sim.workers:
+			if x.id == sel_id:
+				w = x
+	if w != null:
+		t = _inspect_worker(w)
+	else:
+		var found = null
+		var fp = null
+		for p in sim.parties:
+			for m in p.members:
+				if m.id == sel_id:
+					found = m
+					fp = p
+		if found == null:
+			inspector_panel.visible = false
+			return
+		t = _inspect_customer(found, fp)
+	inspector.text = t
+
+func _inspect_worker(w) -> String:
+	if w.kind == "manager":
+		return "[b]店長（妳）[/b]\n%s\n\n右鍵地板移動，右鍵工作地點親自處理。管理能力高，適合處理客訴與糾紛。" % w.activity
+	var m: Dictionary = s.maids[w.maid_id]
+	var def: Dictionary = Data.MAIDS[w.maid_id]
+	var t := "[b]%s[/b]　［%s］\n%s\n" % [def.name, Data.ROLE_NAMES.get(m.role, m.role), def.intro]
+	t += "特質：%s\n" % "、".join(def.traits.map(func(x): return Data.TRAITS[x].name))
+	t += "心情 %d　疲勞 %d\n" % [int(m.mood), int(m.fatigue)]
+	t += "[color=#ffd84a]現在：%s[/color]\n" % w.activity
+	if w.job != null:
+		t += "工作：%s（%d 步驟剩餘）\n" % [Biz.JOB_NAMES.get(w.job.type, w.job.type), w.steps.size()]
+	if w.last_fail != "":
+		t += "[color=#ffb080]上次放棄：%s[/color]\n" % w.last_fail
+	if not m.concern.is_empty():
+		t += "[color=#ffc8e8]💭 %s[/color]\n" % m.concern.sign
+	var habits := []
+	for h in m.habits:
+		if float(m.habits[h]) >= 20:
+			habits.append("%s %d" % [Data.HABITS[h].name, int(m.habits[h])])
+	if not habits.is_empty():
+		t += "習慣：%s\n" % "、".join(habits)
+	if s.phase == "business" and not w.candidates.is_empty():
+		t += "\n[b]工作候選（分數／原因）[/b]\n"
+		for c in w.candidates.slice(0, 4):
+			t += "・%s %s　[color=#a898b0]%s[/color]\n" % [Biz.JOB_NAMES.get(c.type, c.type), str(c.score) if c.score >= 0 else "✕", c.why]
+		for c in w.candidates.slice(0, 4):
+			if c.score >= 0:
+				inspector_buttons.add_child(_btn("指派：%s" % Biz.JOB_NAMES.get(c.type, c.type), _assign.bind(w.maid_id, c.job)))
+	return t
+
+func _assign(mid: String, jid: String) -> void:
+	toast(sim.assign_job(mid, jid))
+
+func _inspect_customer(c, p) -> String:
+	var t := "[b]%s[/b]\n" % c.name
+	t += "狀態：%s　滿意度 %d\n" % [p.state, int(c.sat)]
+	if not p.reasons.is_empty():
+		t += "來店原因：%s\n" % "、".join(p.reasons)
+	if not c.causes.is_empty():
+		t += "感受：%s\n" % "、".join(c.causes.keys().map(func(k): return Settle.CAUSE_TEXT.get(k, k)))
+	if c.def_id != "":
+		var def: Dictionary = Data.CUSTOMERS[c.def_id]
+		var mem: Dictionary = s.customers[c.def_id]
+		t += "\n%s\n來店 %d 次．忠誠 %d%s\n" % [def.desc, int(mem.visits), int(mem.loyalty), "．熟客" if mem.is_regular else ""]
+		if mem.fav_maid != "":
+			t += "喜歡的女僕：%s\n" % Data.MAIDS[mem.fav_maid].name
+		if mem.fav_dish != "":
+			t += "常點：%s\n" % Data.DISHES[mem.fav_dish].name
+	if s.phase == "business":
+		inspector_buttons.add_child(_btn("店長去寒暄", _chat.bind(p.id)))
+	return t
+
+func _chat(pid: String) -> void:
+	toast(sim.manager_chat(pid))
+
+# ======================================================================== debug
+func _toggle_debug() -> void:
+	debug_panel.visible = not debug_panel.visible
+	view.show_debug = debug_panel.visible
+
+func _refresh_debug() -> void:
+	if sim == null:
+		return
+	var t := "[b]DEBUG[/b] mode=%s t=%.1f claims=%d congestion=%.0f\n" % [sim.mode, sim.t, sim._claims.size(), sim.congestion]
+	var hc: Array = sim.health_check()
+	t += ("[color=#a0f0a0]health OK[/color]\n" if hc.is_empty() else "[color=#ff8080]" + "; ".join(hc) + "[/color]\n")
+	for w in sim.workers:
+		var step := "-"
+		if not w.steps.is_empty():
+			step = "%s:%s" % [w.steps[0].kind, w.steps[0].get("label", "")]
+		t += "[color=#ffd84a]%s[/color] %s job=%s step=%s cell=%s path=%d%s%s\n" % [w.name, w.activity, (w.job.type + "#" + w.job.id) if w.job != null else "-", step, str(w.cell), w.path.size(),
+			" GHOST" if w.ghost else "", (" fail=" + w.last_fail) if w.last_fail != "" else ""]
+		for c in w.candidates.slice(0, 3):
+			t += "   %s %s (%s)\n" % [c.type, str(c.score), c.why]
+	t += "[b]jobs[/b] "
+	for j in sim.jobs:
+		if not j.done and not j.cancelled:
+			t += "%s#%s[%s %ds] " % [j.type, j.id, j.claimed if j.claimed != "" else "-", int(sim.t - float(j.created))]
+	t += "\n[b]arrivals[/b] "
+	for a in sim.arrivals:
+		if not a.done:
+			t += "%ds:%s(%s) " % [int(a.t), ",".join(a.ids) if not a.ids.is_empty() else "walk-in", "/".join(a.reasons)]
+	t += "\n[b]relation log[/b]\n"
+	for r in s.rel_log.slice(maxi(0, s.rel_log.size() - 6)):
+		t += "D%d %s-%s %s %+.1f %s\n" % [r.day, r.a, r.b, r.dim, r.amount, r.reason]
+	t += "[b]memory triggers[/b]\n"
+	for d in s.debug_log.slice(maxi(0, s.debug_log.size() - 4)):
+		t += d + "\n"
+	debug_label.text = t
+
+# ======================================================================== notebook
+func _open_notebook() -> void:
+	_notebook_page("maids")
+
+func _notebook_page(page: String) -> void:
+	var tabs := HFlowContainer.new()
+	for p in [["maids", "女僕"], ["rel", "關係"], ["cust", "顧客"], ["street", "商店街"], ["moments", "每日瞬間"]]:
+		tabs.add_child(_btn(("● " if p[0] == page else "") + p[1], _notebook_page.bind(p[0])))
+	var body := ""
+	match page:
+		"maids":
+			for m in St.active_maids(s):
+				var def: Dictionary = Data.MAIDS[m.id]
+				var sk := []
+				for k in Data.SKILLS:
+					sk.append("%s %d" % [Data.SKILL_NAMES[k], int(m.skills[k])])
+				var hb := []
+				for h in m.habits:
+					if float(m.habits[h]) >= 10:
+						hb.append("%s %d" % [Data.HABITS[h].name, int(m.habits[h])])
+				body += "[b][color=#ffc8dc]%s[/color][/b]　%s　生日：%s\n%s\n習慣：%s\n心情 %d　疲勞 %d　工作 %d 天%s\n\n" % [def.name, "、".join(def.traits.map(func(x): return Data.TRAITS[x].name)),
+					Data.date_label(int(def.birthday)).split("（")[0], "、".join(sk), "、".join(hb) if not hb.is_empty() else "（還沒有明顯的習慣）", int(m.mood), int(m.fatigue), int(m.days_worked),
+					("\n💭 " + m.concern.sign) if not m.concern.is_empty() else ""]
+		"rel":
+			var ms := St.active_maids(s)
+			for i in ms.size():
+				for k in range(i + 1, ms.size()):
+					var a: String = ms[i].id
+					var b: String = ms[k].id
+					var r := St.rel(s, a, b)
+					body += "[b]%s × %s[/b]　親近 %d．信任 %d．默契 %d．摩擦 %d\n" % [Data.MAIDS[a].name, Data.MAIDS[b].name, int(r.close), int(r.trust), int(r.synergy), int(r.friction)]
+					for sh in r.shared:
+						body += "　[color=#ffc8e8]・D%d %s[/color]\n" % [sh.day, sh.text]
+			body += "\n[b]最近的變化與原因[/b]\n"
+			for r in s.rel_log.slice(maxi(0, s.rel_log.size() - 12)):
+				body += "D%d %s—%s %s %+.1f：%s\n" % [r.day, Data.MAIDS[r.a].name, Data.MAIDS[r.b].name, {"close": "親近", "trust": "信任", "synergy": "默契", "friction": "摩擦"}.get(r.dim, r.dim), r.amount, r.reason]
+		"cust":
+			for cid in Data.CUSTOMERS:
+				var mem: Dictionary = s.customers[cid]
+				if not mem.known:
+					continue
+				var def: Dictionary = Data.CUSTOMERS[cid]
+				body += "[b][color=#ffc8dc]%s[/color][/b]%s　來店 %d 次．忠誠 %d\n%s\n" % [def.name, "（熟客）" if mem.is_regular else "", int(mem.visits), int(mem.loyalty), def.desc]
+				var habit := []
+				var total := 0
+				for v in mem.weekday_counts:
+					total += int(v)
+				if total >= 3:
+					for d in 7:
+						if float(mem.weekday_counts[d]) / total >= 0.3:
+							habit.append("星期" + Data.WEEKDAYS[d])
+				var favs := []
+				if not habit.is_empty():
+					favs.append("常在%s來" % "、".join(habit))
+				if mem.fav_maid != "":
+					favs.append("指名%s" % Data.MAIDS[mem.fav_maid].name)
+				if mem.fav_dish != "":
+					favs.append("常點%s" % Data.DISHES[mem.fav_dish].name)
+				if mem.fav_seat != "":
+					favs.append("老位子 %s" % mem.fav_seat)
+				if not favs.is_empty():
+					body += "　" + "．".join(favs) + "\n"
+				for k in s.cust_rel:
+					var cr: Dictionary = s.cust_rel[k]
+					if cr.type != "" and cid in String(k).split("|"):
+						var other: String = String(k).replace(cid, "").replace("|", "")
+						body += "　🤝 和%s：%s\n" % [Data.CUSTOMERS[other].name, Data.RELATION_NAMES.get(cr.type, cr.type)]
+				for l in mem.log.slice(maxi(0, mem.log.size() - 3)):
+					body += "　[color=#a898b0]D%d %s[/color]\n" % [l.day, l.text]
+				body += "\n"
+		"street":
+			for rid in Data.RESIDENTS:
+				var def: Dictionary = Data.RESIDENTS[rid]
+				var r := World.resident(s, rid)
+				var where := []
+				for i in Data.SLOTS.size():
+					var loc := World.resident_location(s, rid, i)
+					where.append("%s %s" % [Data.SLOTS[i], Data.LOCATIONS[loc].name.split("「")[0] if loc != "" else "—"])
+				body += "[b]%s[/b]（%s）熟悉度 %d\n　今天：%s\n\n" % [def.name, def.role, int(r.aff), "．".join(where)]
+			var nxt: String = s.street.get("next_event", "")
+			if nxt != "":
+				body += "聽說明天：%s\n" % World.STREET_EVENT_NAMES.get(nxt, nxt)
+		"moments":
+			var ms: Array = s.moments.duplicate()
+			ms.reverse()
+			for mo in ms:
+				body += "[color=#ffc8e8]D%d[/color] %s\n" % [mo.day, mo.text]
+			if ms.is_empty():
+				body = "還沒有特別的瞬間。多看看店裡的人們吧。"
+	var sc := ScrollContainer.new()
+	sc.custom_minimum_size = Vector2(880, 560)
+	var r := _rich(body)
+	r.custom_minimum_size.x = 860
+	sc.add_child(r)
+	var box := VBoxContainer.new()
+	box.add_child(tabs)
+	box.add_child(sc)
+	show_modal("📒 店長的筆記本", "", [["關閉", _close_notebook]], box, 900)
+
+func _close_notebook() -> void:
+	close_modal()
+	if s.phase == "night":
+		_enter_night_scene()
+
+# ======================================================================== album & screenshots
+func _open_album() -> void:
+	var grid := GridContainer.new()
+	grid.columns = 3
+	grid.add_theme_constant_override("h_separation", 10)
+	grid.add_theme_constant_override("v_separation", 10)
+	var items: Array = s.album.duplicate()
+	items.reverse()
+	for a in items:
+		var card := VBoxContainer.new()
+		card.custom_minimum_size = Vector2(280, 0)
+		var img: String = a.get("image", "")
+		if img != "" and img != "pending" and FileAccess.file_exists(img):
+			var im := Image.load_from_file(img)
+			if im != null:
+				var tr := TextureRect.new()
+				tr.texture = ImageTexture.create_from_image(im)
+				tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+				tr.custom_minimum_size = Vector2(280, 160)
+				card.add_child(tr)
+		var who := []
+		for id in a.get("who", []):
+			who.append(Data.MAIDS[id].name if Data.MAIDS.has(id) else Data.CUSTOMERS.get(id, {}).get("name", id))
+		var info := _rich("")
+		info.custom_minimum_size.x = 280
+		card.add_child(info)
+		info.text = ("[b][color=#ffc8dc]%s[/color][/b]\n[color=#a898b0]%s%s[/color]\n%s" % [a.title, a.date, ("．" + "、".join(who)) if not who.is_empty() else "", a.text])
+		grid.add_child(card)
+	var sc := ScrollContainer.new()
+	sc.custom_minimum_size = Vector2(900, 580)
+	sc.add_child(grid)
+	show_modal("📷 Cafe Memories（%d）" % s.album.size(), "", [["關閉", _close_notebook]], sc, 920)
+
+func _check_pending_screenshots() -> void:
+	if capturing or s.is_empty():
+		return
+	for a in s.album:
+		if a.get("image", "") == "pending":
+			_capture(a)
+			return
+
+func _capture(entry: Dictionary) -> void:
+	capturing = true
+	ui.visible = false
+	await RenderingServer.frame_post_draw
+	await RenderingServer.frame_post_draw
+	var img := get_viewport().get_texture().get_image()
+	ui.visible = true
+	DirAccess.make_dir_recursive_absolute("user://memories")
+	var path := "user://memories/d%d_%d.png" % [int(entry.day), s.album.find(entry)]
+	img.resize(640, int(640.0 * img.get_height() / img.get_width()))
+	img.save_png(path)
+	entry.image = path
+	capturing = false
+
+# ======================================================================== scripted playtest screenshots
+## godot --path godot -- --shot=DIR : plays through the loop with UI and saves screenshots (used for automated playtests).
+func _run_playtest_shots() -> void:
+	var dir := autoshot
+	DirAccess.make_dir_recursive_absolute(dir)
+	s = St.new_game(7)
+	view.set_state(s)
+	enter_explore()
+	await _shot(dir + "/01_morning_briefing.png")
+	close_modal()
+	_on_visit("park")
+	await _shot(dir + "/02_encounter.png")
+	close_modal()
+	World.visit_location(s, "general")
+	World.visit_location(s, "plaza")
+	_build_explore_side()
+	await _wait(1.0)
+	await _shot(dir + "/03_explore.png")
+	World.buy_furniture(s, "bookshelf", 3, 9)
+	World.buy_furniture(s, "vase", 14, 9)
+	enter_prepare()
+	prep_tab = 0
+	_build_prepare_side()
+	await _shot(dir + "/04_prepare_menu.png")
+	_set_prep_tab(3)
+	placing = "sofa_table"
+	view.set_ghost("sofa_table", Vector2i(15, 8), true)
+	await _shot(dir + "/05_prepare_furniture.png")
+	placing = ""
+	view.set_ghost("", Vector2i.ZERO, false)
+	_auto_stock()
+	_start_business()
+	speed = 4.0
+	await _wait(14.0)
+	_toggle_debug()
+	for w in sim.workers:
+		if w.kind == "maid":
+			_on_agent_clicked("maid", w.id)
+			break
+	await _wait(0.6)
+	await _shot(dir + "/06_business_debug.png")
+	_toggle_debug()
+	while not sim.ended and s.phase == "business":
+		await _wait(0.5)
+	await _wait(0.5)
+	await _shot(dir + "/07_report.png")
+	_show_report(3)
+	await _shot(dir + "/08_flow.png")
+	_night_events()
+	await _wait(0.3)
+	await _shot(dir + "/09_night_event.png")
+	var guard := 0
+	while modal.visible and guard < 12:
+		guard += 1
+		var bs := modal_buttons.get_children()
+		if bs.is_empty():
+			break
+		(bs[0] as Button).pressed.emit()
+		await _wait(0.2)
+	await _wait(6.0)
+	await _shot(dir + "/10_after_hours.png")
+	St.add_album(s, "打烊後的店裡", "（自動測試：確認回憶相簿會自動截圖）", s.staff.duplicate(), "pending")
+	await _wait(1.0)
+	print("ALBUM_IMAGE=", s.album[s.album.size() - 1].image, " exists=", FileAccess.file_exists(s.album[s.album.size() - 1].image))
+	_open_notebook()
+	_notebook_page("rel")
+	await _shot(dir + "/11_notebook.png")
+	_open_album()
+	await _wait(0.5)
+	await _shot(dir + "/12_album.png")
+	get_tree().quit()
+
+func _wait(sec: float) -> void:
+	await get_tree().create_timer(sec).timeout
+
+func _shot(path: String) -> void:
+	await RenderingServer.frame_post_draw
+	await RenderingServer.frame_post_draw
+	get_viewport().get_texture().get_image().save_png(path)
