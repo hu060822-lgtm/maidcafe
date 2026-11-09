@@ -1,0 +1,57 @@
+{
+  "_doc": "Shared-art archetypes for unnamed / crowd customers. An archetype owns one face set (per pose) that fits all of its looks. A look is one pre-baked body image (hair + outfit + accessories) and is used as the 'outfit' slot of the portrait system: chr_{archetype}_body_{pose}_{look}.png. Looks are only combined with the archetype's own faces, never with another archetype. status=proposal means the art director has not approved this archetype yet.",
+  "archetypes": [
+    {
+      "id": "npc-student-f",
+      "status": "proposal",
+      "age_look": "teen", "body_type": "petite",
+      "customer_types": ["student"], "personalities": ["lively", "shy", "easygoing"],
+      "pose": "stand",
+      "expressions": ["neutral", "smile", "surprised"],
+      "looks": [
+        { "id": "look-01", "hair_style": "ponytail",   "hair_color": "black",      "outfit": "school-uniform", "accessories": ["bag"] },
+        { "id": "look-02", "hair_style": "bob",        "hair_color": "chestnut",   "outfit": "school-uniform", "accessories": ["hairclip"] },
+        { "id": "look-03", "hair_style": "twin-tails", "hair_color": "dark-brown", "outfit": "cardigan",       "accessories": ["ribbon"] }
+      ]
+    },
+    {
+      "id": "npc-office-m",
+      "status": "proposal",
+      "age_look": "adult", "body_type": "average",
+      "customer_types": ["office-worker"], "personalities": ["impatient", "quiet", "easygoing"],
+      "pose": "stand",
+      "expressions": ["neutral", "smile", "angry"],
+      "looks": [
+        { "id": "look-01", "hair_style": "short",   "hair_color": "black",      "outfit": "suit",          "accessories": ["none"] },
+        { "id": "look-02", "hair_style": "slicked", "hair_color": "dark-brown", "outfit": "suit",          "accessories": ["glasses"] },
+        { "id": "look-03", "hair_style": "messy",   "hair_color": "brown",      "outfit": "office-casual", "accessories": ["laptop-bag"] }
+      ]
+    },
+    {
+      "id": "npc-college-f",
+      "status": "proposal",
+      "age_look": "young_adult", "body_type": "slim",
+      "customer_types": ["student", "artist", "tourist"], "personalities": ["lively", "easygoing"],
+      "pose": "stand",
+      "expressions": ["neutral", "smile", "surprised"],
+      "looks": [
+        { "id": "look-01", "hair_style": "long",  "hair_color": "brown",     "outfit": "casual", "accessories": ["camera"] },
+        { "id": "look-02", "hair_style": "bob",   "hair_color": "dyed-pink", "outfit": "street", "accessories": ["headphones"] },
+        { "id": "look-03", "hair_style": "bun",   "hair_color": "black",     "outfit": "elegant", "accessories": ["beret"] }
+      ]
+    },
+    {
+      "id": "npc-senior-m",
+      "status": "proposal",
+      "age_look": "senior", "body_type": "average",
+      "customer_types": ["retiree", "elder"], "personalities": ["quiet", "warm"],
+      "pose": "stand",
+      "expressions": ["neutral", "smile", "surprised"],
+      "looks": [
+        { "id": "look-01", "hair_style": "short", "hair_color": "gray",  "outfit": "cardigan", "accessories": ["glasses"] },
+        { "id": "look-02", "hair_style": "bald",  "hair_color": "white", "outfit": "casual",   "accessories": ["cane"] },
+        { "id": "look-03", "hair_style": "hat",   "hair_color": "gray",  "outfit": "kimono",   "accessories": ["scarf"] }
+      ]
+    }
+  ]
+}

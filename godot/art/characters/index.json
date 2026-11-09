@@ -1,0 +1,117 @@
+{
+  "_doc": "Character index. One entry per character; the bible is the single source of truth for its art.",
+  "characters": [
+    {
+      "id": "koharu",
+      "bible": "characters/koharu/bible.json"
+    },
+    {
+      "id": "rin",
+      "bible": "characters/rin/bible.json"
+    },
+    {
+      "id": "shizuku",
+      "bible": "characters/shizuku/bible.json"
+    },
+    {
+      "id": "yukino",
+      "bible": "characters/yukino/bible.json"
+    },
+    {
+      "id": "kaede",
+      "bible": "characters/kaede/bible.json"
+    },
+    {
+      "id": "sakura",
+      "bible": "characters/sakura/bible.json"
+    },
+    {
+      "id": "otsuka",
+      "bible": "characters/otsuka/bible.json"
+    },
+    {
+      "id": "misaki",
+      "bible": "characters/misaki/bible.json"
+    },
+    {
+      "id": "kenta",
+      "bible": "characters/kenta/bible.json"
+    },
+    {
+      "id": "tachibana",
+      "bible": "characters/tachibana/bible.json"
+    },
+    {
+      "id": "akiko",
+      "bible": "characters/akiko/bible.json"
+    },
+    {
+      "id": "hayase",
+      "bible": "characters/hayase/bible.json"
+    },
+    {
+      "id": "takagi",
+      "bible": "characters/takagi/bible.json"
+    },
+    {
+      "id": "mayu",
+      "bible": "characters/mayu/bible.json"
+    },
+    {
+      "id": "endo",
+      "bible": "characters/endo/bible.json"
+    },
+    {
+      "id": "chizuru",
+      "bible": "characters/chizuru/bible.json"
+    },
+    {
+      "id": "amamiya",
+      "bible": "characters/amamiya/bible.json"
+    },
+    {
+      "id": "shiraishi",
+      "bible": "characters/shiraishi/bible.json"
+    },
+    {
+      "id": "nanami",
+      "bible": "characters/nanami/bible.json"
+    },
+    {
+      "id": "morishita",
+      "bible": "characters/morishita/bible.json"
+    },
+    {
+      "id": "riku",
+      "bible": "characters/riku/bible.json"
+    },
+    {
+      "id": "kasuga_m",
+      "bible": "characters/kasuga_m/bible.json"
+    },
+    {
+      "id": "kasuga_f",
+      "bible": "characters/kasuga_f/bible.json"
+    },
+    {
+      "id": "yamada",
+      "bible": "characters/yamada/bible.json"
+    },
+    {
+      "id": "sunahara",
+      "bible": "characters/sunahara/bible.json"
+    },
+    {
+      "id": "tsukimi",
+      "bible": "characters/tsukimi/bible.json"
+    },
+    {
+      "id": "kanade",
+      "bible": "characters/kanade/bible.json"
+    },
+    {
+      "id": "tsurumi",
+      "bible": "characters/tsurumi/bible.json"
+    }
+  ]
+}
