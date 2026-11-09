@@ -1,0 +1,139 @@
+{
+  "spec_version": 1,
+  "_doc": "Global art specification. Every AI-generated asset must follow this file. Read by ArtCatalog (runtime) and ArtValidator (tooling). See docs/art/ART_SYSTEM.md.",
+
+  "style_guide": {
+    "summary": "Japanese anime illustration, high-quality visual-novel standing portraits.",
+    "rules": [
+      "Japanese anime illustration, high-end visual novel quality",
+      "clean, refined line art with consistent line weight across all characters",
+      "soft cel shading with gentle gradient light, warm key light from upper left",
+      "vivid but not oversaturated colors (avoid neon / pure 100% saturation)",
+      "half-body standing portrait (head to upper thigh), facing the viewer, slight 3/4 allowed",
+      "transparent background, no shadows cast on the background",
+      "same head-to-body proportion and canvas framing for every character (see portrait.guides)"
+    ],
+    "positive_prompt": "japanese anime illustration, visual novel character sprite, half body, clean lineart, soft cel shading, soft lighting, vibrant but natural colors, high detail, masterpiece, transparent background, simple flat background for cutout",
+    "negative_prompt": "photorealistic, 3d render, chibi, sketch, rough lines, oversaturated, neon colors, heavy shadows, text, watermark, signature, cropped head, extra fingers, deformed hands, multiple characters, background scenery, nsfw",
+    "palette_rule": "Each character's main colours come only from their bible (appearance.signature_colors). Never introduce new hair or eye colours during generation."
+  },
+
+  "id_rules": {
+    "_doc": "Segment IDs are lowercase letters/digits with optional hyphens. Underscore is reserved as the separator between filename segments.",
+    "segment_pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+  },
+
+  "naming": {
+    "_doc": "Every image filename is derived from its manifest entry. {x} = one segment ID.",
+    "portrait_body": { "pattern": "chr_{owner}_body_{pose}_{outfit}.png", "dir": "portraits/{owner}", "canvas": "portrait" },
+    "portrait_face": { "pattern": "chr_{owner}_face_{pose}_{expression}.png", "dir": "portraits/{owner}", "canvas": "portrait" },
+    "portrait_full": { "pattern": "chr_{owner}_full_{pose}_{outfit}_{expression}.png", "dir": "portraits/{owner}", "canvas": "portrait" },
+    "cg": { "pattern": "cg_{event}_{variant}.png", "dir": "cg", "canvas": "cg" },
+    "background": { "pattern": "bg_{location}_{time}.png", "dir": "backgrounds", "canvas": "background" },
+    "ui": { "pattern": "ui_{group}_{name}.png", "dir": "ui", "canvas": "ui" },
+    "reference": { "pattern": "ref_{owner}_{name}.png", "dir": "characters/{character}/reference", "canvas": "reference" }
+  },
+
+  "canvases": {
+    "portrait": {
+      "width": 1024, "height": 1536, "format": "png", "alpha": true,
+      "_doc": "All portrait layers (body, face, full) share this exact canvas so layers stack with no offsets.",
+      "guides": {
+        "_doc": "Fractions of canvas height/width. Used for post-production alignment. Characters of different height keep the same pixel scale; only head_top moves.",
+        "center_x": 0.5,
+        "head_top_y_standard": 0.06,
+        "eye_line_y_standard": 0.2,
+        "chin_y_standard": 0.29,
+        "bottom_cut": "upper thigh at canvas bottom edge",
+        "side_margin_min": 0.06
+      }
+    },
+    "cg": { "width": 1920, "height": 1080, "format": "png", "alpha": false },
+    "background": { "width": 1920, "height": 1080, "format": "png", "alpha": false },
+    "ui": { "format": "png", "alpha": true, "_doc": "UI images have no fixed size; a manifest entry may declare width/height to enforce one." },
+    "reference": { "format": "png", "min_width": 512, "min_height": 512 }
+  },
+
+  "layers": {
+    "_doc": "Composition model. A portrait is either one 'full' image (pose x outfit x expression), or a 'body' layer (pose x outfit: the complete portrait with the default neutral face) plus an optional 'face' patch (pose x expression) drawn on top on the same canvas. The default expression needs no face patch. A face patch of a pose must fit every outfit of that pose; for NPC archetypes it may contain eyes/brows/mouth only (no hair) so it fits every look.",
+    "order": ["body", "face"]
+  },
+
+  "vocab": {
+    "_doc": "Standard IDs. Characters pick from these so code, prompts and files agree. Adding a new ID here is allowed; renaming one is a breaking change.",
+    "expressions": {
+      "neutral":     { "label": "平常",   "prompt": "calm neutral expression, closed mouth" },
+      "smile":       { "label": "微笑",   "prompt": "gentle smile" },
+      "laugh":       { "label": "開心大笑", "prompt": "big happy smile, open mouth, eyes slightly closed" },
+      "surprised":   { "label": "驚訝",   "prompt": "surprised, wide eyes, small open mouth" },
+      "embarrassed": { "label": "害羞",   "prompt": "embarrassed, blushing, eyes looking aside" },
+      "sad":         { "label": "難過",   "prompt": "sad, downturned eyebrows, teary eyes" },
+      "angry":       { "label": "生氣",   "prompt": "annoyed, frowning, puffed cheeks or sharp glare" },
+      "tired":       { "label": "疲累",   "prompt": "tired, droopy eyes, slight sweat drop" },
+      "troubled":    { "label": "困擾",   "prompt": "troubled, worried smile" },
+      "thinking":    { "label": "思考",   "prompt": "thinking, looking up, finger near chin" },
+      "serious":     { "label": "認真",   "prompt": "serious determined expression" },
+      "apologetic":  { "label": "道歉",   "prompt": "apologetic, eyebrows raised in worry, bowing slightly" }
+    },
+    "poses": {
+      "stand": { "label": "站姿", "prompt": "standing straight, arms relaxed" },
+      "greet": { "label": "迎賓", "prompt": "welcoming gesture, hands together in front" },
+      "serve": { "label": "端盤", "prompt": "holding a serving tray with one hand" },
+      "point": { "label": "指示", "prompt": "pointing forward with one hand" },
+      "sit":   { "label": "坐姿", "prompt": "sitting at a cafe table, upper body visible" }
+    },
+    "outfits": {
+      "maid":    { "label": "女僕制服", "prompt": "the cafe maid uniform described in the character bible" },
+      "casual":  { "label": "便服",   "prompt": "the casual clothes described in the character bible" },
+      "event":   { "label": "活動服裝", "prompt": "the event costume described in the character bible" },
+      "default": { "label": "預設服裝", "prompt": "the default clothes described in the character bible" }
+    },
+    "times": { "day": "白天", "dusk": "傍晚", "night": "夜晚" }
+  },
+
+  "tiers": {
+    "S": {
+      "label": "核心角色",
+      "min_expressions": 8, "min_poses": 3, "max_poses": null, "min_outfits": 2, "min_cg": 1,
+      "default_expressions": ["neutral", "smile", "laugh", "surprised", "embarrassed", "sad", "angry", "tired"],
+      "default_poses": ["stand", "greet", "serve"],
+      "default_outfits": ["maid", "casual"]
+    },
+    "A": {
+      "label": "次要固定角色",
+      "min_expressions": 4, "min_poses": 1, "max_poses": 2, "min_outfits": 1, "min_cg": 0,
+      "default_expressions": ["neutral", "smile", "surprised", "sad"],
+      "default_poses": ["stand"],
+      "default_outfits": ["default"]
+    },
+    "B": {
+      "label": "一般顧客 NPC",
+      "min_expressions": 2, "min_poses": 1, "max_poses": 1, "min_outfits": 1, "min_cg": 0,
+      "default_expressions": ["neutral", "smile"],
+      "default_poses": ["stand"],
+      "default_outfits": ["default"]
+    }
+  },
+
+  "fallback": {
+    "_doc": "Resolution order when an image is missing. The game never crashes on a missing file; it steps down this list and finally draws a procedural silhouette marked as MISSING.",
+    "expression": "neutral",
+    "order": ["requested", "default_expression", "default_outfit", "default_pose", "silhouette"]
+  },
+
+  "backgrounds_required": [
+    { "location": "cafe", "times": ["day", "night"] },
+    { "location": "grocer", "times": ["day"] },
+    { "location": "general", "times": ["day"] },
+    { "location": "sweets", "times": ["day"] },
+    { "location": "park", "times": ["day"] },
+    { "location": "plaza", "times": ["day"] }
+  ],
+
+  "asset_status": {
+    "missing":    "Planned but no file yet. Never shown as finished.",
+    "draft":      "File exists, not yet reviewed against the bible.",
+    "approved":   "Reviewed against the bible and art spec. Final.",
+    "deprecated": "Kept for history; not used by the game."
+  }
+}

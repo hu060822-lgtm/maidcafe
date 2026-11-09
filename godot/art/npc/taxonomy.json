@@ -1,0 +1,117 @@
+{
+  "taxonomy_version": 1,
+  "_doc": "Customer NPC art taxonomy. Every NPC look is described by these dimensions. Values are categories, not finished designs. Compatibility rules are enforced by the validator and by NpcArtCatalog at runtime: an incompatible look is never shown.",
+
+  "dimensions": {
+    "age_look": {
+      "child":       "小學生年紀",
+      "teen":        "高中生年紀",
+      "young_adult": "大學生／社會新鮮人",
+      "adult":       "成年（30–45 歲感）",
+      "middle_aged": "中年（45–60 歲感）",
+      "senior":      "長者"
+    },
+    "body_type": {
+      "slim":    "纖細",
+      "average": "一般",
+      "sturdy":  "壯碩",
+      "petite":  "嬌小",
+      "tall":    "高挑"
+    },
+    "hair_style": {
+      "short":      "短髮",
+      "bob":        "鮑伯頭",
+      "long":       "長髮",
+      "ponytail":   "馬尾",
+      "twin-tails": "雙馬尾",
+      "bun":        "丸子頭／盤髮",
+      "braid":      "辮子",
+      "messy":      "亂髮",
+      "slicked":    "油頭／整齊後梳",
+      "bald":       "光頭／稀疏",
+      "hat":        "戴帽遮住"
+    },
+    "hair_color": {
+      "black":      "黑",
+      "dark-brown": "深棕",
+      "brown":      "棕",
+      "chestnut":   "栗色",
+      "blonde":     "金",
+      "gray":       "灰",
+      "white":      "白",
+      "dyed-pink":  "染粉",
+      "dyed-blue":  "染藍"
+    },
+    "outfit": {
+      "school-uniform": "學生制服",
+      "suit":           "西裝",
+      "office-casual":  "上班休閒",
+      "casual":         "日常便服",
+      "street":         "街頭風",
+      "hoodie":         "帽 T",
+      "cardigan":       "針織外套",
+      "apron":          "店家圍裙",
+      "kimono":         "和服",
+      "elegant":        "優雅洋裝"
+    },
+    "accessory": {
+      "none":         "無",
+      "glasses":      "眼鏡",
+      "sunglasses":   "墨鏡",
+      "headphones":   "耳機",
+      "hairclip":     "髮夾",
+      "ribbon":       "髮帶／蝴蝶結",
+      "cap":          "棒球帽",
+      "beret":        "貝雷帽",
+      "scarf":        "圍巾",
+      "bag":          "包包",
+      "laptop-bag":   "電腦包",
+      "camera":       "相機",
+      "sketchbook":   "素描本",
+      "penlight":     "螢光棒",
+      "cane":         "拐杖"
+    },
+    "personality": {
+      "lively":    "熱鬧",
+      "quiet":     "安靜",
+      "picky":     "挑剔",
+      "easygoing": "隨和",
+      "impatient": "急性子",
+      "shy":       "害羞",
+      "warm":      "親切"
+    },
+    "customer_type": {
+      "student":       "學生",
+      "office-worker": "上班族",
+      "homemaker":     "家庭主婦／主夫",
+      "shop-owner":    "商店街店主",
+      "freelancer":    "自由工作者",
+      "retiree":       "退休人士",
+      "artist":        "創作者",
+      "writer":        "寫作者",
+      "idol-fan":      "偶像粉絲",
+      "tourist":       "觀光客",
+      "elder":         "長輩"
+    }
+  },
+
+  "compatibility": {
+    "_doc": "Hard rules. A look that breaks any rule fails validation and is never picked at runtime.",
+    "rules": [
+      { "id": "uniform-is-teen",  "if": { "outfit": ["school-uniform"] }, "require": { "age_look": ["teen"] } },
+      { "id": "child-no-adult-wear", "if": { "age_look": ["child"] }, "forbid": { "outfit": ["suit", "office-casual", "school-uniform", "elegant"], "accessory": ["cane", "laptop-bag", "sunglasses"] } },
+      { "id": "teen-no-suit",     "if": { "age_look": ["teen"] }, "forbid": { "outfit": ["suit"], "accessory": ["cane"] } },
+      { "id": "cane-is-senior",   "if": { "accessory": ["cane"] }, "require": { "age_look": ["senior", "middle_aged"] } },
+      { "id": "bald-not-teen",    "if": { "hair_style": ["bald"] }, "forbid": { "age_look": ["teen", "young_adult"] } },
+      { "id": "hat-hides-style",  "if": { "hair_style": ["hat"] }, "forbid": { "accessory": ["cap", "beret"] } },
+      { "id": "kimono-no-street", "if": { "outfit": ["kimono"] }, "forbid": { "accessory": ["headphones", "cap", "penlight"] } }
+    ]
+  },
+
+  "distinctiveness": {
+    "_doc": "Two looks of the same archetype must differ in at least this many visible attributes (hair_style, hair_color, outfit, accessories). The validator warns otherwise. At runtime the same look is never on screen twice and recently used looks are avoided.",
+    "visible_attributes": ["hair_style", "hair_color", "outfit", "accessories"],
+    "min_differences": 2,
+    "recent_history": 4
+  }
+}

@@ -1,0 +1,2126 @@
+{
+  "_doc": "Asset manifest. One entry per image. Edit status by hand (missing -> draft -> approved); run 'art_cli sync' to add planned entries.",
+  "assets": [
+    {
+      "id": "bg_cafe_day",
+      "kind": "background",
+      "location": "cafe",
+      "time": "day",
+      "path": "backgrounds/bg_cafe_day.png",
+      "status": "missing"
+    },
+    {
+      "id": "bg_cafe_night",
+      "kind": "background",
+      "location": "cafe",
+      "time": "night",
+      "path": "backgrounds/bg_cafe_night.png",
+      "status": "missing"
+    },
+    {
+      "id": "bg_general_day",
+      "kind": "background",
+      "location": "general",
+      "time": "day",
+      "path": "backgrounds/bg_general_day.png",
+      "status": "missing"
+    },
+    {
+      "id": "bg_grocer_day",
+      "kind": "background",
+      "location": "grocer",
+      "time": "day",
+      "path": "backgrounds/bg_grocer_day.png",
+      "status": "missing"
+    },
+    {
+      "id": "bg_park_day",
+      "kind": "background",
+      "location": "park",
+      "time": "day",
+      "path": "backgrounds/bg_park_day.png",
+      "status": "missing"
+    },
+    {
+      "id": "bg_plaza_day",
+      "kind": "background",
+      "location": "plaza",
+      "time": "day",
+      "path": "backgrounds/bg_plaza_day.png",
+      "status": "missing"
+    },
+    {
+      "id": "bg_sweets_day",
+      "kind": "background",
+      "location": "sweets",
+      "time": "day",
+      "path": "backgrounds/bg_sweets_day.png",
+      "status": "missing"
+    },
+    {
+      "id": "cg_kaede-story-01_main",
+      "kind": "cg",
+      "event": "kaede-story-01",
+      "variant": "main",
+      "path": "cg/cg_kaede-story-01_main.png",
+      "status": "missing"
+    },
+    {
+      "id": "cg_koharu-story-01_main",
+      "kind": "cg",
+      "event": "koharu-story-01",
+      "variant": "main",
+      "path": "cg/cg_koharu-story-01_main.png",
+      "status": "missing"
+    },
+    {
+      "id": "cg_rin-story-01_main",
+      "kind": "cg",
+      "event": "rin-story-01",
+      "variant": "main",
+      "path": "cg/cg_rin-story-01_main.png",
+      "status": "missing"
+    },
+    {
+      "id": "cg_shizuku-story-01_main",
+      "kind": "cg",
+      "event": "shizuku-story-01",
+      "variant": "main",
+      "path": "cg/cg_shizuku-story-01_main.png",
+      "status": "missing"
+    },
+    {
+      "id": "cg_yukino-story-01_main",
+      "kind": "cg",
+      "event": "yukino-story-01",
+      "variant": "main",
+      "path": "cg/cg_yukino-story-01_main.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_akiko_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "akiko",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/akiko/chr_akiko_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_akiko_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "akiko",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/akiko/chr_akiko_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_amamiya_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "amamiya",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/amamiya/chr_amamiya_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_amamiya_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "amamiya",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/amamiya/chr_amamiya_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_amamiya_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "amamiya",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/amamiya/chr_amamiya_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_amamiya_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "amamiya",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/amamiya/chr_amamiya_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_chizuru_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "chizuru",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/chizuru/chr_chizuru_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_chizuru_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "chizuru",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/chizuru/chr_chizuru_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_chizuru_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "chizuru",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/chizuru/chr_chizuru_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_chizuru_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "chizuru",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/chizuru/chr_chizuru_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_endo_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "endo",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/endo/chr_endo_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_endo_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "endo",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/endo/chr_endo_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_endo_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "endo",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/endo/chr_endo_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_endo_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "endo",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/endo/chr_endo_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_hayase_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "hayase",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/hayase/chr_hayase_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_hayase_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "hayase",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/hayase/chr_hayase_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_hayase_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "hayase",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/hayase/chr_hayase_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_hayase_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "hayase",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/hayase/chr_hayase_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_body_greet_casual",
+      "kind": "portrait_body",
+      "owner": "kaede",
+      "pose": "greet",
+      "outfit": "casual",
+      "path": "portraits/kaede/chr_kaede_body_greet_casual.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_body_greet_maid",
+      "kind": "portrait_body",
+      "owner": "kaede",
+      "pose": "greet",
+      "outfit": "maid",
+      "path": "portraits/kaede/chr_kaede_body_greet_maid.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_body_serve_casual",
+      "kind": "portrait_body",
+      "owner": "kaede",
+      "pose": "serve",
+      "outfit": "casual",
+      "path": "portraits/kaede/chr_kaede_body_serve_casual.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_body_serve_maid",
+      "kind": "portrait_body",
+      "owner": "kaede",
+      "pose": "serve",
+      "outfit": "maid",
+      "path": "portraits/kaede/chr_kaede_body_serve_maid.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_body_stand_casual",
+      "kind": "portrait_body",
+      "owner": "kaede",
+      "pose": "stand",
+      "outfit": "casual",
+      "path": "portraits/kaede/chr_kaede_body_stand_casual.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_body_stand_maid",
+      "kind": "portrait_body",
+      "owner": "kaede",
+      "pose": "stand",
+      "outfit": "maid",
+      "path": "portraits/kaede/chr_kaede_body_stand_maid.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_greet_angry",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "greet",
+      "expression": "angry",
+      "path": "portraits/kaede/chr_kaede_face_greet_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_greet_embarrassed",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "greet",
+      "expression": "embarrassed",
+      "path": "portraits/kaede/chr_kaede_face_greet_embarrassed.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_greet_laugh",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "greet",
+      "expression": "laugh",
+      "path": "portraits/kaede/chr_kaede_face_greet_laugh.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_greet_sad",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "greet",
+      "expression": "sad",
+      "path": "portraits/kaede/chr_kaede_face_greet_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_greet_smile",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "greet",
+      "expression": "smile",
+      "path": "portraits/kaede/chr_kaede_face_greet_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_greet_surprised",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "greet",
+      "expression": "surprised",
+      "path": "portraits/kaede/chr_kaede_face_greet_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_greet_tired",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "greet",
+      "expression": "tired",
+      "path": "portraits/kaede/chr_kaede_face_greet_tired.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_serve_angry",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "serve",
+      "expression": "angry",
+      "path": "portraits/kaede/chr_kaede_face_serve_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_serve_embarrassed",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "serve",
+      "expression": "embarrassed",
+      "path": "portraits/kaede/chr_kaede_face_serve_embarrassed.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_serve_laugh",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "serve",
+      "expression": "laugh",
+      "path": "portraits/kaede/chr_kaede_face_serve_laugh.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_serve_sad",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "serve",
+      "expression": "sad",
+      "path": "portraits/kaede/chr_kaede_face_serve_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_serve_smile",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "serve",
+      "expression": "smile",
+      "path": "portraits/kaede/chr_kaede_face_serve_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_serve_surprised",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "serve",
+      "expression": "surprised",
+      "path": "portraits/kaede/chr_kaede_face_serve_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_serve_tired",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "serve",
+      "expression": "tired",
+      "path": "portraits/kaede/chr_kaede_face_serve_tired.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_stand_angry",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "stand",
+      "expression": "angry",
+      "path": "portraits/kaede/chr_kaede_face_stand_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_stand_embarrassed",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "stand",
+      "expression": "embarrassed",
+      "path": "portraits/kaede/chr_kaede_face_stand_embarrassed.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_stand_laugh",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "stand",
+      "expression": "laugh",
+      "path": "portraits/kaede/chr_kaede_face_stand_laugh.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/kaede/chr_kaede_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/kaede/chr_kaede_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/kaede/chr_kaede_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kaede_face_stand_tired",
+      "kind": "portrait_face",
+      "owner": "kaede",
+      "pose": "stand",
+      "expression": "tired",
+      "path": "portraits/kaede/chr_kaede_face_stand_tired.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kanade_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "kanade",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/kanade/chr_kanade_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kanade_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "kanade",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/kanade/chr_kanade_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kanade_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "kanade",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/kanade/chr_kanade_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kanade_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "kanade",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/kanade/chr_kanade_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kasuga-f_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "kasuga-f",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/kasuga-f/chr_kasuga-f_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kasuga-f_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "kasuga-f",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/kasuga-f/chr_kasuga-f_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kasuga-m_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "kasuga-m",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/kasuga-m/chr_kasuga-m_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kasuga-m_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "kasuga-m",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/kasuga-m/chr_kasuga-m_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kenta_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "kenta",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/kenta/chr_kenta_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_kenta_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "kenta",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/kenta/chr_kenta_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_body_greet_casual",
+      "kind": "portrait_body",
+      "owner": "koharu",
+      "pose": "greet",
+      "outfit": "casual",
+      "path": "portraits/koharu/chr_koharu_body_greet_casual.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_body_greet_maid",
+      "kind": "portrait_body",
+      "owner": "koharu",
+      "pose": "greet",
+      "outfit": "maid",
+      "path": "portraits/koharu/chr_koharu_body_greet_maid.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_body_serve_casual",
+      "kind": "portrait_body",
+      "owner": "koharu",
+      "pose": "serve",
+      "outfit": "casual",
+      "path": "portraits/koharu/chr_koharu_body_serve_casual.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_body_serve_maid",
+      "kind": "portrait_body",
+      "owner": "koharu",
+      "pose": "serve",
+      "outfit": "maid",
+      "path": "portraits/koharu/chr_koharu_body_serve_maid.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_body_stand_casual",
+      "kind": "portrait_body",
+      "owner": "koharu",
+      "pose": "stand",
+      "outfit": "casual",
+      "path": "portraits/koharu/chr_koharu_body_stand_casual.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_body_stand_maid",
+      "kind": "portrait_body",
+      "owner": "koharu",
+      "pose": "stand",
+      "outfit": "maid",
+      "path": "portraits/koharu/chr_koharu_body_stand_maid.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_greet_angry",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "greet",
+      "expression": "angry",
+      "path": "portraits/koharu/chr_koharu_face_greet_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_greet_embarrassed",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "greet",
+      "expression": "embarrassed",
+      "path": "portraits/koharu/chr_koharu_face_greet_embarrassed.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_greet_laugh",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "greet",
+      "expression": "laugh",
+      "path": "portraits/koharu/chr_koharu_face_greet_laugh.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_greet_sad",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "greet",
+      "expression": "sad",
+      "path": "portraits/koharu/chr_koharu_face_greet_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_greet_smile",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "greet",
+      "expression": "smile",
+      "path": "portraits/koharu/chr_koharu_face_greet_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_greet_surprised",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "greet",
+      "expression": "surprised",
+      "path": "portraits/koharu/chr_koharu_face_greet_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_greet_tired",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "greet",
+      "expression": "tired",
+      "path": "portraits/koharu/chr_koharu_face_greet_tired.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_serve_angry",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "serve",
+      "expression": "angry",
+      "path": "portraits/koharu/chr_koharu_face_serve_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_serve_embarrassed",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "serve",
+      "expression": "embarrassed",
+      "path": "portraits/koharu/chr_koharu_face_serve_embarrassed.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_serve_laugh",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "serve",
+      "expression": "laugh",
+      "path": "portraits/koharu/chr_koharu_face_serve_laugh.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_serve_sad",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "serve",
+      "expression": "sad",
+      "path": "portraits/koharu/chr_koharu_face_serve_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_serve_smile",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "serve",
+      "expression": "smile",
+      "path": "portraits/koharu/chr_koharu_face_serve_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_serve_surprised",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "serve",
+      "expression": "surprised",
+      "path": "portraits/koharu/chr_koharu_face_serve_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_serve_tired",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "serve",
+      "expression": "tired",
+      "path": "portraits/koharu/chr_koharu_face_serve_tired.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_stand_angry",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "stand",
+      "expression": "angry",
+      "path": "portraits/koharu/chr_koharu_face_stand_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_stand_embarrassed",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "stand",
+      "expression": "embarrassed",
+      "path": "portraits/koharu/chr_koharu_face_stand_embarrassed.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_stand_laugh",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "stand",
+      "expression": "laugh",
+      "path": "portraits/koharu/chr_koharu_face_stand_laugh.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/koharu/chr_koharu_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/koharu/chr_koharu_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/koharu/chr_koharu_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_koharu_face_stand_tired",
+      "kind": "portrait_face",
+      "owner": "koharu",
+      "pose": "stand",
+      "expression": "tired",
+      "path": "portraits/koharu/chr_koharu_face_stand_tired.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_mayu_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "mayu",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/mayu/chr_mayu_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_mayu_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "mayu",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/mayu/chr_mayu_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_mayu_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "mayu",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/mayu/chr_mayu_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_mayu_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "mayu",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/mayu/chr_mayu_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_misaki_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "misaki",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/misaki/chr_misaki_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_misaki_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "misaki",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/misaki/chr_misaki_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_morishita_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "morishita",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/morishita/chr_morishita_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_morishita_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "morishita",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/morishita/chr_morishita_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_nanami_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "nanami",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/nanami/chr_nanami_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_nanami_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "nanami",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/nanami/chr_nanami_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-college-f_body_stand_look-01",
+      "kind": "portrait_body",
+      "owner": "npc-college-f",
+      "pose": "stand",
+      "outfit": "look-01",
+      "path": "portraits/npc-college-f/chr_npc-college-f_body_stand_look-01.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-college-f_body_stand_look-02",
+      "kind": "portrait_body",
+      "owner": "npc-college-f",
+      "pose": "stand",
+      "outfit": "look-02",
+      "path": "portraits/npc-college-f/chr_npc-college-f_body_stand_look-02.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-college-f_body_stand_look-03",
+      "kind": "portrait_body",
+      "owner": "npc-college-f",
+      "pose": "stand",
+      "outfit": "look-03",
+      "path": "portraits/npc-college-f/chr_npc-college-f_body_stand_look-03.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-college-f_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "npc-college-f",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/npc-college-f/chr_npc-college-f_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-college-f_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "npc-college-f",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/npc-college-f/chr_npc-college-f_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-office-m_body_stand_look-01",
+      "kind": "portrait_body",
+      "owner": "npc-office-m",
+      "pose": "stand",
+      "outfit": "look-01",
+      "path": "portraits/npc-office-m/chr_npc-office-m_body_stand_look-01.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-office-m_body_stand_look-02",
+      "kind": "portrait_body",
+      "owner": "npc-office-m",
+      "pose": "stand",
+      "outfit": "look-02",
+      "path": "portraits/npc-office-m/chr_npc-office-m_body_stand_look-02.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-office-m_body_stand_look-03",
+      "kind": "portrait_body",
+      "owner": "npc-office-m",
+      "pose": "stand",
+      "outfit": "look-03",
+      "path": "portraits/npc-office-m/chr_npc-office-m_body_stand_look-03.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-office-m_face_stand_angry",
+      "kind": "portrait_face",
+      "owner": "npc-office-m",
+      "pose": "stand",
+      "expression": "angry",
+      "path": "portraits/npc-office-m/chr_npc-office-m_face_stand_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-office-m_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "npc-office-m",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/npc-office-m/chr_npc-office-m_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-senior-m_body_stand_look-01",
+      "kind": "portrait_body",
+      "owner": "npc-senior-m",
+      "pose": "stand",
+      "outfit": "look-01",
+      "path": "portraits/npc-senior-m/chr_npc-senior-m_body_stand_look-01.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-senior-m_body_stand_look-02",
+      "kind": "portrait_body",
+      "owner": "npc-senior-m",
+      "pose": "stand",
+      "outfit": "look-02",
+      "path": "portraits/npc-senior-m/chr_npc-senior-m_body_stand_look-02.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-senior-m_body_stand_look-03",
+      "kind": "portrait_body",
+      "owner": "npc-senior-m",
+      "pose": "stand",
+      "outfit": "look-03",
+      "path": "portraits/npc-senior-m/chr_npc-senior-m_body_stand_look-03.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-senior-m_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "npc-senior-m",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/npc-senior-m/chr_npc-senior-m_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-senior-m_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "npc-senior-m",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/npc-senior-m/chr_npc-senior-m_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-student-f_body_stand_look-01",
+      "kind": "portrait_body",
+      "owner": "npc-student-f",
+      "pose": "stand",
+      "outfit": "look-01",
+      "path": "portraits/npc-student-f/chr_npc-student-f_body_stand_look-01.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-student-f_body_stand_look-02",
+      "kind": "portrait_body",
+      "owner": "npc-student-f",
+      "pose": "stand",
+      "outfit": "look-02",
+      "path": "portraits/npc-student-f/chr_npc-student-f_body_stand_look-02.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-student-f_body_stand_look-03",
+      "kind": "portrait_body",
+      "owner": "npc-student-f",
+      "pose": "stand",
+      "outfit": "look-03",
+      "path": "portraits/npc-student-f/chr_npc-student-f_body_stand_look-03.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-student-f_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "npc-student-f",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/npc-student-f/chr_npc-student-f_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_npc-student-f_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "npc-student-f",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/npc-student-f/chr_npc-student-f_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_otsuka_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "otsuka",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/otsuka/chr_otsuka_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_otsuka_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "otsuka",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/otsuka/chr_otsuka_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_riku_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "riku",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/riku/chr_riku_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_riku_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "riku",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/riku/chr_riku_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_body_greet_casual",
+      "kind": "portrait_body",
+      "owner": "rin",
+      "pose": "greet",
+      "outfit": "casual",
+      "path": "portraits/rin/chr_rin_body_greet_casual.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_body_greet_maid",
+      "kind": "portrait_body",
+      "owner": "rin",
+      "pose": "greet",
+      "outfit": "maid",
+      "path": "portraits/rin/chr_rin_body_greet_maid.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_body_serve_casual",
+      "kind": "portrait_body",
+      "owner": "rin",
+      "pose": "serve",
+      "outfit": "casual",
+      "path": "portraits/rin/chr_rin_body_serve_casual.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_body_serve_maid",
+      "kind": "portrait_body",
+      "owner": "rin",
+      "pose": "serve",
+      "outfit": "maid",
+      "path": "portraits/rin/chr_rin_body_serve_maid.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_body_stand_casual",
+      "kind": "portrait_body",
+      "owner": "rin",
+      "pose": "stand",
+      "outfit": "casual",
+      "path": "portraits/rin/chr_rin_body_stand_casual.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_body_stand_maid",
+      "kind": "portrait_body",
+      "owner": "rin",
+      "pose": "stand",
+      "outfit": "maid",
+      "path": "portraits/rin/chr_rin_body_stand_maid.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_greet_angry",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "greet",
+      "expression": "angry",
+      "path": "portraits/rin/chr_rin_face_greet_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_greet_embarrassed",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "greet",
+      "expression": "embarrassed",
+      "path": "portraits/rin/chr_rin_face_greet_embarrassed.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_greet_laugh",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "greet",
+      "expression": "laugh",
+      "path": "portraits/rin/chr_rin_face_greet_laugh.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_greet_sad",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "greet",
+      "expression": "sad",
+      "path": "portraits/rin/chr_rin_face_greet_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_greet_smile",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "greet",
+      "expression": "smile",
+      "path": "portraits/rin/chr_rin_face_greet_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_greet_surprised",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "greet",
+      "expression": "surprised",
+      "path": "portraits/rin/chr_rin_face_greet_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_greet_tired",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "greet",
+      "expression": "tired",
+      "path": "portraits/rin/chr_rin_face_greet_tired.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_serve_angry",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "serve",
+      "expression": "angry",
+      "path": "portraits/rin/chr_rin_face_serve_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_serve_embarrassed",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "serve",
+      "expression": "embarrassed",
+      "path": "portraits/rin/chr_rin_face_serve_embarrassed.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_serve_laugh",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "serve",
+      "expression": "laugh",
+      "path": "portraits/rin/chr_rin_face_serve_laugh.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_serve_sad",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "serve",
+      "expression": "sad",
+      "path": "portraits/rin/chr_rin_face_serve_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_serve_smile",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "serve",
+      "expression": "smile",
+      "path": "portraits/rin/chr_rin_face_serve_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_serve_surprised",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "serve",
+      "expression": "surprised",
+      "path": "portraits/rin/chr_rin_face_serve_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_serve_tired",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "serve",
+      "expression": "tired",
+      "path": "portraits/rin/chr_rin_face_serve_tired.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_stand_angry",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "stand",
+      "expression": "angry",
+      "path": "portraits/rin/chr_rin_face_stand_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_stand_embarrassed",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "stand",
+      "expression": "embarrassed",
+      "path": "portraits/rin/chr_rin_face_stand_embarrassed.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_stand_laugh",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "stand",
+      "expression": "laugh",
+      "path": "portraits/rin/chr_rin_face_stand_laugh.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/rin/chr_rin_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/rin/chr_rin_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/rin/chr_rin_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_rin_face_stand_tired",
+      "kind": "portrait_face",
+      "owner": "rin",
+      "pose": "stand",
+      "expression": "tired",
+      "path": "portraits/rin/chr_rin_face_stand_tired.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_sakura_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "sakura",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/sakura/chr_sakura_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_sakura_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "sakura",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/sakura/chr_sakura_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shiraishi_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "shiraishi",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/shiraishi/chr_shiraishi_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shiraishi_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "shiraishi",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/shiraishi/chr_shiraishi_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shiraishi_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "shiraishi",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/shiraishi/chr_shiraishi_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shiraishi_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "shiraishi",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/shiraishi/chr_shiraishi_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_body_greet_casual",
+      "kind": "portrait_body",
+      "owner": "shizuku",
+      "pose": "greet",
+      "outfit": "casual",
+      "path": "portraits/shizuku/chr_shizuku_body_greet_casual.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_body_greet_maid",
+      "kind": "portrait_body",
+      "owner": "shizuku",
+      "pose": "greet",
+      "outfit": "maid",
+      "path": "portraits/shizuku/chr_shizuku_body_greet_maid.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_body_serve_casual",
+      "kind": "portrait_body",
+      "owner": "shizuku",
+      "pose": "serve",
+      "outfit": "casual",
+      "path": "portraits/shizuku/chr_shizuku_body_serve_casual.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_body_serve_maid",
+      "kind": "portrait_body",
+      "owner": "shizuku",
+      "pose": "serve",
+      "outfit": "maid",
+      "path": "portraits/shizuku/chr_shizuku_body_serve_maid.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_body_stand_casual",
+      "kind": "portrait_body",
+      "owner": "shizuku",
+      "pose": "stand",
+      "outfit": "casual",
+      "path": "portraits/shizuku/chr_shizuku_body_stand_casual.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_body_stand_maid",
+      "kind": "portrait_body",
+      "owner": "shizuku",
+      "pose": "stand",
+      "outfit": "maid",
+      "path": "portraits/shizuku/chr_shizuku_body_stand_maid.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_greet_angry",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "greet",
+      "expression": "angry",
+      "path": "portraits/shizuku/chr_shizuku_face_greet_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_greet_embarrassed",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "greet",
+      "expression": "embarrassed",
+      "path": "portraits/shizuku/chr_shizuku_face_greet_embarrassed.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_greet_laugh",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "greet",
+      "expression": "laugh",
+      "path": "portraits/shizuku/chr_shizuku_face_greet_laugh.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_greet_sad",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "greet",
+      "expression": "sad",
+      "path": "portraits/shizuku/chr_shizuku_face_greet_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_greet_smile",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "greet",
+      "expression": "smile",
+      "path": "portraits/shizuku/chr_shizuku_face_greet_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_greet_surprised",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "greet",
+      "expression": "surprised",
+      "path": "portraits/shizuku/chr_shizuku_face_greet_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_greet_tired",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "greet",
+      "expression": "tired",
+      "path": "portraits/shizuku/chr_shizuku_face_greet_tired.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_serve_angry",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "serve",
+      "expression": "angry",
+      "path": "portraits/shizuku/chr_shizuku_face_serve_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_serve_embarrassed",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "serve",
+      "expression": "embarrassed",
+      "path": "portraits/shizuku/chr_shizuku_face_serve_embarrassed.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_serve_laugh",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "serve",
+      "expression": "laugh",
+      "path": "portraits/shizuku/chr_shizuku_face_serve_laugh.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_serve_sad",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "serve",
+      "expression": "sad",
+      "path": "portraits/shizuku/chr_shizuku_face_serve_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_serve_smile",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "serve",
+      "expression": "smile",
+      "path": "portraits/shizuku/chr_shizuku_face_serve_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_serve_surprised",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "serve",
+      "expression": "surprised",
+      "path": "portraits/shizuku/chr_shizuku_face_serve_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_serve_tired",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "serve",
+      "expression": "tired",
+      "path": "portraits/shizuku/chr_shizuku_face_serve_tired.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_stand_angry",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "stand",
+      "expression": "angry",
+      "path": "portraits/shizuku/chr_shizuku_face_stand_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_stand_embarrassed",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "stand",
+      "expression": "embarrassed",
+      "path": "portraits/shizuku/chr_shizuku_face_stand_embarrassed.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_stand_laugh",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "stand",
+      "expression": "laugh",
+      "path": "portraits/shizuku/chr_shizuku_face_stand_laugh.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/shizuku/chr_shizuku_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/shizuku/chr_shizuku_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/shizuku/chr_shizuku_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_shizuku_face_stand_tired",
+      "kind": "portrait_face",
+      "owner": "shizuku",
+      "pose": "stand",
+      "expression": "tired",
+      "path": "portraits/shizuku/chr_shizuku_face_stand_tired.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_sunahara_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "sunahara",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/sunahara/chr_sunahara_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_sunahara_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "sunahara",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/sunahara/chr_sunahara_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_sunahara_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "sunahara",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/sunahara/chr_sunahara_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_sunahara_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "sunahara",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/sunahara/chr_sunahara_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_tachibana_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "tachibana",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/tachibana/chr_tachibana_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_tachibana_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "tachibana",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/tachibana/chr_tachibana_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_takagi_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "takagi",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/takagi/chr_takagi_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_takagi_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "takagi",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/takagi/chr_takagi_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_takagi_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "takagi",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/takagi/chr_takagi_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_takagi_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "takagi",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/takagi/chr_takagi_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_tsukimi_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "tsukimi",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/tsukimi/chr_tsukimi_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_tsukimi_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "tsukimi",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/tsukimi/chr_tsukimi_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_tsukimi_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "tsukimi",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/tsukimi/chr_tsukimi_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_tsukimi_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "tsukimi",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/tsukimi/chr_tsukimi_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_tsurumi_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "tsurumi",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/tsurumi/chr_tsurumi_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_tsurumi_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "tsurumi",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/tsurumi/chr_tsurumi_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_tsurumi_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "tsurumi",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/tsurumi/chr_tsurumi_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_tsurumi_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "tsurumi",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/tsurumi/chr_tsurumi_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yamada_body_stand_default",
+      "kind": "portrait_body",
+      "owner": "yamada",
+      "pose": "stand",
+      "outfit": "default",
+      "path": "portraits/yamada/chr_yamada_body_stand_default.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yamada_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "yamada",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/yamada/chr_yamada_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yamada_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "yamada",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/yamada/chr_yamada_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yamada_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "yamada",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/yamada/chr_yamada_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_body_greet_casual",
+      "kind": "portrait_body",
+      "owner": "yukino",
+      "pose": "greet",
+      "outfit": "casual",
+      "path": "portraits/yukino/chr_yukino_body_greet_casual.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_body_greet_maid",
+      "kind": "portrait_body",
+      "owner": "yukino",
+      "pose": "greet",
+      "outfit": "maid",
+      "path": "portraits/yukino/chr_yukino_body_greet_maid.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_body_serve_casual",
+      "kind": "portrait_body",
+      "owner": "yukino",
+      "pose": "serve",
+      "outfit": "casual",
+      "path": "portraits/yukino/chr_yukino_body_serve_casual.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_body_serve_maid",
+      "kind": "portrait_body",
+      "owner": "yukino",
+      "pose": "serve",
+      "outfit": "maid",
+      "path": "portraits/yukino/chr_yukino_body_serve_maid.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_body_stand_casual",
+      "kind": "portrait_body",
+      "owner": "yukino",
+      "pose": "stand",
+      "outfit": "casual",
+      "path": "portraits/yukino/chr_yukino_body_stand_casual.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_body_stand_maid",
+      "kind": "portrait_body",
+      "owner": "yukino",
+      "pose": "stand",
+      "outfit": "maid",
+      "path": "portraits/yukino/chr_yukino_body_stand_maid.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_greet_angry",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "greet",
+      "expression": "angry",
+      "path": "portraits/yukino/chr_yukino_face_greet_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_greet_embarrassed",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "greet",
+      "expression": "embarrassed",
+      "path": "portraits/yukino/chr_yukino_face_greet_embarrassed.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_greet_laugh",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "greet",
+      "expression": "laugh",
+      "path": "portraits/yukino/chr_yukino_face_greet_laugh.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_greet_sad",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "greet",
+      "expression": "sad",
+      "path": "portraits/yukino/chr_yukino_face_greet_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_greet_smile",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "greet",
+      "expression": "smile",
+      "path": "portraits/yukino/chr_yukino_face_greet_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_greet_surprised",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "greet",
+      "expression": "surprised",
+      "path": "portraits/yukino/chr_yukino_face_greet_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_greet_tired",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "greet",
+      "expression": "tired",
+      "path": "portraits/yukino/chr_yukino_face_greet_tired.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_serve_angry",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "serve",
+      "expression": "angry",
+      "path": "portraits/yukino/chr_yukino_face_serve_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_serve_embarrassed",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "serve",
+      "expression": "embarrassed",
+      "path": "portraits/yukino/chr_yukino_face_serve_embarrassed.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_serve_laugh",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "serve",
+      "expression": "laugh",
+      "path": "portraits/yukino/chr_yukino_face_serve_laugh.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_serve_sad",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "serve",
+      "expression": "sad",
+      "path": "portraits/yukino/chr_yukino_face_serve_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_serve_smile",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "serve",
+      "expression": "smile",
+      "path": "portraits/yukino/chr_yukino_face_serve_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_serve_surprised",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "serve",
+      "expression": "surprised",
+      "path": "portraits/yukino/chr_yukino_face_serve_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_serve_tired",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "serve",
+      "expression": "tired",
+      "path": "portraits/yukino/chr_yukino_face_serve_tired.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_stand_angry",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "stand",
+      "expression": "angry",
+      "path": "portraits/yukino/chr_yukino_face_stand_angry.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_stand_embarrassed",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "stand",
+      "expression": "embarrassed",
+      "path": "portraits/yukino/chr_yukino_face_stand_embarrassed.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_stand_laugh",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "stand",
+      "expression": "laugh",
+      "path": "portraits/yukino/chr_yukino_face_stand_laugh.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/yukino/chr_yukino_face_stand_sad.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/yukino/chr_yukino_face_stand_smile.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/yukino/chr_yukino_face_stand_surprised.png",
+      "status": "missing"
+    },
+    {
+      "id": "chr_yukino_face_stand_tired",
+      "kind": "portrait_face",
+      "owner": "yukino",
+      "pose": "stand",
+      "expression": "tired",
+      "path": "portraits/yukino/chr_yukino_face_stand_tired.png",
+      "status": "missing"
+    }
+  ]
+}

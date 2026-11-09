@@ -1,0 +1,87 @@
+{
+  "id": "tsurumi",
+  "name": "鶴見先生",
+  "role": "resident",
+  "tier": "A",
+  "tier_confirmed": false,
+  "bible_revision": 0,
+  "appearance_status": "unconfirmed",
+  "appearance_lock_hash": "",
+  "appearance": {
+    "summary": "TBD",
+    "age_look": "TBD",
+    "hair": {
+      "style": "TBD",
+      "color": "TBD"
+    },
+    "eyes": {
+      "color": "TBD"
+    },
+    "body": {
+      "height_cm": "TBD",
+      "build": "TBD",
+      "proportion_note": "TBD"
+    },
+    "outfits": {
+      "default": {
+        "design": "TBD"
+      }
+    },
+    "accessories": "TBD",
+    "signature_colors": "TBD",
+    "expression_traits": "TBD"
+  },
+  "personality": {
+    "source": "godot/scripts/core/data.gd",
+    "summary": "公園的象棋老人",
+    "traits": [],
+    "speech_samples": [
+      "將軍！……啊，被妳看到了。",
+      "商店街以前可熱鬧了，有祭典、有夜市。"
+    ]
+  },
+  "art": {
+    "owner": "tsurumi",
+    "expressions": [
+      "neutral",
+      "smile",
+      "surprised",
+      "sad"
+    ],
+    "poses": [
+      "stand"
+    ],
+    "outfits": [
+      "default"
+    ],
+    "default": {
+      "pose": "stand",
+      "outfit": "default",
+      "expression": "neutral"
+    },
+    "cg": [],
+    "display": {
+      "scale": 1.0,
+      "y_offset": 0.0
+    }
+  },
+  "prototype_hints": {
+    "_doc": "3D 佔位模型使用的顏色，僅供參考，並非已確認的美術設定。",
+    "clothes_hex": "#5a6a5a"
+  },
+  "references": [],
+  "open_questions": [
+    "外貌（髮型、髮色、瞳色、身高與體型）尚未確認",
+    "服裝設計尚未確認",
+    "代表色與配件尚未確認",
+    "需要至少一張角色視覺參考圖",
+    "Tier A 為提案，請確認"
+  ],
+  "changelog": [
+    {
+      "revision": 0,
+      "date": "2026-11-09",
+      "note": "建立空白設定。外貌全部待確認。"
+    }
+  ]
+}

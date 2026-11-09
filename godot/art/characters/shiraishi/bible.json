@@ -1,0 +1,94 @@
+{
+  "id": "shiraishi",
+  "name": "白石小姐",
+  "role": "customer-regular",
+  "tier": "A",
+  "tier_confirmed": false,
+  "bible_revision": 0,
+  "appearance_status": "unconfirmed",
+  "appearance_lock_hash": "",
+  "appearance": {
+    "summary": "TBD",
+    "age_look": "TBD",
+    "hair": {
+      "style": "TBD",
+      "color": "TBD"
+    },
+    "eyes": {
+      "color": "TBD"
+    },
+    "body": {
+      "height_cm": "TBD",
+      "build": "TBD",
+      "proportion_note": "TBD"
+    },
+    "outfits": {
+      "default": {
+        "design": "TBD"
+      }
+    },
+    "accessories": "TBD",
+    "signature_colors": "TBD",
+    "expression_traits": "TBD"
+  },
+  "personality": {
+    "source": "godot/scripts/core/data.gd",
+    "summary": "在月光雜貨認識的圖書館員，週二、週四下班後一定會來看書。",
+    "traits": [
+      "quiet"
+    ]
+  },
+  "art": {
+    "owner": "shiraishi",
+    "expressions": [
+      "neutral",
+      "smile",
+      "surprised",
+      "sad"
+    ],
+    "poses": [
+      "stand"
+    ],
+    "outfits": [
+      "default"
+    ],
+    "default": {
+      "pose": "stand",
+      "outfit": "default",
+      "expression": "neutral"
+    },
+    "cg": [],
+    "display": {
+      "scale": 1.0,
+      "y_offset": 0.0
+    },
+    "npc_tags": {
+      "_doc": "依遊戲文字描述推得的分類標籤（非外貌設定）",
+      "age_look": "TBD",
+      "customer_type": "office-worker",
+      "personality": [
+        "quiet"
+      ]
+    }
+  },
+  "prototype_hints": {
+    "_doc": "3D 佔位模型使用的顏色，僅供參考，並非已確認的美術設定。",
+    "hair_hex": "#1a1a2a",
+    "clothes_hex": "#6a8a9a"
+  },
+  "references": [],
+  "open_questions": [
+    "外貌（髮型、髮色、瞳色、身高與體型）尚未確認",
+    "服裝設計尚未確認",
+    "代表色與配件尚未確認",
+    "需要至少一張角色視覺參考圖",
+    "Tier A 為提案，請確認"
+  ],
+  "changelog": [
+    {
+      "revision": 0,
+      "date": "2026-11-09",
+      "note": "建立空白設定。外貌全部待確認。"
+    }
+  ]
+}
