@@ -15,6 +15,7 @@ const CREAM := Color("fff6ef")
 const PANEL := Color("ffffff")
 const INK := Color("5a3a48")
 const STATUS_COLORS := {"missing": Color("c9bcc4"), "draft": Color("f5b84a"), "approved": Color("5cc48a"), "deprecated": Color("9a9a9a")}
+const GAME_FONT := "res://ui/fonts/jf-openhuninn-2.1.ttf"
 const STATUS_LABELS := {"missing": "缺少", "draft": "草稿", "approved": "完成", "deprecated": "停用"}
 
 var catalog: ArtCatalog
@@ -81,6 +82,11 @@ func _make_theme() -> Theme:
 	var f := SystemFont.new()
 	f.font_names = PackedStringArray(["Noto Sans CJK TC", "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", "Heiti TC", "sans-serif"])
 	th.default_font = f
+	# Use the game's bundled UI font when it is present, so the workshop matches the game.
+	if ResourceLoader.exists(GAME_FONT):
+		var gf = load(GAME_FONT)
+		if gf is Font:
+			th.default_font = gf
 	th.default_font_size = int(20 * font_scale)
 	th.set_color("font_color", "Label", INK)
 	th.set_stylebox("panel", "PanelContainer", _box(PANEL, 18, 14))
