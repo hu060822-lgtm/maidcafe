@@ -4,6 +4,7 @@
 
 相關文件：
 
+- [創作者工作坊](CREATOR_WORKSHOP.md)（匯入、創造、管理立繪的視窗工具）
 - [新增角色教學](ADD_CHARACTER.md)
 - [AI 圖片生成與後製流程](AI_WORKFLOW.md)
 - [素材進度表](ASSET_STATUS.md)（由工具自動產生）
@@ -218,9 +219,24 @@ tools/art/art.sh lock <id>
 tools/art/art.sh test                     # 執行自動測試
 ```
 
-## 10. 待你確認的事項
+## 10. 創作者工作坊與立繪產生器
 
-1. 所有 32 位角色的外貌（髮型、髮色、瞳色、身形、服裝、配件、代表色、表情特徵）與參考圖。
+不想用指令時，開啟 `tools/art/workshop.sh`（Windows：`tools\art\workshop.cmd`），詳見 [CREATOR_WORKSHOP.md](CREATOR_WORKSHOP.md)。
+
+| 檔案 | 用途 |
+| --- | --- |
+| `scripts/art/workshop/creator_workshop.tscn` | 工作坊畫面（素材、產生器、角色設定三個分頁與遊戲內預覽） |
+| `scripts/art/workshop/art_library.gd` | `ArtLibrary`：匯入與縮放、去背、狀態、新增角色、鎖定外觀、儲存 manifest |
+| `scripts/art/maker/portrait_recipe.gd` | `PortraitRecipe`：產生器的選項與預設值 |
+| `scripts/art/maker/portrait_painter.gd` | `PortraitPainter`：依設定以向量方式畫出立繪 |
+| `scripts/art/maker/portrait_exporter.gd` | `PortraitExporter`：把一位角色的全部差分畫成 PNG 存進素材庫（草稿） |
+| `art/characters/<id>/maker.json` | 該角色的產生器設定 |
+
+產生器輸出的 face 補丁在同一角色、同一表情的不同姿勢之間是同一張圖（頭部不隨姿勢移動），檢查工具允許這種情形；其他完全相同的圖片仍視為重複錯誤。
+
+## 11. 待你確認的事項
+
+1. 所有 32 位角色的外貌（髮型、髮色、瞳色、身形、服裝、配件、代表色、表情特徵）與參考圖。九位女僕目前有產生器畫的造型提案（草稿），請在工作坊中確認或修改。
 2. 各角色的 Tier 分級（第 3 節）。
 3. S 級的姿勢（站姿／迎賓／端盤）與服裝（女僕制服／便服）清單。
 4. 4 個 NPC 原型與其 look 組合是否採用。

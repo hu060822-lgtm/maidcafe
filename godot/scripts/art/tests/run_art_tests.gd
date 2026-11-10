@@ -33,6 +33,9 @@ func _run() -> void:
 	_test_npc()
 	_test_validator_detects_problems()
 	_test_prompt_builder()
+	_test_recipe()
+	_test_library()
+	await _test_maker_render()
 	print("== %d passed, %d failed ==" % [passes, failures])
 	quit(1 if failures > 0 else 0)
 
@@ -61,9 +64,21 @@ func _test_real_data() -> void:
 		var b: Dictionary = cat.characters[id]
 		if b["tier"] == "S":
 			check(b["art"]["expressions"].size() >= 8 and b["art"]["poses"].size() >= 3 and b["art"]["outfits"].size() >= 2 and b["art"]["cg"].size() >= 1, id + " meets tier S")
-	# All real characters currently resolve to silhouettes (no art yet) without crashing.
-	var r := cat.resolve_portrait("koharu", "", "", "smile")
-	check(r["silhouette"] and r["known"], "koharu without art -> silhouette, known character")
+	# Characters without art resolve to silhouettes without crashing; the maids
+	# have Portrait Maker drafts, which must be drafts made by the maker (never approved by a tool).
+	var r := cat.resolve_portrait("kasuga_m", "", "", "smile")
+	check(r["silhouette"] and r["known"], "kasuga_m without art -> silhouette, known character")
+	r = cat.resolve_portrait("koharu", "", "", "smile")
+	check(r["known"], "koharu resolves as known character")
+	for e in cat.manifest_list:
+		if str(e.get("source", "")) == "portrait-maker":
+			check(e["status"] == "draft" or e["status"] == "approved", e["id"] + " maker image has a valid status")
+			check(FileAccess.file_exists(cat.root + str(e["path"])), e["id"] + " maker image exists")
+	# Maker recipes are proposals until luz confirms the appearance.
+	var lib := ArtLibrary.new(cat)
+	for id in cat.characters:
+		if lib.has_recipe(id) and str(cat.characters[id].get("appearance_status", "")) != "confirmed":
+			check(str(ArtCatalog.read_json(lib.recipe_path(id)).get("status", "")) == "proposal", id + " recipe is marked as a proposal")
 
 
 # ------------------------------------------------------------- fixture
@@ -409,3 +424,139 @@ func _test_prompt_builder() -> void:
 	check(r["ok"] and r["prompt"].contains("slicked") and r["canvas"].begins_with("1024x1536"), "archetype prompt: %s" % r["prompt"])
 	r = pb.build("bg_park_day")
 	check(r["ok"] and r["negative"].contains("people"), "background prompt")
+
+
+# ------------------------------------------------------------- workshop / maker
+
+func _test_recipe() -> void:
+	print("- portrait recipe")
+	var r := PortraitRecipe.normalized({"hair_color": "#112233", "scale": 5.0, "outfits": {"maid": {"main": "#000000"}, "swim": {"style": "sailor"}}})
+	check(r["hair_color"] == "#112233" and r["bangs"] == PortraitRecipe.DEFAULT["bangs"], "recipe keeps given values and fills defaults")
+	check(is_equal_approx(r["scale"], 1.1), "recipe scale is clamped")
+	check(r["outfits"]["maid"]["main"] == "#000000" and r["outfits"]["maid"]["style"] == "classic", "outfit overrides merge with defaults")
+	check(r["outfits"]["swim"]["style"] == "sailor" and r["outfits"]["swim"].has("ribbon"), "unknown outfit gets default fields")
+	check(PortraitRecipe.DEFAULT["outfits"]["maid"]["main"] == "#2e2a3a", "normalizing never mutates the defaults")
+	var spec := ArtCatalog.read_json("res://art/art_spec.json")
+	for ex in spec["vocab"]["expressions"]:
+		check(PortraitRecipe.EXPRESSIONS.has(ex), "maker can draw expression " + str(ex))
+	var fr := PortraitRecipe.face_rect({})
+	check(Rect2i(0, 0, 1024, 1536).encloses(fr) and fr.size.x > 100, "face patch rect lies inside the canvas")
+
+
+func _test_library() -> void:
+	print("- art library (workshop backend)")
+	var cat := _fixture_catalog()
+	var lib := ArtLibrary.new(cat)
+	var slots := lib.slots_for("alpha")
+	check(slots.size() > 10, "alpha has slots (%d)" % slots.size())
+	check(lib.asset_id_for_filename("chr_alpha_face_stand_sad.png") == "chr_alpha_face_stand_sad", "file name -> asset id")
+	check(lib.asset_id_for_filename("holiday.png") == "", "free file name is not matched to a slot")
+
+	# import: opaque image is refused, then accepted with background removal, and resized to the canvas
+	var src := "user://art_test_fixture/_import_src.png"
+	var img := Image.create(300, 600, false, Image.FORMAT_RGBA8)
+	img.fill(Color(1, 1, 1, 1))
+	img.fill_rect(Rect2i(100, 100, 100, 500), Color(0.8, 0.2, 0.3, 1))
+	img.save_png(src)
+	var id := "chr_alpha_body_serve_maid"
+	var res := lib.import_image(id, src)
+	check(not res["ok"] and str(res["error"]) != "", "opaque portrait refused without background removal")
+	check(not FileAccess.file_exists(FIX + "portraits/alpha/%s.png" % id), "refused import writes nothing")
+	res = lib.import_image(id, src, {"remove_bg": true})
+	check(res["ok"], "import with background removal ok: " + str(res["error"]))
+	var out := Image.load_from_file(FIX + "portraits/alpha/%s.png" % id)
+	check(out != null and out.get_width() == 128 and out.get_height() == 192, "imported image fitted to the canvas")
+	if out != null:
+		check(out.get_pixel(2, 2).a < 0.05, "background became transparent")
+		check(out.get_pixel(64, 150).a > 0.9 and out.get_pixel(64, 150).r > 0.6, "subject kept, anchored to the bottom")
+	cat = _fixture_catalog()
+	lib = ArtLibrary.new(cat)
+	var e: Dictionary = cat.assets.get(id, {})
+	check(e.get("status", "") == "draft", "import is registered as draft, never approved")
+	var v := ArtValidator.new()
+	var rep := v.run(cat)
+	var bad := false
+	for it in rep["issues"]:
+		if str(it["path"]).contains(id) and it["level"] == "error":
+			bad = true
+	check(not bad, "imported asset passes the validator")
+	check(not cat.resolve_portrait("alpha", "serve", "maid", "neutral")["silhouette"], "imported body is used by the portrait system")
+
+	# status changes
+	check(lib.set_status(id, "approved") == "", "draft -> approved")
+	check(lib.set_status("chr_alpha_face_serve_sad", "approved") != "", "cannot approve a slot without an image")
+	check(lib.clear_slot(id) == "", "clear slot")
+	check(not FileAccess.file_exists(FIX + "portraits/alpha/%s.png" % id), "clear removes the file")
+	check(_fixture_catalog().assets[id]["status"] == "missing", "cleared slot is missing again")
+	check(lib.import_image("not a valid name", src)["ok"] == false, "bad asset id refused")
+	check(lib.import_image(id, "user://nope.png")["ok"] == false, "unreadable file refused")
+
+	# add character
+	check(lib.add_character("Bad Id", "x", "S") != "", "invalid id refused")
+	check(lib.add_character("alpha", "x", "S") != "", "duplicate id refused")
+	check(lib.add_character("gamma_new", "測試丙", "A") == "", "add character")
+	cat = _fixture_catalog()
+	lib = ArtLibrary.new(cat)
+	check(cat.has_character("gamma_new") and cat.owner_of("gamma_new") == "gamma-new", "new character is indexed")
+	check(lib.slots_for("gamma_new").size() >= 4, "new character has slots")
+	check(cat.resolve_portrait("gamma_new", "", "", "")["silhouette"], "new character shows the missing-art silhouette")
+	check(str(cat.characters["gamma_new"]["appearance"]["summary"]) == "TBD", "new character appearance is left TBD")
+
+	# lock / unlock
+	check(lib.lock_appearance("gamma_new") != "", "cannot lock while fields are TBD")
+	var b: Dictionary = cat.characters["gamma_new"].duplicate(true)
+	b["appearance"] = {"summary": "短髮", "hair": {"style": "短髮", "color": "黑"}}
+	check(lib.save_bible("gamma_new", b) == "", "save bible")
+	check(lib.lock_appearance("gamma_new") == "", "lock filled appearance")
+	check(str(cat.characters["gamma_new"]["appearance_status"]) == "confirmed", "locked -> confirmed")
+	var changed: Dictionary = cat.characters["gamma_new"].duplicate(true)
+	changed["appearance"]["summary"] = "長髮"
+	check(lib.save_bible("gamma_new", changed) != "", "locked appearance cannot be changed")
+	rep = ArtValidator.new().run(_fixture_catalog())
+	var lock_ok := true
+	for it in rep["issues"]:
+		if it["code"] in ["E_LOCK_CHANGED", "E_LOCK_TBD"] and str(it["message"]).begins_with("gamma_new"):
+			lock_ok = false
+	check(lock_ok, "lock hash written by the library validates")
+	check(lib.unlock_appearance("gamma_new") == "", "unlock")
+	changed["appearance_status"] = "unconfirmed"
+	changed["appearance_lock_hash"] = ""
+	check(lib.save_bible("gamma_new", changed) == "", "edit after unlock")
+
+	# recipes
+	check(not lib.has_recipe("alpha"), "no recipe yet")
+	var rec := lib.load_recipe("alpha")
+	check(rec["outfits"].has("maid") and rec["outfits"].has("casual"), "default recipe covers the bible's outfits")
+	rec["hair_back"] = "bob"
+	check(lib.save_recipe("alpha", rec) and lib.has_recipe("alpha"), "save recipe")
+	check(lib.load_recipe("alpha")["hair_back"] == "bob", "recipe round-trips")
+
+
+func _test_maker_render() -> void:
+	print("- portrait maker render")
+	if DisplayServer.get_name() == "headless":
+		print("  (skipped: needs a renderer; run without --headless)")
+		return
+	var cat := _fixture_catalog()
+	var lib := ArtLibrary.new(cat)
+	var ex := PortraitExporter.new()
+	root.add_child(ex)
+	var rec := PortraitRecipe.normalized({})
+	var img: Image = await ex.render(rec, "stand", "maid", "smile")
+	check(img.get_width() == 1024 and img.get_height() == 1536, "render is on the spec canvas")
+	check(img.get_pixel(4, 4).a < 0.02, "render background is transparent")
+	check(img.get_pixel(512, 420).a > 0.95, "face is opaque")
+	var other: Image = await ex.render(rec, "stand", "maid", "angry")
+	check(img.get_pixel(512, 440) != other.get_pixel(512, 440) or img.get_data() != other.get_data(), "expressions differ")
+	var face: Image = await ex.render_face(rec, "stand", "maid", "smile")
+	var fr := PortraitRecipe.face_rect(rec)
+	check(face.get_pixel(512, 1400).a == 0.0 and face.get_pixelv(fr.get_center()).a > 0.9, "face patch only covers the face")
+	var out: Dictionary = await ex.export_character(lib, "alpha", rec)
+	check(out["ok"] > 0 and out["failed"].is_empty(), "export alpha: %s" % str(out))
+	var c2 := _fixture_catalog()
+	var res := c2.resolve_portrait("alpha", "point", "casual", "sad")
+	check(not res["silhouette"], "exported character resolves to real images")
+	for e in c2.manifest_list:
+		if str(e.get("source", "")) == "portrait-maker":
+			check(e["status"] == "draft", e["id"] + " exported as draft")
+	ex.queue_free()

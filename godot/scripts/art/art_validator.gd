@@ -287,7 +287,13 @@ func _check_file(e: Dictionary, kind: String, status: String, rel: String) -> vo
 		_add("error", "E_BLANK", "%s: image is a single flat colour (looks like a placeholder)" % aid, rel)
 	var md5 := FileAccess.get_md5(full)
 	if _hashes.has(md5):
-		_add("error", "E_DUP_CONTENT", "%s: identical to '%s'" % [aid, _hashes[md5]], rel)
+		# A face patch may be the same image for several poses of one character
+		# (the head does not move between those poses); anything else is a copy.
+		var first: Dictionary = catalog.parse_filename(str(_hashes[md5]).get_file())
+		var same_face: bool = kind == "portrait_face" and first.get("kind", "") == "portrait_face" \
+				and first["fields"].get("owner", "") == str(e.get("owner", "")) and first["fields"].get("expression", "") == str(e.get("expression", ""))
+		if not same_face:
+			_add("error", "E_DUP_CONTENT", "%s: identical to '%s'" % [aid, _hashes[md5]], rel)
 	else:
 		_hashes[md5] = rel
 

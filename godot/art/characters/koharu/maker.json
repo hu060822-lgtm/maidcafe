@@ -1,0 +1,29 @@
+{
+  "_doc": "立繪產生器設定。這是外觀『提案』，尚未經確認，可在創作者工作坊中自由修改。",
+  "status": "proposal",
+  "skin": "#ffe9df",
+  "hair_color": "#f2a65a",
+  "hair_back": "twin-tails",
+  "bangs": "parted",
+  "ahoge": true,
+  "eye_color": "#8a4b2a",
+  "eye_shape": "round",
+  "scale": 0.97,
+  "accessories": [
+    "headdress"
+  ],
+  "outfits": {
+    "maid": {
+      "style": "frill",
+      "main": "#3a2e3e",
+      "accent": "#ffffff",
+      "ribbon": "#f07a8a"
+    },
+    "casual": {
+      "style": "hoodie",
+      "main": "#ffd27a",
+      "accent": "#f08a6a",
+      "ribbon": "#f07a8a"
+    }
+  }
+}
