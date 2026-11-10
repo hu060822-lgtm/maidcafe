@@ -337,6 +337,11 @@ const DISHES := {
 	"sea_sakura": {"name": "櫻花拿鐵", "cat": "drink", "price": 520, "time": 6, "q": 62, "ing": {"sakura": 1, "milk": 1}, "station": "coffee", "color": "f8c8d8", "season": "spring"},
 	"sea_soda": {"name": "冰淇淋蘇打", "cat": "drink", "price": 550, "time": 5, "q": 62, "ing": {"icecream": 1, "sugar": 1}, "station": "coffee", "color": "60d0a0", "season": "summer"},
 	"sea_montblanc": {"name": "栗子蒙布朗", "cat": "dessert", "price": 680, "time": 10, "q": 64, "ing": {"chestnut": 1, "cream": 1, "flour": 1}, "station": "stove", "color": "c8a070", "season": "autumn"},
+	# story rewards (story_data.gd STORY_DISHES)
+	"st_heart_omurice": {"name": "愛心蛋包飯", "cat": "main", "price": 1080, "time": 13, "q": 66, "ing": {"egg": 2, "rice": 1, "tomato": 1}, "station": "stove", "color": "ff8a7a", "story": true},
+	"st_rose_tea": {"name": "玫瑰蜜奶茶", "cat": "drink", "price": 520, "time": 6, "q": 64, "ing": {"tea": 1, "milk": 1, "sugar": 1}, "station": "coffee", "color": "f2a7bb", "story": true},
+	"st_lace_crepe": {"name": "蕾絲可麗餅", "cat": "dessert", "price": 640, "time": 8, "q": 66, "ing": {"flour": 1, "egg": 1, "cream": 1, "strawberry": 1}, "station": "stove", "color": "fbe3c8", "story": true},
+	"st_parade_parfait": {"name": "遊行聖代", "cat": "dessert", "price": 820, "time": 9, "q": 76, "ing": {"cream": 1, "strawberry": 1, "chocolate": 1, "sugar": 1}, "station": "stove", "color": "ffb3cf", "story": true},
 	"sea_appletea": {"name": "熱蘋果茶", "cat": "drink", "price": 480, "time": 6, "q": 62, "ing": {"apple": 1, "tea": 1}, "station": "coffee", "color": "d08040", "season": "winter"},
 }
 const BASE_DISHES := ["d_coffee", "d_royaltea", "d_matcha", "d_strawmilk", "d_cocoa", "s_pudding", "s_shortcake", "s_pancake", "s_parfait", "s_choco",
@@ -360,6 +365,8 @@ const FURNITURE := {
 	"bookshelf": {"name": "書架", "price": 650, "fp": [[0, 0]], "style": {"retro": 2, "elegant": 1}, "desc": "愛看書的客人會選旁邊的座位、待得更久；愛書的女僕休息時會來這裡讀書。"},
 	"display": {"name": "展示櫃", "price": 800, "fp": [[0, 0]], "style": {"elegant": 2, "cute": 1}, "desc": "展示合作商品。客人離開前可能會順手買一份。"},
 	"partition": {"name": "隔間屏風", "price": 350, "fp": [[0, 0]], "style": {"elegant": 1, "retro": 1}, "desc": "緊鄰屏風的桌子變成半包廂，喜歡安靜的客人會優先選擇，也不容易被舞台吵到。"},
+	"ribbon_arch": {"name": "緞帶拱門", "price": 480, "fp": [[0, 0]], "style": {"cute": 3, "warm": 1}, "desc": "綁滿粉色緞帶的小拱門。愛拍照的客人很喜歡在這裡停下來。"},
+	"tea_cart": {"name": "下午茶推車", "price": 520, "fp": [[0, 0]], "style": {"elegant": 3, "warm": 1}, "desc": "擺著茶壺與點心架的推車，讓店裡多一點午茶時光的氣氛。"},
 }
 const STYLE_NAMES := {"warm": "溫馨家庭風", "elegant": "高級優雅風", "cute": "可愛偶像風", "retro": "復古懷舊風", "fantasy": "奇幻主題風"}
 

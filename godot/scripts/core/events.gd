@@ -4,6 +4,7 @@ extends RefCounted
 const Data = preload("res://scripts/core/data.gd")
 const St = preload("res://scripts/core/state.gd")
 const Life = preload("res://scripts/core/life.gd")
+const Story = preload("res://scripts/core/story.gd")
 
 static func _m(s: Dictionary, id: String) -> Dictionary:
 	return s.maids[id]
@@ -41,6 +42,8 @@ static func build(s: Dictionary, id: String) -> Dictionary:
 	var base: String = parts[0]
 	var arg: String = parts[1] if parts.size() > 1 else ""
 	match base:
+		"story", "heart":
+			return Story.build(s, id)
 		"arc":
 			return Life.arc_event(s, arg)
 		"pair":
@@ -137,6 +140,8 @@ static func resolve(s: Dictionary, id: String, idx: int) -> String:
 	var base: String = parts[0]
 	var arg: String = parts[1] if parts.size() > 1 else ""
 	match base:
+		"story", "heart":
+			return Story.resolve(s, id, idx)
 		"arc":
 			return Life.arc_resolve(s, arg, idx)
 		"pair":

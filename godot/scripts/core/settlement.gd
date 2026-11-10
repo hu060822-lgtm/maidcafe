@@ -15,6 +15,7 @@ const Events = preload("res://scripts/core/events.gd")
 const Moments = preload("res://scripts/core/moments.gd")
 const Layout = preload("res://scripts/core/layout.gd")
 const Life = preload("res://scripts/core/life.gd")
+const Story = preload("res://scripts/core/story.gd")
 
 const CAUSE_TEXT := {
 	"longWaitDoor": "在門口等了好久", "longWaitOrder": "一直沒人來點餐", "longWaitFood": "餐點等太久",
@@ -490,6 +491,7 @@ static func settle(s: Dictionary, biz) -> Dictionary:
 	s.history.append({"day": int(s.day), "revenue": biz.revenue, "net": biz.revenue - total_exp, "sat": int(roundf(avg_sat)), "popularity": float(s.popularity), "reputation": float(s.reputation)})
 	while s.history.size() > St.CAP_HISTORY:
 		s.history.pop_front()
+	Story.after_settle(s, served, true)
 	s.phase = "night"
 	return report
 
