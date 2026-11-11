@@ -14,6 +14,10 @@ const Auto = preload("res://tests/autoplay.gd")
 const Life = preload("res://scripts/core/life.gd")
 const LD = preload("res://scripts/core/life_data.gd")
 const Main = preload("res://scripts/view/main.gd")
+const Story = preload("res://scripts/core/story.gd")
+const SD = preload("res://scripts/core/story_data.gd")
+const Settings = preload("res://scripts/core/settings.gd")
+const MaidTheme = preload("res://scripts/view/maid_theme.gd")
 
 var passed := 0
 var failed := 0
@@ -53,6 +57,11 @@ func _init() -> void:
 	test_migration()
 	test_autonomy()
 	test_long_life()
+	test_story_content()
+	test_story_chapters()
+	test_hearts_and_training()
+	test_story_autoplay()
+	test_settings_and_theme()
 	print("\n%d passed, %d failed  (%.1fs)" % [passed, failed, (Time.get_ticks_msec() - t0) / 1000.0])
 	quit(1 if failed > 0 else 0)
 
@@ -890,3 +899,180 @@ func test_long_life() -> void:
 	var txt := St.serialize(s)
 	check(St.serialize(St.deserialize(txt)) == txt, "60-day save round-trips")
 	print("    staff %s | album %d | promises kept %d | arc stages %d | customer lives %d | talks %d" % [", ".join(s.staff), s.album.size(), kept, arcs, lives, a.talks])
+
+# ---------------------------------------------------------------- story / raising
+func test_story_content() -> void:
+	section("story content")
+	check(SD.CHAPTERS.size() == 6, "six main chapters")
+	for i in SD.CHAPTERS.size():
+		var ch: Dictionary = SD.CHAPTERS[i]
+		check(not ch.intro.is_empty() and not ch.outro.is_empty() and not ch.goals.is_empty(), "chapter %d has intro/outro/goals" % i)
+		var s := St.new_game(1)
+		for g in ch.goals:
+			var gs := Story.goal_status(s, g)
+			check(gs.target > 0, "chapter %d goal %s has a target" % [i, g.kind])
+		var rw: Dictionary = ch.get("reward", {})
+		if rw.has("dish"):
+			check(Data.DISHES.has(rw.dish) and Data.DISHES[rw.dish].get("story", false), "reward dish %s exists" % rw.dish)
+			for ing in Data.DISHES[rw.dish].ing:
+				check(Data.INGREDIENTS.has(ing), "story dish ingredient %s exists" % ing)
+	for mid in Data.MAIDS:
+		check(SD.PROFILES.has(mid), "%s has a profile" % mid)
+		for k in ["motto", "food", "good", "weak", "dream", "secret", "title"]:
+			check(SD.PROFILES.get(mid, {}).has(k), "%s profile has %s" % [mid, k])
+		for r in [2, 3, 4]:
+			var ep: Dictionary = SD.HEART.get(mid, {}).get(r, {})
+			check(not ep.is_empty(), "%s has heart episode Lv%d" % [mid, r])
+			for c in ep.get("choices", []):
+				if c.fx.has("skill"):
+					check(c.fx.skill[0] in Data.SKILLS, "%s Lv%d skill key valid" % [mid, r])
+	for d in SD.STORY_DISHES:
+		check(not d in Data.BASE_DISHES, "story dish %s starts locked" % d)
+	for f in ["ribbon_arch", "tea_cart"]:
+		check(Data.FURNITURE.has(f), "new furniture %s" % f)
+	for sk in Data.SKILLS:
+		check(SD.TRAINING.has(sk), "training for %s" % sk)
+
+func test_story_chapters() -> void:
+	section("story chapters")
+	var s := St.new_game(5)
+	check(Story.needs_intro(s), "new game shows the prologue")
+	var intro := Story.intro_scene(s)
+	check(intro.title == SD.CHAPTERS[0].title and intro.choices.size() == 1, "prologue intro scene")
+	Story.begin_chapter(s)
+	check(not Story.needs_intro(s), "intro only once")
+	check(not Story.chapter_complete(s), "prologue not done at start")
+	Story.after_settle(s, 10, true)
+	check(int(s.story.days_open) == 1 and int(s.story.served_total) == 10, "progress counted")
+	check(not "story:done|0" in s.pending_events, "not complete after one day")
+	Story.after_settle(s, 10, true)
+	Story.after_settle(s, 10, true)
+	check("story:done|0" in s.pending_events, "chapter completion queued when all goals are met")
+	var ev := Events.next_event(s)
+	check(ev.id == "story:done|0", "completion plays as a night event")
+	var money := float(s.money)
+	var res := Events.resolve(s, ev.id, 0)
+	check(res != "", "completion text")
+	check(int(s.story.chapter) == 1 and not s.story.started, "next chapter waits for its intro")
+	check("st_heart_omurice" in s.unlocked_dishes, "reward dish unlocked")
+	check(float(s.money) > money, "reward money")
+	check(Story.needs_intro(s), "chapter 1 intro next morning")
+	check(Story.build(s, "story:done|0").is_empty(), "stale completion ignored")
+	# goals read live state
+	Story.begin_chapter(s)
+	var gs := Story.goals(s)
+	check(gs.size() == 3 and not gs[0].done, "chapter 1 goals")
+	s.customers[s.customers.keys()[0]].is_regular = true
+	s.popularity = 30.0
+	s.story.trained_total = 3
+	check(Story.chapter_complete(s), "chapter 1 done when regular + popularity + training")
+	# finale ends the story
+	s.story.chapter = SD.CHAPTERS.size() - 1
+	s.story.started = true
+	var r2 := Story.resolve(s, "story:done|%d" % (SD.CHAPTERS.size() - 1), 0)
+	check(s.story.ended and Story.chapter(s).is_empty(), "finale ends the main story")
+	check("st_parade_parfait" in s.unlocked_dishes and r2.find("感謝") >= 0, "finale rewards")
+	check(not Story.needs_intro(s), "no intro after the end")
+	Story.after_settle(s, 5, true)
+	check(not s.pending_events.any(func(e): return String(e).begins_with("story:")), "no chapter events after the end")
+	# save/load keeps the story
+	var copy := St.deserialize(St.serialize(s))
+	check(copy.story.ended == true and int(copy.story.chapter) == SD.CHAPTERS.size(), "story survives save/load")
+	# old saves without the story key get one
+	var old := St.new_game(3)
+	old.erase("story")
+	St.fill_defaults(old)
+	check(old.has("story") and Story.needs_intro(old), "old saves start the story")
+
+func test_hearts_and_training() -> void:
+	section("hearts & training")
+	var s := St.new_game(9)
+	var k: Dictionary = s.maids.koharu
+	k.bond = 35.0
+	check(Story.heart_rank(s, "koharu") == 1, "Lv1 at start")
+	k.bond = 41.0
+	check(Story.heart_rank(s, "koharu") == 2, "Lv2 from bond 40")
+	k.bond = 90.0
+	check(Story.heart_rank(s, "koharu") == 5, "Lv5 max")
+	check(Story.heart_progress(s, "koharu") == 1.0, "max rank progress full")
+	var prof := Story.profile(s, "koharu")
+	check(prof.all(func(r): return r[2]), "all profile rows open at Lv5")
+	k.bond = 41.0
+	prof = Story.profile(s, "koharu")
+	check(not prof[4][2] and not prof[6][2], "dream and secret locked at Lv2")
+	# one heart episode per night, in rank order
+	s.pending_events.clear()
+	Story.after_settle(s, 0, false)
+	check("heart:koharu|2" in s.pending_events, "Lv2 episode queued")
+	var ev := Events.next_event(s)
+	check(ev.id == "heart:koharu|2" and ev.who == "koharu" and ev.choices.size() >= 1, "heart episode builds")
+	var mood := float(k.mood)
+	Events.resolve(s, ev.id, 0)
+	check(int(s.story.heart.koharu) == 2, "episode recorded")
+	check(float(k.mood) > mood, "episode effect applied")
+	Story.after_settle(s, 0, false)
+	check(not s.pending_events.any(func(e): return String(e).begins_with("heart:koharu")), "not replayed")
+	k.bond = 70.0
+	Story.after_settle(s, 0, false)
+	check("heart:koharu|3" in s.pending_events, "skipped ranks play in order (Lv3 first)")
+	s.pending_events.clear()
+	s.story.heart.koharu = 4
+	k.bond = 95.0
+	Story.after_settle(s, 0, false)
+	check(int(s.story.heart.koharu) == 5 and s.pending_events.is_empty(), "Lv5 has no episode, recorded silently")
+	# a maid who is not on staff gets no episode
+	s.maids.yukino.bond = 60.0
+	Story.after_settle(s, 0, false)
+	check(not s.pending_events.any(func(e): return String(e).begins_with("heart:yukino")), "no episode for maids not hired")
+	# training
+	s.phase = "prepare"
+	var before := int(s.maids.rin.skills.cooking)
+	var fat := float(s.maids.rin.fatigue)
+	var r := Story.train(s, "rin", "cooking")
+	check(r.ok, "training works before opening")
+	check(int(s.maids.rin.skills.cooking) == before + SD.TRAIN_POINTS + 1, "growth focus gives a bonus point")
+	check(float(s.maids.rin.fatigue) > fat, "training is tiring")
+	check(not Story.train(s, "rin", "floor").ok, "once a day per maid")
+	check(Story.train(s, "shizuku", "reception").ok, "second maid ok")
+	check(Story.train_left(s) == 0 and not Story.train(s, "koharu", "reception").ok, "manager has limited time")
+	check(int(s.story.trained_total) == 2, "training counted for goals")
+	s.day = int(s.day) + 1
+	check(Story.train_left(s) == SD.TRAIN_PER_DAY, "time resets next day")
+	s.maids.koharu.fatigue = 90.0
+	check(Story.can_train(s, "koharu") != "", "too tired to train")
+	s.phase = "business"
+	check(Story.can_train(s, "rin") != "", "no training during business")
+	s.phase = "prepare"
+	s.maids.koharu.fatigue = 0.0
+	s.maids.koharu.skills.performance = int(Data.MAIDS.koharu.caps.performance)
+	Story.train(s, "koharu", "performance")
+	check(int(s.maids.koharu.skills.performance) == int(Data.MAIDS.koharu.caps.performance), "skill caps respected")
+
+func test_story_autoplay() -> void:
+	section("story in a long game")
+	var a := Auto.new(77)
+	a.play_days(30)
+	check(a.problems.is_empty(), "no problems with the story running (%s)" % str(a.problems.slice(0, 3)))
+	check(int(a.s.story.chapter) >= 1, "the prologue gets completed by normal play (chapter %d)" % int(a.s.story.chapter))
+	check(a.trained >= 20, "training used every day (%d)" % a.trained)
+	var heard := 0
+	for mid in a.s.story.heart:
+		if int(a.s.story.heart[mid]) >= 2:
+			heard += 1
+	check(heard >= 1, "heart episodes play in a normal game (%d maids)" % heard)
+	print("  story: chapter %d, days_open %d, served %d, hearts %s" % [int(a.s.story.chapter), int(a.s.story.days_open), int(a.s.story.served_total), str(a.s.story.heart)])
+
+func test_settings_and_theme() -> void:
+	section("settings & theme")
+	Settings.reset(true)
+	check(Settings.font_scale() == 1.0, "default font size is standard")
+	check(not Settings.hints(), "compact text by default")
+	var keys := {}
+	for f in Settings.FONT_SIZES:
+		keys[f.key] = true
+	check(keys.size() == Settings.FONT_SIZES.size(), "font size keys unique")
+	var t1 := MaidTheme.build(1.0)
+	var t2 := MaidTheme.build(1.4)
+	check(t2.default_font_size > t1.default_font_size and t1.default_font_size >= 18, "bigger setting, bigger text")
+	check(t1.has_stylebox("normal", "SoftButton") and t1.has_stylebox("panel", "CardPanel"), "theme variations")
+	check(ResourceLoader.exists("res://ui/maid_theme.tres"), "pre-built theme resource for tools")

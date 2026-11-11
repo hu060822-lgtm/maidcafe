@@ -10,6 +10,8 @@ const Settle = preload("res://scripts/core/settlement.gd")
 const Events = preload("res://scripts/core/events.gd")
 const Social = preload("res://scripts/core/social.gd")
 const Life = preload("res://scripts/core/life.gd")
+const Story = preload("res://scripts/core/story.gd")
+const SD = preload("res://scripts/core/story_data.gd")
 
 var s: Dictionary
 var log: Array = []
@@ -21,6 +23,8 @@ var commands := true
 var listen := true          # false = a player who never answers maids (autonomy test)
 var keep_promises := true
 var talks := 0
+var story := true          # start story chapters and train one maid a day like a player would
+var trained := 0
 
 func _init(seed_value: int) -> void:
 	s = St.new_game(seed_value)
@@ -31,6 +35,10 @@ func play_days(n: int) -> void:
 
 func play_day() -> void:
 	var d := int(s.day)
+	if story:
+		if Story.needs_intro(s):
+			Story.begin_chapter(s)
+		_train()
 	_explore()
 	_prepare()
 	_morning()
@@ -247,3 +255,15 @@ func _place(type: String) -> bool:
 			log.append("  promise furniture %s placed at %d,%d" % [type, c[0], c[1]])
 			return true
 	return false
+
+func _train() -> void:
+	var best = null
+	for m in St.active_maids(s):
+		if Story.can_train(s, m.id) == "" and (best == null or float(m.fatigue) < float(best.fatigue)):
+			best = m
+	if best == null:
+		return
+	var focus: Array = SD.GROWTH_FOCUS.get(Data.MAIDS[best.id].get("growth", ""), ["reception"])
+	var r := Story.train(s, best.id, focus[int(s.day) % focus.size()])
+	if r.ok:
+		trained += 1

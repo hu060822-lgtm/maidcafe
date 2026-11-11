@@ -4,6 +4,11 @@ extends Node3D
 const Data = preload("res://scripts/core/data.gd")
 const Layout = preload("res://scripts/core/layout.gd")
 const LD = preload("res://scripts/core/life_data.gd")
+const MaidTheme = preload("res://scripts/view/maid_theme.gd")
+
+## Anime look: toon (cel) shading with a soft rim light, plus an inverted-hull outline on solid meshes.
+const TOON := true
+const OUTLINE_GROW := 0.035
 
 signal cell_clicked(cell: Vector2i, button: int)
 signal agent_clicked(kind: String, id: String)
@@ -43,26 +48,37 @@ func _ready() -> void:
 	sun = DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-55, -35, 0)
 	sun.shadow_enabled = true
+	sun.shadow_opacity = 0.55
+	sun.shadow_blur = 1.5
 	add_child(sun)
 	env = WorldEnvironment.new()
 	var e := Environment.new()
 	e.background_mode = Environment.BG_COLOR
-	e.background_color = Color("2b2433")
+	e.background_color = Color("f6dde6")
 	e.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	e.ambient_light_color = Color("f4f0ff")
-	e.ambient_light_energy = 0.4
+	e.ambient_light_color = Color("fff1f6")
+	e.ambient_light_energy = 0.42
 	e.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.environment = e
 	add_child(env)
 	_update_camera()
 
-func mat(hex: String, emissive := false, alpha := 1.0) -> StandardMaterial3D:
-	var k := "%s|%s|%s" % [hex, emissive, alpha]
+func mat(hex: String, emissive := false, alpha := 1.0, outline := true) -> StandardMaterial3D:
+	var k := "%s|%s|%s|%s" % [hex, emissive, alpha, outline]
 	if mats.has(k):
 		return mats[k]
 	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(hex)
+	# colours are picked as they should look on screen; the lighting brightens them, so start from linear
+	m.albedo_color = Color(hex).srgb_to_linear() if TOON else Color(hex)
 	m.roughness = 0.85
+	if TOON:
+		m.diffuse_mode = BaseMaterial3D.DIFFUSE_TOON
+		m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+		m.roughness = 1.0
+		m.metallic_specular = 0.2
+		m.rim_enabled = true
+		m.rim = 0.35
+		m.rim_tint = 0.6
 	if alpha < 1.0:
 		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
 		m.albedo_color.a = alpha
@@ -70,8 +86,26 @@ func mat(hex: String, emissive := false, alpha := 1.0) -> StandardMaterial3D:
 		m.emission_enabled = true
 		m.emission = Color(hex)
 		m.emission_energy_multiplier = 1.4
+	if TOON and outline and alpha >= 1.0 and not emissive:
+		m.next_pass = _outline_mat(Color(hex))
 	mats[k] = m
 	return m
+
+## Dark, slightly tinted version of the surface colour, drawn as a grown back-face shell.
+func _outline_mat(c: Color) -> StandardMaterial3D:
+	var key := "outline|" + c.to_html(false)
+	if mats.has(key):
+		return mats[key]
+	var o := StandardMaterial3D.new()
+	o.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	o.cull_mode = BaseMaterial3D.CULL_FRONT
+	o.grow = true
+	o.grow_amount = OUTLINE_GROW
+	var d := c.darkened(0.62)
+	d = d.lerp(Color("5b2a3f"), 0.35)
+	o.albedo_color = d
+	mats[key] = o
+	return o
 
 func box(parent: Node3D, size: Vector3, pos: Vector3, hex: String, emissive := false) -> MeshInstance3D:
 	var mi := MeshInstance3D.new()
@@ -130,15 +164,16 @@ func rebuild_room() -> void:
 		c.queue_free()
 	var lay = Layout.new(s.furniture, s.upgrades)
 	# floor
-	box(room, Vector3(16, 0.1, 10), Vector3(8.5, -0.05, 5.5), "8a6a50")
+	box(room, Vector3(16, 0.1, 10), Vector3(8.5, -0.05, 5.5), "efcfb6")
 	for x in range(1, 17):
 		for z in range(1, 11):
 			if (x + z) % 2 == 0:
-				box(room, Vector3(1, 0.012, 1), Vector3(x, 0.006, z), "7a5c44")
+				var tile := box(room, Vector3(1, 0.012, 1), Vector3(x, 0.006, z), "f2b3c6")
+				tile.material_override = mat("f2b3c6", false, 1.0, false)
 	# the street outside the door
-	box(room, Vector3(30, 0.05, 4), Vector3(8.5, -0.06, 13.5), "5a5560")
-	box(room, Vector3(5, 0.02, 3), Vector3(3, 0.01, 2), "dcd6cc")   # kitchen tiles
-	box(room, Vector3(4, 0.02, 3), Vector3(14.5, 0.01, 2), "8a7a9a")  # staff room carpet
+	box(room, Vector3(30, 0.05, 4), Vector3(8.5, -0.06, 13.5), "c9bcc6")
+	box(room, Vector3(5, 0.02, 3), Vector3(3, 0.01, 2), "dfe9f0")   # kitchen tiles
+	box(room, Vector3(4, 0.02, 3), Vector3(14.5, 0.01, 2), "d9c6ea")  # staff room carpet
 	for x in Layout.W:
 		for z in Layout.H:
 			var c := Vector2i(x, z)
@@ -148,18 +183,18 @@ func rebuild_room() -> void:
 					var low: bool = z == Layout.H - 1 or x == Layout.W - 1
 					var inner: bool = x > 0 and z > 0 and x < Layout.W - 1 and z < Layout.H - 1
 					var h := 0.35 if low else (1.3 if inner else 2.4)
-					box(room, Vector3(1, h, 1), Vector3(x, h / 2, z), "c8b49a" if not inner else "a89078")
+					box(room, Vector3(1, h, 1), Vector3(x, h / 2, z), "f4b4c8" if not inner else "e99ab3")
 				"door":
-					box(room, Vector3(1, 0.04, 1), Vector3(x, 0.02, z), "7a4a3a")
+					box(room, Vector3(1, 0.04, 1), Vector3(x, 0.02, z), "eab08c")
 				"kitchen":
-					box(room, Vector3(0.96, 0.9, 0.96), Vector3(x, 0.45, z), "c9c4bc")
+					box(room, Vector3(0.96, 0.9, 0.96), Vector3(x, 0.45, z), "f4f1ee")
 				"counter":
-					box(room, Vector3(0.98, 0.95, 0.9), Vector3(x, 0.475, z), "8a5a3a")
+					box(room, Vector3(0.98, 0.95, 0.9), Vector3(x, 0.475, z), "f2c9a8")
 				"desk":
-					box(room, Vector3(0.95, 1.0, 0.8), Vector3(x, 0.5, z), "6a3a4a")
+					box(room, Vector3(0.95, 1.0, 0.8), Vector3(x, 0.5, z), "f39ab8")
 					box(room, Vector3(0.3, 0.05, 0.2), Vector3(x, 1.03, z), "f2e6d0")
 				"sofa":
-					box(room, Vector3(0.95, 0.45, 0.8), Vector3(x, 0.22, z), "b05a6a")
+					box(room, Vector3(0.95, 0.45, 0.8), Vector3(x, 0.22, z), "f19ab4")
 	# windows on the back wall
 	for x in [3, 8, 14]:
 		box(room, Vector3(1.6, 1.0, 0.05), Vector3(x, 1.4, 0.52), "9ad0f0" if s.weather != "rain" else "6a8aa0", true)
@@ -172,7 +207,7 @@ func rebuild_room() -> void:
 		else:
 			box(room, Vector3(0.5, 0.5, 0.45), Vector3(c.x, 1.15, c.y), "3a3a40" if not s.upgrades.coffee_machine else "b0b0b8")
 	# shelves in kitchen / staff room
-	box(room, Vector3(0.9, 0.9, 0.9), Vector3(16, 0.45, 3), "7a5a8a")
+	box(room, Vector3(0.9, 0.9, 0.9), Vector3(16, 0.45, 3), "b99ad0")
 	# furniture
 	for f in s.furniture:
 		_furniture_mesh(f, lay)
@@ -212,17 +247,17 @@ func _furniture_mesh(f: Dictionary, lay) -> void:
 			cyl(n, 0.38, 0.06, Vector3(0, 0.72, 0), "f2e6d0")
 			cyl(n, 0.06, 0.7, Vector3(0, 0.35, 0), "6a4a3a")
 			for dx in [-1, 1]:
-				box(n, Vector3(0.45, 0.06, 0.45), Vector3(dx, 0.42, 0), "8a5a3a")
-				box(n, Vector3(0.08, 0.5, 0.45), Vector3(dx * 1.22, 0.65, 0), "8a5a3a")
+				box(n, Vector3(0.45, 0.06, 0.45), Vector3(dx, 0.42, 0), "f08fb0")
+				box(n, Vector3(0.08, 0.5, 0.45), Vector3(dx * 1.22, 0.65, 0), "fbe3ea")
 		"sofa_table":
 			cyl(n, 0.4, 0.06, Vector3(0, 0.6, 0), "f6efe2")
 			cyl(n, 0.07, 0.6, Vector3(0, 0.3, 0), "5a3a2a")
 			for dx in [-1, 1]:
-				box(n, Vector3(0.7, 0.4, 0.8), Vector3(dx, 0.2, 0), "a04a5a")
-				box(n, Vector3(0.2, 0.8, 0.8), Vector3(dx * 1.3, 0.4, 0), "a04a5a")
+				box(n, Vector3(0.7, 0.4, 0.8), Vector3(dx, 0.2, 0), "e57c9b")
+				box(n, Vector3(0.2, 0.8, 0.8), Vector3(dx * 1.3, 0.4, 0), "e57c9b")
 		"plant":
 			cyl(n, 0.22, 0.4, Vector3(0, 0.2, 0), "a0603a", false, 0.28)
-			sphere(n, 0.35, Vector3(0, 0.75, 0), "4a8a4a")
+			sphere(n, 0.35, Vector3(0, 0.75, 0), "79c27f")
 		"lamp":
 			cyl(n, 0.04, 1.5, Vector3(0, 0.75, 0), "3a3a3a")
 			cyl(n, 0.25, 0.3, Vector3(0, 1.55, 0), "ffd890", true, 0.12)
@@ -257,7 +292,7 @@ func _furniture_mesh(f: Dictionary, lay) -> void:
 			box(n, Vector3(2, 0.3, 2), Vector3(0.5, 0.15, 0.5), "7a3a5a")
 			box(n, Vector3(2, 0.04, 0.1), Vector3(0.5, 0.32, 1.45), "ffd0e0", true)
 		"bookshelf":
-			box(n, Vector3(0.9, 1.9, 0.5), Vector3(0, 0.95, 0), "6a4a2a")
+			box(n, Vector3(0.9, 1.9, 0.5), Vector3(0, 0.95, 0), "c99a6e")
 			var cols := ["a04a4a", "4a6aa0", "e0c060", "4a8a5a", "8a5aa0", "d0d0c0"]
 			for row in 4:
 				for i in 5:
@@ -273,6 +308,30 @@ func _furniture_mesh(f: Dictionary, lay) -> void:
 			n.add_child(gm)
 			sphere(n, 0.1, Vector3(-0.2, 0.95, 0), "f5a0b5")
 			sphere(n, 0.1, Vector3(0.15, 0.95, 0), "fff0a0")
+		"ribbon_arch":
+			for dx in [-0.42, 0.42]:
+				cyl(n, 0.05, 1.7, Vector3(dx, 0.85, 0), "ffffff")
+			var arch := MeshInstance3D.new()
+			var tm := TorusMesh.new()
+			tm.inner_radius = 0.37
+			tm.outer_radius = 0.47
+			arch.mesh = tm
+			arch.rotation_degrees = Vector3(90, 0, 0)
+			arch.position = Vector3(0, 1.7, 0)
+			arch.material_override = mat("ff8fb5")
+			n.add_child(arch)
+			sphere(n, 0.1, Vector3(-0.12, 2.15, 0.04), "ff6f9c")
+			sphere(n, 0.1, Vector3(0.12, 2.15, 0.04), "ff6f9c")
+			sphere(n, 0.06, Vector3(0, 2.15, 0.06), "ffd1e0")
+		"tea_cart":
+			box(n, Vector3(0.8, 0.05, 0.5), Vector3(0, 0.75, 0), "f6efe2")
+			box(n, Vector3(0.8, 0.05, 0.5), Vector3(0, 0.35, 0), "f6efe2")
+			for cx in [-0.36, 0.36]:
+				for cz in [-0.2, 0.2]:
+					cyl(n, 0.025, 0.75, Vector3(cx, 0.38, cz), "c9a46a")
+			cyl(n, 0.12, 0.18, Vector3(-0.15, 0.87, 0), "ffffff", false, 0.09)
+			cyl(n, 0.13, 0.02, Vector3(0.18, 0.79, 0), "ffb3cf")
+			sphere(n, 0.06, Vector3(0.18, 0.85, 0), "fbe3c8")
 		"partition":
 			box(n, Vector3(0.12, 1.6, 0.95), Vector3(0, 0.8, 0), "c8b090")
 			box(n, Vector3(0.14, 1.2, 0.7), Vector3(0, 0.85, 0), "f0e6d6")
@@ -282,15 +341,15 @@ func _apply_lighting() -> void:
 	match s.get("lighting", "warm"):
 		"bright":
 			sun.light_color = Color("ffffff")
-			sun.light_energy = 0.95
-			e.ambient_light_energy = 0.5
-		"dim":
-			sun.light_color = Color("ffc890")
-			sun.light_energy = 0.42
-			e.ambient_light_energy = 0.25
-		_:
-			sun.light_color = Color("fff0e0")
 			sun.light_energy = 0.7
+			e.ambient_light_energy = 0.45
+		"dim":
+			sun.light_color = Color("ffc8a0")
+			sun.light_energy = 0.38
+			e.ambient_light_energy = 0.26
+		_:
+			sun.light_color = Color("fff0e6")
+			sun.light_energy = 0.48
 			e.ambient_light_energy = 0.38
 	if s.get("weather", "") == "rain":
 		sun.light_energy *= 0.7
@@ -319,12 +378,26 @@ func _make_agent(id: String, kind: String, body_hex: String, hair_hex: String, n
 	torso.material_override = mat(body_hex)
 	body.add_child(torso)
 	if kind == "maid":
-		# skirt + apron + headdress
-		cyl(body, 0.3, 0.35, Vector3(0, 0.3, 0), body_hex, false, 0.18)
-		box(body, Vector3(0.26, 0.42, 0.04), Vector3(0, 0.42, 0.2), "fafafa")
-		box(body, Vector3(0.3, 0.05, 0.1), Vector3(0, 1.17, 0.02), "fafafa")
-	var head := sphere(body, 0.17, Vector3(0, 0.98, 0), "f6d8c0")
-	sphere(body, 0.185, Vector3(0, 1.03, -0.04), hair_hex)
+		# flared skirt with a frilly hem, apron with a bow, headdress (chibi proportions)
+		cyl(body, 0.34, 0.38, Vector3(0, 0.3, 0), body_hex, false, 0.17)
+		cyl(body, 0.36, 0.05, Vector3(0, 0.12, 0), "ffffff", false, 0.35)
+		box(body, Vector3(0.26, 0.42, 0.04), Vector3(0, 0.42, 0.2), "ffffff")
+		sphere(body, 0.07, Vector3(-0.07, 0.6, -0.21), "ff8fb5")
+		sphere(body, 0.07, Vector3(0.07, 0.6, -0.21), "ff8fb5")
+		box(body, Vector3(0.36, 0.06, 0.12), Vector3(0, 1.3, 0.04), "ffffff")
+		sphere(body, 0.045, Vector3(0, 1.3, 0.12), "ff8fb5")
+	var head := sphere(body, 0.23, Vector3(0, 1.02, 0), "ffe3d3")
+	sphere(body, 0.245, Vector3(0, 1.08, -0.05), hair_hex)
+	# big anime eyes with a highlight, and blush
+	for sx in [-1, 1]:
+		var eye := sphere(body, 0.045, Vector3(sx * 0.085, 1.0, 0.2), "3a2238")
+		eye.scale = Vector3(0.8, 1.25, 0.5)
+		eye.material_override = mat("3a2238", false, 1.0, false)
+		var hi := sphere(body, 0.016, Vector3(sx * 0.085 + 0.012, 1.025, 0.222), "ffffff", true)
+		hi.material_override = mat("ffffff", true, 1.0, false)
+		var bl := sphere(body, 0.035, Vector3(sx * 0.14, 0.95, 0.18), "ff9fb8")
+		bl.scale = Vector3(1.2, 0.6, 0.4)
+		bl.material_override = mat("ff9fb8", false, 0.7)
 	var carry := sphere(body, 0.09, Vector3(0.25, 0.7, 0.15), "ffffff")
 	carry.visible = false
 	var lbl := Label3D.new()
@@ -333,8 +406,11 @@ func _make_agent(id: String, kind: String, body_hex: String, hair_hex: String, n
 	lbl.font_size = 40
 	lbl.pixel_size = 0.0065
 	lbl.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	lbl.outline_size = 10
+	lbl.outline_size = 12
+	lbl.font = MaidTheme.font()
+	lbl.position.y = 1.62
 	lbl.modulate = Color("ffffff")
+	lbl.outline_modulate = Color("d94f82") if kind == "maid" else Color("6b4a5a")
 	lbl.no_depth_test = true
 	root.add_child(lbl)
 	var bub := Label3D.new()
@@ -343,8 +419,10 @@ func _make_agent(id: String, kind: String, body_hex: String, hair_hex: String, n
 	bub.pixel_size = 0.0065
 	bub.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 	bub.outline_size = 12
-	bub.modulate = Color("fff6c8")
-	bub.outline_modulate = Color("3a2a3a")
+	bub.font = MaidTheme.font()
+	bub.position.y = 2.05
+	bub.modulate = Color("fff8f3")
+	bub.outline_modulate = Color("8f3a5e")
 	bub.no_depth_test = true
 	bub.width = 420
 	bub.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
@@ -355,7 +433,7 @@ func _make_agent(id: String, kind: String, body_hex: String, hair_hex: String, n
 	tm.outer_radius = 0.4
 	ring.mesh = tm
 	ring.position = Vector3(0, 0.03, 0)
-	ring.material_override = mat("ffd84a", true)
+	ring.material_override = mat("ff8fb5", true)
 	ring.visible = false
 	root.add_child(ring)
 	var d := {"root": root, "body": body, "head": head, "name": lbl, "bubble": bub, "carry": carry, "ring": ring, "kind": kind, "seen": true}

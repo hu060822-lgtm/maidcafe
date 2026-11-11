@@ -158,6 +158,7 @@ static func new_game(seed_value: int = -1) -> Dictionary:
 		"special_prep": {},          # preparations for tomorrow's special day
 		"promises": [],              # things the manager agreed to [{id, maid, kind, text, day, due, data, status}]
 		"decor": "",                 # seasonal decoration currently up ("" or a season key)
+		"story": {},                 # main chapters / heart ranks / training (story.gd fills the fields)
 		"debug_log": [],
 	}
 
@@ -318,6 +319,8 @@ static func fill_defaults(v: Dictionary) -> void:
 		for k in fresh:
 			if not v.customers[id].has(k):
 				v.customers[id][k] = fresh[k]
+	if not v.has("story"):
+		v["story"] = {}
 	for k in ["promises", "decor"]:
 		if not v.has(k):
 			v[k] = [] if k == "promises" else ""
