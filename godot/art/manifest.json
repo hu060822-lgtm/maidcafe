@@ -58,6 +58,30 @@
       "status": "missing"
     },
     {
+      "id": "cg_aoi-story-01_main",
+      "kind": "cg",
+      "event": "aoi-story-01",
+      "variant": "main",
+      "path": "cg/cg_aoi-story-01_main.png",
+      "status": "missing"
+    },
+    {
+      "id": "cg_chinatsu-story-01_main",
+      "kind": "cg",
+      "event": "chinatsu-story-01",
+      "variant": "main",
+      "path": "cg/cg_chinatsu-story-01_main.png",
+      "status": "missing"
+    },
+    {
+      "id": "cg_hiyori-story-01_main",
+      "kind": "cg",
+      "event": "hiyori-story-01",
+      "variant": "main",
+      "path": "cg/cg_hiyori-story-01_main.png",
+      "status": "missing"
+    },
+    {
       "id": "cg_kaede-story-01_main",
       "kind": "cg",
       "event": "kaede-story-01",
@@ -87,6 +111,14 @@
       "event": "shizuku-story-01",
       "variant": "main",
       "path": "cg/cg_shizuku-story-01_main.png",
+      "status": "missing"
+    },
+    {
+      "id": "cg_tsumugi-story-01_main",
+      "kind": "cg",
+      "event": "tsumugi-story-01",
+      "variant": "main",
+      "path": "cg/cg_tsumugi-story-01_main.png",
       "status": "missing"
     },
     {
@@ -150,6 +182,546 @@
       "expression": "surprised",
       "path": "portraits/amamiya/chr_amamiya_face_stand_surprised.png",
       "status": "missing"
+    },
+    {
+      "id": "chr_aoi_body_greet_casual",
+      "kind": "portrait_body",
+      "owner": "aoi",
+      "pose": "greet",
+      "outfit": "casual",
+      "path": "portraits/aoi/chr_aoi_body_greet_casual.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_body_greet_maid",
+      "kind": "portrait_body",
+      "owner": "aoi",
+      "pose": "greet",
+      "outfit": "maid",
+      "path": "portraits/aoi/chr_aoi_body_greet_maid.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_body_serve_casual",
+      "kind": "portrait_body",
+      "owner": "aoi",
+      "pose": "serve",
+      "outfit": "casual",
+      "path": "portraits/aoi/chr_aoi_body_serve_casual.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_body_serve_maid",
+      "kind": "portrait_body",
+      "owner": "aoi",
+      "pose": "serve",
+      "outfit": "maid",
+      "path": "portraits/aoi/chr_aoi_body_serve_maid.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_body_stand_casual",
+      "kind": "portrait_body",
+      "owner": "aoi",
+      "pose": "stand",
+      "outfit": "casual",
+      "path": "portraits/aoi/chr_aoi_body_stand_casual.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_body_stand_maid",
+      "kind": "portrait_body",
+      "owner": "aoi",
+      "pose": "stand",
+      "outfit": "maid",
+      "path": "portraits/aoi/chr_aoi_body_stand_maid.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_greet_angry",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "greet",
+      "expression": "angry",
+      "path": "portraits/aoi/chr_aoi_face_greet_angry.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_greet_embarrassed",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "greet",
+      "expression": "embarrassed",
+      "path": "portraits/aoi/chr_aoi_face_greet_embarrassed.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_greet_laugh",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "greet",
+      "expression": "laugh",
+      "path": "portraits/aoi/chr_aoi_face_greet_laugh.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_greet_sad",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "greet",
+      "expression": "sad",
+      "path": "portraits/aoi/chr_aoi_face_greet_sad.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_greet_smile",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "greet",
+      "expression": "smile",
+      "path": "portraits/aoi/chr_aoi_face_greet_smile.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_greet_surprised",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "greet",
+      "expression": "surprised",
+      "path": "portraits/aoi/chr_aoi_face_greet_surprised.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_greet_tired",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "greet",
+      "expression": "tired",
+      "path": "portraits/aoi/chr_aoi_face_greet_tired.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_serve_angry",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "serve",
+      "expression": "angry",
+      "path": "portraits/aoi/chr_aoi_face_serve_angry.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_serve_embarrassed",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "serve",
+      "expression": "embarrassed",
+      "path": "portraits/aoi/chr_aoi_face_serve_embarrassed.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_serve_laugh",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "serve",
+      "expression": "laugh",
+      "path": "portraits/aoi/chr_aoi_face_serve_laugh.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_serve_sad",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "serve",
+      "expression": "sad",
+      "path": "portraits/aoi/chr_aoi_face_serve_sad.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_serve_smile",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "serve",
+      "expression": "smile",
+      "path": "portraits/aoi/chr_aoi_face_serve_smile.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_serve_surprised",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "serve",
+      "expression": "surprised",
+      "path": "portraits/aoi/chr_aoi_face_serve_surprised.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_serve_tired",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "serve",
+      "expression": "tired",
+      "path": "portraits/aoi/chr_aoi_face_serve_tired.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_stand_angry",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "stand",
+      "expression": "angry",
+      "path": "portraits/aoi/chr_aoi_face_stand_angry.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_stand_embarrassed",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "stand",
+      "expression": "embarrassed",
+      "path": "portraits/aoi/chr_aoi_face_stand_embarrassed.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_stand_laugh",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "stand",
+      "expression": "laugh",
+      "path": "portraits/aoi/chr_aoi_face_stand_laugh.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/aoi/chr_aoi_face_stand_sad.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/aoi/chr_aoi_face_stand_smile.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/aoi/chr_aoi_face_stand_surprised.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_aoi_face_stand_tired",
+      "kind": "portrait_face",
+      "owner": "aoi",
+      "pose": "stand",
+      "expression": "tired",
+      "path": "portraits/aoi/chr_aoi_face_stand_tired.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_body_greet_casual",
+      "kind": "portrait_body",
+      "owner": "chinatsu",
+      "pose": "greet",
+      "outfit": "casual",
+      "path": "portraits/chinatsu/chr_chinatsu_body_greet_casual.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_body_greet_maid",
+      "kind": "portrait_body",
+      "owner": "chinatsu",
+      "pose": "greet",
+      "outfit": "maid",
+      "path": "portraits/chinatsu/chr_chinatsu_body_greet_maid.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_body_serve_casual",
+      "kind": "portrait_body",
+      "owner": "chinatsu",
+      "pose": "serve",
+      "outfit": "casual",
+      "path": "portraits/chinatsu/chr_chinatsu_body_serve_casual.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_body_serve_maid",
+      "kind": "portrait_body",
+      "owner": "chinatsu",
+      "pose": "serve",
+      "outfit": "maid",
+      "path": "portraits/chinatsu/chr_chinatsu_body_serve_maid.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_body_stand_casual",
+      "kind": "portrait_body",
+      "owner": "chinatsu",
+      "pose": "stand",
+      "outfit": "casual",
+      "path": "portraits/chinatsu/chr_chinatsu_body_stand_casual.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_body_stand_maid",
+      "kind": "portrait_body",
+      "owner": "chinatsu",
+      "pose": "stand",
+      "outfit": "maid",
+      "path": "portraits/chinatsu/chr_chinatsu_body_stand_maid.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_greet_angry",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "greet",
+      "expression": "angry",
+      "path": "portraits/chinatsu/chr_chinatsu_face_greet_angry.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_greet_embarrassed",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "greet",
+      "expression": "embarrassed",
+      "path": "portraits/chinatsu/chr_chinatsu_face_greet_embarrassed.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_greet_laugh",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "greet",
+      "expression": "laugh",
+      "path": "portraits/chinatsu/chr_chinatsu_face_greet_laugh.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_greet_sad",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "greet",
+      "expression": "sad",
+      "path": "portraits/chinatsu/chr_chinatsu_face_greet_sad.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_greet_smile",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "greet",
+      "expression": "smile",
+      "path": "portraits/chinatsu/chr_chinatsu_face_greet_smile.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_greet_surprised",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "greet",
+      "expression": "surprised",
+      "path": "portraits/chinatsu/chr_chinatsu_face_greet_surprised.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_greet_tired",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "greet",
+      "expression": "tired",
+      "path": "portraits/chinatsu/chr_chinatsu_face_greet_tired.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_serve_angry",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "serve",
+      "expression": "angry",
+      "path": "portraits/chinatsu/chr_chinatsu_face_serve_angry.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_serve_embarrassed",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "serve",
+      "expression": "embarrassed",
+      "path": "portraits/chinatsu/chr_chinatsu_face_serve_embarrassed.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_serve_laugh",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "serve",
+      "expression": "laugh",
+      "path": "portraits/chinatsu/chr_chinatsu_face_serve_laugh.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_serve_sad",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "serve",
+      "expression": "sad",
+      "path": "portraits/chinatsu/chr_chinatsu_face_serve_sad.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_serve_smile",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "serve",
+      "expression": "smile",
+      "path": "portraits/chinatsu/chr_chinatsu_face_serve_smile.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_serve_surprised",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "serve",
+      "expression": "surprised",
+      "path": "portraits/chinatsu/chr_chinatsu_face_serve_surprised.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_serve_tired",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "serve",
+      "expression": "tired",
+      "path": "portraits/chinatsu/chr_chinatsu_face_serve_tired.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_stand_angry",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "stand",
+      "expression": "angry",
+      "path": "portraits/chinatsu/chr_chinatsu_face_stand_angry.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_stand_embarrassed",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "stand",
+      "expression": "embarrassed",
+      "path": "portraits/chinatsu/chr_chinatsu_face_stand_embarrassed.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_stand_laugh",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "stand",
+      "expression": "laugh",
+      "path": "portraits/chinatsu/chr_chinatsu_face_stand_laugh.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/chinatsu/chr_chinatsu_face_stand_sad.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/chinatsu/chr_chinatsu_face_stand_smile.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/chinatsu/chr_chinatsu_face_stand_surprised.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_chinatsu_face_stand_tired",
+      "kind": "portrait_face",
+      "owner": "chinatsu",
+      "pose": "stand",
+      "expression": "tired",
+      "path": "portraits/chinatsu/chr_chinatsu_face_stand_tired.png",
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_chizuru_body_stand_default",
@@ -260,13 +832,284 @@
       "status": "missing"
     },
     {
+      "id": "chr_hiyori_body_greet_casual",
+      "kind": "portrait_body",
+      "owner": "hiyori",
+      "pose": "greet",
+      "outfit": "casual",
+      "path": "portraits/hiyori/chr_hiyori_body_greet_casual.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_body_greet_maid",
+      "kind": "portrait_body",
+      "owner": "hiyori",
+      "pose": "greet",
+      "outfit": "maid",
+      "path": "portraits/hiyori/chr_hiyori_body_greet_maid.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_body_serve_casual",
+      "kind": "portrait_body",
+      "owner": "hiyori",
+      "pose": "serve",
+      "outfit": "casual",
+      "path": "portraits/hiyori/chr_hiyori_body_serve_casual.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_body_serve_maid",
+      "kind": "portrait_body",
+      "owner": "hiyori",
+      "pose": "serve",
+      "outfit": "maid",
+      "path": "portraits/hiyori/chr_hiyori_body_serve_maid.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_body_stand_casual",
+      "kind": "portrait_body",
+      "owner": "hiyori",
+      "pose": "stand",
+      "outfit": "casual",
+      "path": "portraits/hiyori/chr_hiyori_body_stand_casual.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_body_stand_maid",
+      "kind": "portrait_body",
+      "owner": "hiyori",
+      "pose": "stand",
+      "outfit": "maid",
+      "path": "portraits/hiyori/chr_hiyori_body_stand_maid.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_greet_angry",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "greet",
+      "expression": "angry",
+      "path": "portraits/hiyori/chr_hiyori_face_greet_angry.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_greet_embarrassed",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "greet",
+      "expression": "embarrassed",
+      "path": "portraits/hiyori/chr_hiyori_face_greet_embarrassed.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_greet_laugh",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "greet",
+      "expression": "laugh",
+      "path": "portraits/hiyori/chr_hiyori_face_greet_laugh.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_greet_sad",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "greet",
+      "expression": "sad",
+      "path": "portraits/hiyori/chr_hiyori_face_greet_sad.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_greet_smile",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "greet",
+      "expression": "smile",
+      "path": "portraits/hiyori/chr_hiyori_face_greet_smile.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_greet_surprised",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "greet",
+      "expression": "surprised",
+      "path": "portraits/hiyori/chr_hiyori_face_greet_surprised.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_greet_tired",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "greet",
+      "expression": "tired",
+      "path": "portraits/hiyori/chr_hiyori_face_greet_tired.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_serve_angry",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "serve",
+      "expression": "angry",
+      "path": "portraits/hiyori/chr_hiyori_face_serve_angry.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_serve_embarrassed",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "serve",
+      "expression": "embarrassed",
+      "path": "portraits/hiyori/chr_hiyori_face_serve_embarrassed.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_serve_laugh",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "serve",
+      "expression": "laugh",
+      "path": "portraits/hiyori/chr_hiyori_face_serve_laugh.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_serve_sad",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "serve",
+      "expression": "sad",
+      "path": "portraits/hiyori/chr_hiyori_face_serve_sad.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_serve_smile",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "serve",
+      "expression": "smile",
+      "path": "portraits/hiyori/chr_hiyori_face_serve_smile.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_serve_surprised",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "serve",
+      "expression": "surprised",
+      "path": "portraits/hiyori/chr_hiyori_face_serve_surprised.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_serve_tired",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "serve",
+      "expression": "tired",
+      "path": "portraits/hiyori/chr_hiyori_face_serve_tired.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_stand_angry",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "stand",
+      "expression": "angry",
+      "path": "portraits/hiyori/chr_hiyori_face_stand_angry.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_stand_embarrassed",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "stand",
+      "expression": "embarrassed",
+      "path": "portraits/hiyori/chr_hiyori_face_stand_embarrassed.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_stand_laugh",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "stand",
+      "expression": "laugh",
+      "path": "portraits/hiyori/chr_hiyori_face_stand_laugh.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/hiyori/chr_hiyori_face_stand_sad.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/hiyori/chr_hiyori_face_stand_smile.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/hiyori/chr_hiyori_face_stand_surprised.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_hiyori_face_stand_tired",
+      "kind": "portrait_face",
+      "owner": "hiyori",
+      "pose": "stand",
+      "expression": "tired",
+      "path": "portraits/hiyori/chr_hiyori_face_stand_tired.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
       "id": "chr_kaede_body_greet_casual",
       "kind": "portrait_body",
       "owner": "kaede",
       "pose": "greet",
       "outfit": "casual",
       "path": "portraits/kaede/chr_kaede_body_greet_casual.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_body_greet_maid",
@@ -275,7 +1118,8 @@
       "pose": "greet",
       "outfit": "maid",
       "path": "portraits/kaede/chr_kaede_body_greet_maid.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_body_serve_casual",
@@ -284,7 +1128,8 @@
       "pose": "serve",
       "outfit": "casual",
       "path": "portraits/kaede/chr_kaede_body_serve_casual.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_body_serve_maid",
@@ -293,7 +1138,8 @@
       "pose": "serve",
       "outfit": "maid",
       "path": "portraits/kaede/chr_kaede_body_serve_maid.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_body_stand_casual",
@@ -302,7 +1148,8 @@
       "pose": "stand",
       "outfit": "casual",
       "path": "portraits/kaede/chr_kaede_body_stand_casual.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_body_stand_maid",
@@ -311,7 +1158,8 @@
       "pose": "stand",
       "outfit": "maid",
       "path": "portraits/kaede/chr_kaede_body_stand_maid.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_greet_angry",
@@ -320,7 +1168,8 @@
       "pose": "greet",
       "expression": "angry",
       "path": "portraits/kaede/chr_kaede_face_greet_angry.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_greet_embarrassed",
@@ -329,7 +1178,8 @@
       "pose": "greet",
       "expression": "embarrassed",
       "path": "portraits/kaede/chr_kaede_face_greet_embarrassed.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_greet_laugh",
@@ -338,7 +1188,8 @@
       "pose": "greet",
       "expression": "laugh",
       "path": "portraits/kaede/chr_kaede_face_greet_laugh.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_greet_sad",
@@ -347,7 +1198,8 @@
       "pose": "greet",
       "expression": "sad",
       "path": "portraits/kaede/chr_kaede_face_greet_sad.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_greet_smile",
@@ -356,7 +1208,8 @@
       "pose": "greet",
       "expression": "smile",
       "path": "portraits/kaede/chr_kaede_face_greet_smile.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_greet_surprised",
@@ -365,7 +1218,8 @@
       "pose": "greet",
       "expression": "surprised",
       "path": "portraits/kaede/chr_kaede_face_greet_surprised.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_greet_tired",
@@ -374,7 +1228,8 @@
       "pose": "greet",
       "expression": "tired",
       "path": "portraits/kaede/chr_kaede_face_greet_tired.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_serve_angry",
@@ -383,7 +1238,8 @@
       "pose": "serve",
       "expression": "angry",
       "path": "portraits/kaede/chr_kaede_face_serve_angry.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_serve_embarrassed",
@@ -392,7 +1248,8 @@
       "pose": "serve",
       "expression": "embarrassed",
       "path": "portraits/kaede/chr_kaede_face_serve_embarrassed.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_serve_laugh",
@@ -401,7 +1258,8 @@
       "pose": "serve",
       "expression": "laugh",
       "path": "portraits/kaede/chr_kaede_face_serve_laugh.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_serve_sad",
@@ -410,7 +1268,8 @@
       "pose": "serve",
       "expression": "sad",
       "path": "portraits/kaede/chr_kaede_face_serve_sad.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_serve_smile",
@@ -419,7 +1278,8 @@
       "pose": "serve",
       "expression": "smile",
       "path": "portraits/kaede/chr_kaede_face_serve_smile.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_serve_surprised",
@@ -428,7 +1288,8 @@
       "pose": "serve",
       "expression": "surprised",
       "path": "portraits/kaede/chr_kaede_face_serve_surprised.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_serve_tired",
@@ -437,7 +1298,8 @@
       "pose": "serve",
       "expression": "tired",
       "path": "portraits/kaede/chr_kaede_face_serve_tired.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_stand_angry",
@@ -446,7 +1308,8 @@
       "pose": "stand",
       "expression": "angry",
       "path": "portraits/kaede/chr_kaede_face_stand_angry.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_stand_embarrassed",
@@ -455,7 +1318,8 @@
       "pose": "stand",
       "expression": "embarrassed",
       "path": "portraits/kaede/chr_kaede_face_stand_embarrassed.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_stand_laugh",
@@ -464,7 +1328,8 @@
       "pose": "stand",
       "expression": "laugh",
       "path": "portraits/kaede/chr_kaede_face_stand_laugh.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_stand_sad",
@@ -473,7 +1338,8 @@
       "pose": "stand",
       "expression": "sad",
       "path": "portraits/kaede/chr_kaede_face_stand_sad.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_stand_smile",
@@ -482,7 +1348,8 @@
       "pose": "stand",
       "expression": "smile",
       "path": "portraits/kaede/chr_kaede_face_stand_smile.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_stand_surprised",
@@ -491,7 +1358,8 @@
       "pose": "stand",
       "expression": "surprised",
       "path": "portraits/kaede/chr_kaede_face_stand_surprised.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kaede_face_stand_tired",
@@ -500,7 +1368,8 @@
       "pose": "stand",
       "expression": "tired",
       "path": "portraits/kaede/chr_kaede_face_stand_tired.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_kanade_body_stand_default",
@@ -599,7 +1468,8 @@
       "pose": "greet",
       "outfit": "casual",
       "path": "portraits/koharu/chr_koharu_body_greet_casual.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_body_greet_maid",
@@ -608,7 +1478,8 @@
       "pose": "greet",
       "outfit": "maid",
       "path": "portraits/koharu/chr_koharu_body_greet_maid.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_body_serve_casual",
@@ -617,7 +1488,8 @@
       "pose": "serve",
       "outfit": "casual",
       "path": "portraits/koharu/chr_koharu_body_serve_casual.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_body_serve_maid",
@@ -626,7 +1498,8 @@
       "pose": "serve",
       "outfit": "maid",
       "path": "portraits/koharu/chr_koharu_body_serve_maid.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_body_stand_casual",
@@ -635,7 +1508,8 @@
       "pose": "stand",
       "outfit": "casual",
       "path": "portraits/koharu/chr_koharu_body_stand_casual.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_body_stand_maid",
@@ -644,7 +1518,8 @@
       "pose": "stand",
       "outfit": "maid",
       "path": "portraits/koharu/chr_koharu_body_stand_maid.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_greet_angry",
@@ -653,7 +1528,8 @@
       "pose": "greet",
       "expression": "angry",
       "path": "portraits/koharu/chr_koharu_face_greet_angry.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_greet_embarrassed",
@@ -662,7 +1538,8 @@
       "pose": "greet",
       "expression": "embarrassed",
       "path": "portraits/koharu/chr_koharu_face_greet_embarrassed.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_greet_laugh",
@@ -671,7 +1548,8 @@
       "pose": "greet",
       "expression": "laugh",
       "path": "portraits/koharu/chr_koharu_face_greet_laugh.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_greet_sad",
@@ -680,7 +1558,8 @@
       "pose": "greet",
       "expression": "sad",
       "path": "portraits/koharu/chr_koharu_face_greet_sad.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_greet_smile",
@@ -689,7 +1568,8 @@
       "pose": "greet",
       "expression": "smile",
       "path": "portraits/koharu/chr_koharu_face_greet_smile.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_greet_surprised",
@@ -698,7 +1578,8 @@
       "pose": "greet",
       "expression": "surprised",
       "path": "portraits/koharu/chr_koharu_face_greet_surprised.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_greet_tired",
@@ -707,7 +1588,8 @@
       "pose": "greet",
       "expression": "tired",
       "path": "portraits/koharu/chr_koharu_face_greet_tired.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_serve_angry",
@@ -716,7 +1598,8 @@
       "pose": "serve",
       "expression": "angry",
       "path": "portraits/koharu/chr_koharu_face_serve_angry.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_serve_embarrassed",
@@ -725,7 +1608,8 @@
       "pose": "serve",
       "expression": "embarrassed",
       "path": "portraits/koharu/chr_koharu_face_serve_embarrassed.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_serve_laugh",
@@ -734,7 +1618,8 @@
       "pose": "serve",
       "expression": "laugh",
       "path": "portraits/koharu/chr_koharu_face_serve_laugh.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_serve_sad",
@@ -743,7 +1628,8 @@
       "pose": "serve",
       "expression": "sad",
       "path": "portraits/koharu/chr_koharu_face_serve_sad.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_serve_smile",
@@ -752,7 +1638,8 @@
       "pose": "serve",
       "expression": "smile",
       "path": "portraits/koharu/chr_koharu_face_serve_smile.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_serve_surprised",
@@ -761,7 +1648,8 @@
       "pose": "serve",
       "expression": "surprised",
       "path": "portraits/koharu/chr_koharu_face_serve_surprised.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_serve_tired",
@@ -770,7 +1658,8 @@
       "pose": "serve",
       "expression": "tired",
       "path": "portraits/koharu/chr_koharu_face_serve_tired.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_stand_angry",
@@ -779,7 +1668,8 @@
       "pose": "stand",
       "expression": "angry",
       "path": "portraits/koharu/chr_koharu_face_stand_angry.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_stand_embarrassed",
@@ -788,7 +1678,8 @@
       "pose": "stand",
       "expression": "embarrassed",
       "path": "portraits/koharu/chr_koharu_face_stand_embarrassed.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_stand_laugh",
@@ -797,7 +1688,8 @@
       "pose": "stand",
       "expression": "laugh",
       "path": "portraits/koharu/chr_koharu_face_stand_laugh.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_stand_sad",
@@ -806,7 +1698,8 @@
       "pose": "stand",
       "expression": "sad",
       "path": "portraits/koharu/chr_koharu_face_stand_sad.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_stand_smile",
@@ -815,7 +1708,8 @@
       "pose": "stand",
       "expression": "smile",
       "path": "portraits/koharu/chr_koharu_face_stand_smile.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_stand_surprised",
@@ -824,7 +1718,8 @@
       "pose": "stand",
       "expression": "surprised",
       "path": "portraits/koharu/chr_koharu_face_stand_surprised.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_koharu_face_stand_tired",
@@ -833,7 +1728,8 @@
       "pose": "stand",
       "expression": "tired",
       "path": "portraits/koharu/chr_koharu_face_stand_tired.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_mayu_body_stand_default",
@@ -1148,7 +2044,8 @@
       "pose": "greet",
       "outfit": "casual",
       "path": "portraits/rin/chr_rin_body_greet_casual.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_body_greet_maid",
@@ -1157,7 +2054,8 @@
       "pose": "greet",
       "outfit": "maid",
       "path": "portraits/rin/chr_rin_body_greet_maid.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_body_serve_casual",
@@ -1166,7 +2064,8 @@
       "pose": "serve",
       "outfit": "casual",
       "path": "portraits/rin/chr_rin_body_serve_casual.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_body_serve_maid",
@@ -1175,7 +2074,8 @@
       "pose": "serve",
       "outfit": "maid",
       "path": "portraits/rin/chr_rin_body_serve_maid.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_body_stand_casual",
@@ -1184,7 +2084,8 @@
       "pose": "stand",
       "outfit": "casual",
       "path": "portraits/rin/chr_rin_body_stand_casual.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_body_stand_maid",
@@ -1193,7 +2094,8 @@
       "pose": "stand",
       "outfit": "maid",
       "path": "portraits/rin/chr_rin_body_stand_maid.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_greet_angry",
@@ -1202,7 +2104,8 @@
       "pose": "greet",
       "expression": "angry",
       "path": "portraits/rin/chr_rin_face_greet_angry.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_greet_embarrassed",
@@ -1211,7 +2114,8 @@
       "pose": "greet",
       "expression": "embarrassed",
       "path": "portraits/rin/chr_rin_face_greet_embarrassed.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_greet_laugh",
@@ -1220,7 +2124,8 @@
       "pose": "greet",
       "expression": "laugh",
       "path": "portraits/rin/chr_rin_face_greet_laugh.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_greet_sad",
@@ -1229,7 +2134,8 @@
       "pose": "greet",
       "expression": "sad",
       "path": "portraits/rin/chr_rin_face_greet_sad.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_greet_smile",
@@ -1238,7 +2144,8 @@
       "pose": "greet",
       "expression": "smile",
       "path": "portraits/rin/chr_rin_face_greet_smile.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_greet_surprised",
@@ -1247,7 +2154,8 @@
       "pose": "greet",
       "expression": "surprised",
       "path": "portraits/rin/chr_rin_face_greet_surprised.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_greet_tired",
@@ -1256,7 +2164,8 @@
       "pose": "greet",
       "expression": "tired",
       "path": "portraits/rin/chr_rin_face_greet_tired.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_serve_angry",
@@ -1265,7 +2174,8 @@
       "pose": "serve",
       "expression": "angry",
       "path": "portraits/rin/chr_rin_face_serve_angry.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_serve_embarrassed",
@@ -1274,7 +2184,8 @@
       "pose": "serve",
       "expression": "embarrassed",
       "path": "portraits/rin/chr_rin_face_serve_embarrassed.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_serve_laugh",
@@ -1283,7 +2194,8 @@
       "pose": "serve",
       "expression": "laugh",
       "path": "portraits/rin/chr_rin_face_serve_laugh.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_serve_sad",
@@ -1292,7 +2204,8 @@
       "pose": "serve",
       "expression": "sad",
       "path": "portraits/rin/chr_rin_face_serve_sad.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_serve_smile",
@@ -1301,7 +2214,8 @@
       "pose": "serve",
       "expression": "smile",
       "path": "portraits/rin/chr_rin_face_serve_smile.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_serve_surprised",
@@ -1310,7 +2224,8 @@
       "pose": "serve",
       "expression": "surprised",
       "path": "portraits/rin/chr_rin_face_serve_surprised.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_serve_tired",
@@ -1319,7 +2234,8 @@
       "pose": "serve",
       "expression": "tired",
       "path": "portraits/rin/chr_rin_face_serve_tired.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_stand_angry",
@@ -1328,7 +2244,8 @@
       "pose": "stand",
       "expression": "angry",
       "path": "portraits/rin/chr_rin_face_stand_angry.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_stand_embarrassed",
@@ -1337,7 +2254,8 @@
       "pose": "stand",
       "expression": "embarrassed",
       "path": "portraits/rin/chr_rin_face_stand_embarrassed.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_stand_laugh",
@@ -1346,7 +2264,8 @@
       "pose": "stand",
       "expression": "laugh",
       "path": "portraits/rin/chr_rin_face_stand_laugh.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_stand_sad",
@@ -1355,7 +2274,8 @@
       "pose": "stand",
       "expression": "sad",
       "path": "portraits/rin/chr_rin_face_stand_sad.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_stand_smile",
@@ -1364,7 +2284,8 @@
       "pose": "stand",
       "expression": "smile",
       "path": "portraits/rin/chr_rin_face_stand_smile.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_stand_surprised",
@@ -1373,7 +2294,8 @@
       "pose": "stand",
       "expression": "surprised",
       "path": "portraits/rin/chr_rin_face_stand_surprised.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_rin_face_stand_tired",
@@ -1382,7 +2304,8 @@
       "pose": "stand",
       "expression": "tired",
       "path": "portraits/rin/chr_rin_face_stand_tired.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_sakura_body_stand_default",
@@ -1445,7 +2368,8 @@
       "pose": "greet",
       "outfit": "casual",
       "path": "portraits/shizuku/chr_shizuku_body_greet_casual.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_body_greet_maid",
@@ -1454,7 +2378,8 @@
       "pose": "greet",
       "outfit": "maid",
       "path": "portraits/shizuku/chr_shizuku_body_greet_maid.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_body_serve_casual",
@@ -1463,7 +2388,8 @@
       "pose": "serve",
       "outfit": "casual",
       "path": "portraits/shizuku/chr_shizuku_body_serve_casual.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_body_serve_maid",
@@ -1472,7 +2398,8 @@
       "pose": "serve",
       "outfit": "maid",
       "path": "portraits/shizuku/chr_shizuku_body_serve_maid.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_body_stand_casual",
@@ -1481,7 +2408,8 @@
       "pose": "stand",
       "outfit": "casual",
       "path": "portraits/shizuku/chr_shizuku_body_stand_casual.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_body_stand_maid",
@@ -1490,7 +2418,8 @@
       "pose": "stand",
       "outfit": "maid",
       "path": "portraits/shizuku/chr_shizuku_body_stand_maid.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_greet_angry",
@@ -1499,7 +2428,8 @@
       "pose": "greet",
       "expression": "angry",
       "path": "portraits/shizuku/chr_shizuku_face_greet_angry.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_greet_embarrassed",
@@ -1508,7 +2438,8 @@
       "pose": "greet",
       "expression": "embarrassed",
       "path": "portraits/shizuku/chr_shizuku_face_greet_embarrassed.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_greet_laugh",
@@ -1517,7 +2448,8 @@
       "pose": "greet",
       "expression": "laugh",
       "path": "portraits/shizuku/chr_shizuku_face_greet_laugh.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_greet_sad",
@@ -1526,7 +2458,8 @@
       "pose": "greet",
       "expression": "sad",
       "path": "portraits/shizuku/chr_shizuku_face_greet_sad.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_greet_smile",
@@ -1535,7 +2468,8 @@
       "pose": "greet",
       "expression": "smile",
       "path": "portraits/shizuku/chr_shizuku_face_greet_smile.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_greet_surprised",
@@ -1544,7 +2478,8 @@
       "pose": "greet",
       "expression": "surprised",
       "path": "portraits/shizuku/chr_shizuku_face_greet_surprised.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_greet_tired",
@@ -1553,7 +2488,8 @@
       "pose": "greet",
       "expression": "tired",
       "path": "portraits/shizuku/chr_shizuku_face_greet_tired.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_serve_angry",
@@ -1562,7 +2498,8 @@
       "pose": "serve",
       "expression": "angry",
       "path": "portraits/shizuku/chr_shizuku_face_serve_angry.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_serve_embarrassed",
@@ -1571,7 +2508,8 @@
       "pose": "serve",
       "expression": "embarrassed",
       "path": "portraits/shizuku/chr_shizuku_face_serve_embarrassed.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_serve_laugh",
@@ -1580,7 +2518,8 @@
       "pose": "serve",
       "expression": "laugh",
       "path": "portraits/shizuku/chr_shizuku_face_serve_laugh.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_serve_sad",
@@ -1589,7 +2528,8 @@
       "pose": "serve",
       "expression": "sad",
       "path": "portraits/shizuku/chr_shizuku_face_serve_sad.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_serve_smile",
@@ -1598,7 +2538,8 @@
       "pose": "serve",
       "expression": "smile",
       "path": "portraits/shizuku/chr_shizuku_face_serve_smile.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_serve_surprised",
@@ -1607,7 +2548,8 @@
       "pose": "serve",
       "expression": "surprised",
       "path": "portraits/shizuku/chr_shizuku_face_serve_surprised.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_serve_tired",
@@ -1616,7 +2558,8 @@
       "pose": "serve",
       "expression": "tired",
       "path": "portraits/shizuku/chr_shizuku_face_serve_tired.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_stand_angry",
@@ -1625,7 +2568,8 @@
       "pose": "stand",
       "expression": "angry",
       "path": "portraits/shizuku/chr_shizuku_face_stand_angry.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_stand_embarrassed",
@@ -1634,7 +2578,8 @@
       "pose": "stand",
       "expression": "embarrassed",
       "path": "portraits/shizuku/chr_shizuku_face_stand_embarrassed.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_stand_laugh",
@@ -1643,7 +2588,8 @@
       "pose": "stand",
       "expression": "laugh",
       "path": "portraits/shizuku/chr_shizuku_face_stand_laugh.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_stand_sad",
@@ -1652,7 +2598,8 @@
       "pose": "stand",
       "expression": "sad",
       "path": "portraits/shizuku/chr_shizuku_face_stand_sad.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_stand_smile",
@@ -1661,7 +2608,8 @@
       "pose": "stand",
       "expression": "smile",
       "path": "portraits/shizuku/chr_shizuku_face_stand_smile.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_stand_surprised",
@@ -1670,7 +2618,8 @@
       "pose": "stand",
       "expression": "surprised",
       "path": "portraits/shizuku/chr_shizuku_face_stand_surprised.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_shizuku_face_stand_tired",
@@ -1679,7 +2628,8 @@
       "pose": "stand",
       "expression": "tired",
       "path": "portraits/shizuku/chr_shizuku_face_stand_tired.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_sunahara_body_stand_default",
@@ -1808,6 +2758,276 @@
       "status": "missing"
     },
     {
+      "id": "chr_tsumugi_body_greet_casual",
+      "kind": "portrait_body",
+      "owner": "tsumugi",
+      "pose": "greet",
+      "outfit": "casual",
+      "path": "portraits/tsumugi/chr_tsumugi_body_greet_casual.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_body_greet_maid",
+      "kind": "portrait_body",
+      "owner": "tsumugi",
+      "pose": "greet",
+      "outfit": "maid",
+      "path": "portraits/tsumugi/chr_tsumugi_body_greet_maid.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_body_serve_casual",
+      "kind": "portrait_body",
+      "owner": "tsumugi",
+      "pose": "serve",
+      "outfit": "casual",
+      "path": "portraits/tsumugi/chr_tsumugi_body_serve_casual.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_body_serve_maid",
+      "kind": "portrait_body",
+      "owner": "tsumugi",
+      "pose": "serve",
+      "outfit": "maid",
+      "path": "portraits/tsumugi/chr_tsumugi_body_serve_maid.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_body_stand_casual",
+      "kind": "portrait_body",
+      "owner": "tsumugi",
+      "pose": "stand",
+      "outfit": "casual",
+      "path": "portraits/tsumugi/chr_tsumugi_body_stand_casual.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_body_stand_maid",
+      "kind": "portrait_body",
+      "owner": "tsumugi",
+      "pose": "stand",
+      "outfit": "maid",
+      "path": "portraits/tsumugi/chr_tsumugi_body_stand_maid.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_greet_angry",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "greet",
+      "expression": "angry",
+      "path": "portraits/tsumugi/chr_tsumugi_face_greet_angry.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_greet_embarrassed",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "greet",
+      "expression": "embarrassed",
+      "path": "portraits/tsumugi/chr_tsumugi_face_greet_embarrassed.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_greet_laugh",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "greet",
+      "expression": "laugh",
+      "path": "portraits/tsumugi/chr_tsumugi_face_greet_laugh.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_greet_sad",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "greet",
+      "expression": "sad",
+      "path": "portraits/tsumugi/chr_tsumugi_face_greet_sad.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_greet_smile",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "greet",
+      "expression": "smile",
+      "path": "portraits/tsumugi/chr_tsumugi_face_greet_smile.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_greet_surprised",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "greet",
+      "expression": "surprised",
+      "path": "portraits/tsumugi/chr_tsumugi_face_greet_surprised.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_greet_tired",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "greet",
+      "expression": "tired",
+      "path": "portraits/tsumugi/chr_tsumugi_face_greet_tired.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_serve_angry",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "serve",
+      "expression": "angry",
+      "path": "portraits/tsumugi/chr_tsumugi_face_serve_angry.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_serve_embarrassed",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "serve",
+      "expression": "embarrassed",
+      "path": "portraits/tsumugi/chr_tsumugi_face_serve_embarrassed.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_serve_laugh",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "serve",
+      "expression": "laugh",
+      "path": "portraits/tsumugi/chr_tsumugi_face_serve_laugh.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_serve_sad",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "serve",
+      "expression": "sad",
+      "path": "portraits/tsumugi/chr_tsumugi_face_serve_sad.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_serve_smile",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "serve",
+      "expression": "smile",
+      "path": "portraits/tsumugi/chr_tsumugi_face_serve_smile.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_serve_surprised",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "serve",
+      "expression": "surprised",
+      "path": "portraits/tsumugi/chr_tsumugi_face_serve_surprised.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_serve_tired",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "serve",
+      "expression": "tired",
+      "path": "portraits/tsumugi/chr_tsumugi_face_serve_tired.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_stand_angry",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "stand",
+      "expression": "angry",
+      "path": "portraits/tsumugi/chr_tsumugi_face_stand_angry.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_stand_embarrassed",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "stand",
+      "expression": "embarrassed",
+      "path": "portraits/tsumugi/chr_tsumugi_face_stand_embarrassed.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_stand_laugh",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "stand",
+      "expression": "laugh",
+      "path": "portraits/tsumugi/chr_tsumugi_face_stand_laugh.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_stand_sad",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "stand",
+      "expression": "sad",
+      "path": "portraits/tsumugi/chr_tsumugi_face_stand_sad.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_stand_smile",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "stand",
+      "expression": "smile",
+      "path": "portraits/tsumugi/chr_tsumugi_face_stand_smile.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_stand_surprised",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "stand",
+      "expression": "surprised",
+      "path": "portraits/tsumugi/chr_tsumugi_face_stand_surprised.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
+      "id": "chr_tsumugi_face_stand_tired",
+      "kind": "portrait_face",
+      "owner": "tsumugi",
+      "pose": "stand",
+      "expression": "tired",
+      "path": "portraits/tsumugi/chr_tsumugi_face_stand_tired.png",
+      "status": "draft",
+      "source": "portrait-maker"
+    },
+    {
       "id": "chr_tsurumi_body_stand_default",
       "kind": "portrait_body",
       "owner": "tsurumi",
@@ -1886,7 +3106,8 @@
       "pose": "greet",
       "outfit": "casual",
       "path": "portraits/yukino/chr_yukino_body_greet_casual.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_body_greet_maid",
@@ -1895,7 +3116,8 @@
       "pose": "greet",
       "outfit": "maid",
       "path": "portraits/yukino/chr_yukino_body_greet_maid.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_body_serve_casual",
@@ -1904,7 +3126,8 @@
       "pose": "serve",
       "outfit": "casual",
       "path": "portraits/yukino/chr_yukino_body_serve_casual.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_body_serve_maid",
@@ -1913,7 +3136,8 @@
       "pose": "serve",
       "outfit": "maid",
       "path": "portraits/yukino/chr_yukino_body_serve_maid.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_body_stand_casual",
@@ -1922,7 +3146,8 @@
       "pose": "stand",
       "outfit": "casual",
       "path": "portraits/yukino/chr_yukino_body_stand_casual.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_body_stand_maid",
@@ -1931,7 +3156,8 @@
       "pose": "stand",
       "outfit": "maid",
       "path": "portraits/yukino/chr_yukino_body_stand_maid.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_greet_angry",
@@ -1940,7 +3166,8 @@
       "pose": "greet",
       "expression": "angry",
       "path": "portraits/yukino/chr_yukino_face_greet_angry.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_greet_embarrassed",
@@ -1949,7 +3176,8 @@
       "pose": "greet",
       "expression": "embarrassed",
       "path": "portraits/yukino/chr_yukino_face_greet_embarrassed.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_greet_laugh",
@@ -1958,7 +3186,8 @@
       "pose": "greet",
       "expression": "laugh",
       "path": "portraits/yukino/chr_yukino_face_greet_laugh.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_greet_sad",
@@ -1967,7 +3196,8 @@
       "pose": "greet",
       "expression": "sad",
       "path": "portraits/yukino/chr_yukino_face_greet_sad.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_greet_smile",
@@ -1976,7 +3206,8 @@
       "pose": "greet",
       "expression": "smile",
       "path": "portraits/yukino/chr_yukino_face_greet_smile.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_greet_surprised",
@@ -1985,7 +3216,8 @@
       "pose": "greet",
       "expression": "surprised",
       "path": "portraits/yukino/chr_yukino_face_greet_surprised.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_greet_tired",
@@ -1994,7 +3226,8 @@
       "pose": "greet",
       "expression": "tired",
       "path": "portraits/yukino/chr_yukino_face_greet_tired.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_serve_angry",
@@ -2003,7 +3236,8 @@
       "pose": "serve",
       "expression": "angry",
       "path": "portraits/yukino/chr_yukino_face_serve_angry.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_serve_embarrassed",
@@ -2012,7 +3246,8 @@
       "pose": "serve",
       "expression": "embarrassed",
       "path": "portraits/yukino/chr_yukino_face_serve_embarrassed.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_serve_laugh",
@@ -2021,7 +3256,8 @@
       "pose": "serve",
       "expression": "laugh",
       "path": "portraits/yukino/chr_yukino_face_serve_laugh.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_serve_sad",
@@ -2030,7 +3266,8 @@
       "pose": "serve",
       "expression": "sad",
       "path": "portraits/yukino/chr_yukino_face_serve_sad.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_serve_smile",
@@ -2039,7 +3276,8 @@
       "pose": "serve",
       "expression": "smile",
       "path": "portraits/yukino/chr_yukino_face_serve_smile.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_serve_surprised",
@@ -2048,7 +3286,8 @@
       "pose": "serve",
       "expression": "surprised",
       "path": "portraits/yukino/chr_yukino_face_serve_surprised.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_serve_tired",
@@ -2057,7 +3296,8 @@
       "pose": "serve",
       "expression": "tired",
       "path": "portraits/yukino/chr_yukino_face_serve_tired.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_stand_angry",
@@ -2066,7 +3306,8 @@
       "pose": "stand",
       "expression": "angry",
       "path": "portraits/yukino/chr_yukino_face_stand_angry.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_stand_embarrassed",
@@ -2075,7 +3316,8 @@
       "pose": "stand",
       "expression": "embarrassed",
       "path": "portraits/yukino/chr_yukino_face_stand_embarrassed.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_stand_laugh",
@@ -2084,7 +3326,8 @@
       "pose": "stand",
       "expression": "laugh",
       "path": "portraits/yukino/chr_yukino_face_stand_laugh.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_stand_sad",
@@ -2093,7 +3336,8 @@
       "pose": "stand",
       "expression": "sad",
       "path": "portraits/yukino/chr_yukino_face_stand_sad.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_stand_smile",
@@ -2102,7 +3346,8 @@
       "pose": "stand",
       "expression": "smile",
       "path": "portraits/yukino/chr_yukino_face_stand_smile.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_stand_surprised",
@@ -2111,7 +3356,8 @@
       "pose": "stand",
       "expression": "surprised",
       "path": "portraits/yukino/chr_yukino_face_stand_surprised.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     },
     {
       "id": "chr_yukino_face_stand_tired",
@@ -2120,7 +3366,8 @@
       "pose": "stand",
       "expression": "tired",
       "path": "portraits/yukino/chr_yukino_face_stand_tired.png",
-      "status": "missing"
+      "status": "draft",
+      "source": "portrait-maker"
     }
   ]
 }

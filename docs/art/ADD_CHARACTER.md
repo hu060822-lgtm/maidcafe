@@ -4,6 +4,8 @@
 
 指令以 macOS/Linux 為例；Windows 把 `tools/art/art.sh` 換成 `tools\art\art.cmd`。若 `godot` 不在 PATH，先設定 `GODOT` 環境變數指向 Godot 4.3。
 
+> 不想用指令？[創作者工作坊](CREATOR_WORKSHOP.md) 可以用按鈕完成第 2、3、5、6、7 步（新增角色、填寫與鎖定外觀、畫出或匯入圖片、標為完成）。
+
 ---
 
 ## 第 1 步：決定角色 ID 與分級
