@@ -36,6 +36,7 @@ const TRAITS := {
 	"bookish": {"name": "愛書", "desc": "空檔時喜歡到書架旁讀書，會和愛看書的客人聊起來。"},
 	"impatient": {"name": "急性子", "desc": "動作快，但看不慣慢吞吞的同事。"},
 	"caring": {"name": "愛照顧人", "desc": "看到同事忙不過來，會主動去幫忙。"},
+	"laid_back": {"name": "慢步調", "desc": "動作慢一點，但不容易累，也不容易被忙碌影響心情。"},
 }
 
 ## Habits form from repeated behaviour. Strength 0-100; behaviour choices add strength, days decay it.
@@ -123,8 +124,70 @@ const MAIDS := {
 		},
 		"recruit": {"location": "plaza", "visits": 2, "popularity": 30},
 	},
+	# ---- Living Hearts: more maids who can join
+	"tsumugi": {
+		"name": "紬", "hair": "a07858", "intro": "在月光雜貨幫忙做手作小物的女生。說話輕聲細語，手很巧，總是默默照顧身邊的人。",
+		"traits": ["caring", "careful"], "growth": "allround", "default_role": "floor", "birthday": 27, "gift": "craft",
+		"skills": {"reception": 42, "cooking": 44, "floor": 52, "performance": 30, "management": 40},
+		"caps": {"reception": 85, "cooking": 80, "floor": 85, "performance": 60, "management": 75},
+		"seed_habits": {"tidy": 30, "help": 20},
+		"lines": {
+			"greet": ["歡迎回來。外套可以交給我喔。", "這邊請，椅子已經擦好了。"],
+			"idle": ["這個桌布的邊，有點脫線了呢。", "（從口袋拿出針線）……", "大家都還好嗎？"],
+			"tired": ["我沒事……只是手有點痠。", "稍微坐一下就好。"],
+			"happy": ["能幫上忙就好。", "嘿嘿，謝謝。"],
+			"sorry": ["對不起，我馬上弄好。"],
+		},
+		"recruit": {"location": "general", "visits": 4, "popularity": 28, "requires": "tsukimi_collab"},
+	},
+	"chinatsu": {
+		"name": "千夏", "hair": "4a7ac8", "intro": "奏的學妹，音樂系的學生。在人前會緊張到說不出話，一拿起吉他就像換了一個人。",
+		"traits": ["shy", "lively"], "growth": "idol", "default_role": "floor", "birthday": 50, "gift": "music",
+		"skills": {"reception": 32, "cooking": 30, "floor": 45, "performance": 60, "management": 28},
+		"caps": {"reception": 80, "cooking": 55, "floor": 75, "performance": 100, "management": 55},
+		"seed_habits": {"window": 20, "stay_late": 15},
+		"lines": {
+			"greet": ["歡、歡迎回來！", "這邊……請！"],
+			"idle": ["（手指在托盤上敲著節奏）", "這段旋律……要記下來。", "啦～啦啦～"],
+			"tired": ["腦袋裡的歌停了……", "有點撐不住了……"],
+			"happy": ["好像聽到掌聲了！", "今天的心情是大調！"],
+			"sorry": ["對不起！我又分心了！"],
+		},
+		"recruit": {"location": "plaza", "visits": 4, "popularity": 32, "requires": "kanade_collab"},
+	},
+	"aoi": {
+		"name": "葵", "hair": "2a6a5a", "intro": "從廣場旁的連鎖咖啡店辭職的咖啡師。做事俐落、標準很高，想泡出讓人記住的咖啡。",
+		"traits": ["perfectionist", "impatient"], "growth": "specialist", "default_role": "kitchen", "birthday": 14, "gift": "coffee",
+		"skills": {"reception": 40, "cooking": 55, "floor": 48, "performance": 22, "management": 45},
+		"caps": {"reception": 75, "cooking": 95, "floor": 75, "performance": 45, "management": 80},
+		"seed_habits": {"stay_late": 20, "tidy": 15},
+		"lines": {
+			"greet": ["歡迎光臨。今天想喝什麼？", "請坐，我馬上來點餐。"],
+			"idle": ["研磨度再細一點……", "（擦著咖啡杯）", "那家店的豆子，烘太深了。"],
+			"tired": ["……手腕好重。", "還差一點。"],
+			"happy": ["這杯，及格了。", "客人喝完了，一滴不剩。"],
+			"sorry": ["是我的錯，重新做一杯。"],
+		},
+		"recruit": {"location": "plaza", "visits": 3, "popularity": 35, "requires": "new_shop_seen"},
+	},
+	"hiyori": {
+		"name": "日和", "hair": "f0d878", "intro": "常在公園花圃午睡的女生。做什麼都慢半拍，但只要她在，連忙碌的晚上都會變得悠閒一點。",
+		"traits": ["laid_back", "cheerful"], "growth": "allround", "default_role": "reception", "birthday": 31, "gift": "plant",
+		"skills": {"reception": 50, "cooking": 36, "floor": 40, "performance": 35, "management": 30},
+		"caps": {"reception": 90, "cooking": 70, "floor": 70, "performance": 75, "management": 60},
+		"seed_habits": {"window": 30, "chat": 20},
+		"lines": {
+			"greet": ["歡迎回來～慢慢來沒關係喔。", "外面天氣很好吧～這邊請～"],
+			"idle": ["呼啊……（打呵欠）", "窗外的雲，像一隻貓。", "花該澆水了～"],
+			"tired": ["好想睡……", "可以……瞇一下下嗎……"],
+			"happy": ["今天是好日子呢～", "嘿嘿～"],
+			"sorry": ["啊、對不起～我馬上～"],
+		},
+		"recruit": {"location": "park", "visits": 3, "popularity": 30},
+	},
 }
 const STARTING_MAIDS := ["koharu", "rin", "shizuku"]
+const MAX_STAFF := 6
 const MANAGER_SKILLS := {"reception": 55, "cooking": 40, "floor": 50, "performance": 20, "management": 70}
 
 # ------------------------------------------------------------------ customers
@@ -274,6 +337,11 @@ const DISHES := {
 	"sea_sakura": {"name": "櫻花拿鐵", "cat": "drink", "price": 520, "time": 6, "q": 62, "ing": {"sakura": 1, "milk": 1}, "station": "coffee", "color": "f8c8d8", "season": "spring"},
 	"sea_soda": {"name": "冰淇淋蘇打", "cat": "drink", "price": 550, "time": 5, "q": 62, "ing": {"icecream": 1, "sugar": 1}, "station": "coffee", "color": "60d0a0", "season": "summer"},
 	"sea_montblanc": {"name": "栗子蒙布朗", "cat": "dessert", "price": 680, "time": 10, "q": 64, "ing": {"chestnut": 1, "cream": 1, "flour": 1}, "station": "stove", "color": "c8a070", "season": "autumn"},
+	# story rewards (story_data.gd STORY_DISHES)
+	"st_heart_omurice": {"name": "愛心蛋包飯", "cat": "main", "price": 1080, "time": 13, "q": 66, "ing": {"egg": 2, "rice": 1, "tomato": 1}, "station": "stove", "color": "ff8a7a", "story": true},
+	"st_rose_tea": {"name": "玫瑰蜜奶茶", "cat": "drink", "price": 520, "time": 6, "q": 64, "ing": {"tea": 1, "milk": 1, "sugar": 1}, "station": "coffee", "color": "f2a7bb", "story": true},
+	"st_lace_crepe": {"name": "蕾絲可麗餅", "cat": "dessert", "price": 640, "time": 8, "q": 66, "ing": {"flour": 1, "egg": 1, "cream": 1, "strawberry": 1}, "station": "stove", "color": "fbe3c8", "story": true},
+	"st_parade_parfait": {"name": "遊行聖代", "cat": "dessert", "price": 820, "time": 9, "q": 76, "ing": {"cream": 1, "strawberry": 1, "chocolate": 1, "sugar": 1}, "station": "stove", "color": "ffb3cf", "story": true},
 	"sea_appletea": {"name": "熱蘋果茶", "cat": "drink", "price": 480, "time": 6, "q": 62, "ing": {"apple": 1, "tea": 1}, "station": "coffee", "color": "d08040", "season": "winter"},
 }
 const BASE_DISHES := ["d_coffee", "d_royaltea", "d_matcha", "d_strawmilk", "d_cocoa", "s_pudding", "s_shortcake", "s_pancake", "s_parfait", "s_choco",
@@ -297,6 +365,8 @@ const FURNITURE := {
 	"bookshelf": {"name": "書架", "price": 650, "fp": [[0, 0]], "style": {"retro": 2, "elegant": 1}, "desc": "愛看書的客人會選旁邊的座位、待得更久；愛書的女僕休息時會來這裡讀書。"},
 	"display": {"name": "展示櫃", "price": 800, "fp": [[0, 0]], "style": {"elegant": 2, "cute": 1}, "desc": "展示合作商品。客人離開前可能會順手買一份。"},
 	"partition": {"name": "隔間屏風", "price": 350, "fp": [[0, 0]], "style": {"elegant": 1, "retro": 1}, "desc": "緊鄰屏風的桌子變成半包廂，喜歡安靜的客人會優先選擇，也不容易被舞台吵到。"},
+	"ribbon_arch": {"name": "緞帶拱門", "price": 480, "fp": [[0, 0]], "style": {"cute": 3, "warm": 1}, "desc": "綁滿粉色緞帶的小拱門。愛拍照的客人很喜歡在這裡停下來。"},
+	"tea_cart": {"name": "下午茶推車", "price": 520, "fp": [[0, 0]], "style": {"elegant": 3, "warm": 1}, "desc": "擺著茶壺與點心架的推車，讓店裡多一點午茶時光的氣氛。"},
 }
 const STYLE_NAMES := {"warm": "溫馨家庭風", "elegant": "高級優雅風", "cute": "可愛偶像風", "retro": "復古懷舊風", "fantasy": "奇幻主題風"}
 

@@ -9,6 +9,7 @@ const St = preload("res://scripts/core/state.gd")
 const Layout = preload("res://scripts/core/layout.gd")
 const World = preload("res://scripts/core/world.gd")
 const Moments = preload("res://scripts/core/moments.gd")
+const Life = preload("res://scripts/core/life.gd")
 
 const DURATION := 240.0
 const LAST_ARRIVAL := 200.0
@@ -145,6 +146,8 @@ var ac_broken := false
 var moment_timer := 0.0
 var _uid := 0
 var _claims := {}
+var sought := {}           # maid id -> already went to find the manager this session
+var argued := {}           # pair key -> argued this session
 
 func _init(p_state: Dictionary, p_mode := "business") -> void:
 	s = p_state
@@ -166,7 +169,8 @@ func _init(p_state: Dictionary, p_mode := "business") -> void:
 		elif Layout.IDLE_SPOTS.has(role):
 			c = Layout.IDLE_SPOTS[role][0]
 		if mode == "offhours":
-			c = [Vector2i(8, 4), Vector2i(10, 7), Vector2i(4, 7), Vector2i(13, 8), Vector2i(9, 3)][i % 5]
+			c = [Vector2i(8, 4), Vector2i(10, 7), Vector2i(4, 7), Vector2i(13, 8), Vector2i(9, 3), Vector2i(7, 9)][i % 6]
+		c = _spawn_cell(c)
 		workers.append(_make_worker("maid", m.id, Data.MAIDS[m.id].name, c))
 		maid_stats[m.id] = {"tasks": 0.0, "greets": 0, "cooks": 0, "delivers": 0, "spills": 0, "wrong": 0, "complaints": 0,
 			"happy": 0, "perform": 0.0, "solo": 0, "rest": 0.0, "idle": 0.0, "leisure": 0.0, "helped": 0, "regular_talks": 0}
@@ -197,6 +201,26 @@ func _init(p_state: Dictionary, p_mode := "business") -> void:
 		for f in s.furniture:
 			if f.type == "vase" and int(s.vase_water.get(f.id, 0)) >= 1:
 				_add_job("tend", {"furniture": f.id})
+
+func _spawn_cell(c: Vector2i) -> Vector2i:
+	var used := {}
+	for w in workers:
+		used[w.cell] = true
+	if layout.walkable(c) and not used.has(c):
+		return c
+	var frontier := [c]
+	var seen := {c: true}
+	while not frontier.is_empty():
+		var x: Vector2i = frontier.pop_front()
+		for d in Layout.NEIGHBORS:
+			var n: Vector2i = x + d
+			if seen.has(n) or not layout.in_bounds(n):
+				continue
+			seen[n] = true
+			if layout.walkable(n) and not used.has(n):
+				return n
+			frontier.append(n)
+	return c
 
 func _uid_next(p: String) -> String:
 	_uid += 1
@@ -291,8 +315,12 @@ func _plan_arrivals() -> void:
 		var mem: Dictionary = s.customers[id]
 		if not mem.known or s.day < int(def.get("min_day", 0)):
 			continue
-		var reasons := []
-		var ch := float(def.chance) + float(mem.loyalty) * 0.004 + (float(s.popularity) - 20.0) * 0.004
+		# their own life comes first: a deadline, a new job, a birthday
+		var lm := Life.arrival_mod(s, id)
+		if lm.skip:
+			continue
+		var reasons: Array = lm.reasons.duplicate()
+		var ch := float(def.chance) + float(mem.loyalty) * 0.004 + (float(s.popularity) - 20.0) * 0.004 + float(lm.bonus)
 		if float(mem.last_sat) >= 0:
 			ch += (float(mem.last_sat) - 60.0) * 0.006
 		if "walkedOut" in mem.last_causes or "complaintIgnored" in mem.last_causes:
@@ -304,14 +332,14 @@ func _plan_arrivals() -> void:
 		if int(mem.visits) == 0:
 			ch += 0.15
 			reasons.append("好奇第一次來")
-		var days: Array = def.weekdays
-		var wd_mul := 1.0
+		var days: Array = lm.get("weekdays", def.weekdays)
+		var wd_mul := float(lm.chance)
 		if not days.is_empty():
 			if wd in days:
-				wd_mul = 1.6
+				wd_mul *= 1.6
 				reasons.append("習慣星期%s來" % Data.WEEKDAYS[wd])
 			else:
-				wd_mul = 0.3
+				wd_mul *= 0.3
 		elif int(mem.visits) >= 3:
 			var total := 0
 			for v in mem.weekday_counts:
@@ -322,6 +350,9 @@ func _plan_arrivals() -> void:
 		if def.style != "" and def.style == style:
 			ch += 0.1
 			reasons.append("喜歡店裡的風格")
+		if s.get("decor", "") != "" and ("seasonal" in def.events or "curious_new" in def.behaviors):
+			ch += 0.08
+			reasons.append("被季節裝飾吸引")
 		if s.activity in def.events:
 			ch += 0.3
 			reasons.append("對今天的活動有興趣")
@@ -411,7 +442,8 @@ func _plan_arrivals() -> void:
 		if size == 1 and int(mem.visits) >= Data.FRIEND_VISITS and float(mem.loyalty) >= Data.FRIEND_LOYALTY and rng.randf() < 0.45:
 			size = 2
 			reasons = reasons + ["帶朋友來"]
-		var tt := rng.randf_range(float(def.arrival[0]), minf(float(def.arrival[1]), LAST_ARRIVAL))
+		var win: Array = Life.arrival_mod(s, id).get("arrival", def.arrival)
+		var tt := rng.randf_range(float(win[0]), minf(float(win[1]), LAST_ARRIVAL))
 		arrivals.append({"t": tt, "ids": group, "size": maxi(size, group.size()), "reasons": reasons, "done": false, "waits_for": waits})
 		if waits != "":
 			arrivals.append({"t": minf(LAST_ARRIVAL, tt + rng.randf_range(15, 45)), "ids": [waits], "size": 1, "reasons": ["約了朋友"], "done": false, "join": true})
@@ -537,7 +569,14 @@ func _spawn(a: Dictionary) -> void:
 	parties.append(p)
 	# memory-driven greeting line
 	if not def.is_empty():
-		var line := _arrival_line(def, mem)
+		var here := []
+		for op in parties:
+			for om in op.members:
+				if om.def_id != "" and op != p:
+					here.append(om.def_id)
+		var line := Life.arrival_line(s, main.def_id, here)
+		if line == "":
+			line = _arrival_line(def, mem)
 		if line != "":
 			say(main, line, 6)
 		var fav: String = mem.fav_maid
@@ -2059,6 +2098,8 @@ func _update_worker(w: Worker, dt: float) -> void:
 		mul = (0.85 + float(m.skills.floor) / 100.0 * 0.3) * (0.82 if float(m.fatigue) > 70 else 1.0)
 		if has_trait(w, "impatient"):
 			mul *= 1.08
+		if has_trait(w, "laid_back"):
+			mul *= 0.93
 		if m.concern.get("effect", "") == "slow":
 			mul *= 0.9
 	if not m.is_empty() and m.role == "off" and mode == "business":
@@ -2100,7 +2141,7 @@ func _update_worker(w: Worker, dt: float) -> void:
 		return
 	_run_steps(w, dt, mul)
 	if not m.is_empty():
-		var rate := 0.14 if has_trait(w, "perfectionist") else 0.11
+		var rate := 0.14 if has_trait(w, "perfectionist") else (0.08 if has_trait(w, "laid_back") else 0.11)
 		if ac_broken:
 			rate *= 1.4
 		m.fatigue = St.clampf100(float(m.fatigue) + rate * dt)
@@ -2328,7 +2369,78 @@ func _leisure_options(w: Worker, m: Dictionary) -> Array:
 	if mode == "offhours" and habit(w, "stay_late") > 20:
 		var c: Vector2i = layout.stations[0].stand if m.role == "kitchen" else Vector2i(10, 4)
 		out.append({"id": "stay", "label": "一個人留下來練習", "cell": c, "score": habit(w, "stay_late") / 30.0, "dur": 14.0, "habit": "stay_late"})
+	_life_options(w, m, out)
 	return out
+
+## Living Hearts leisure: coming to find the manager, arguing it out, and using the furniture she likes.
+## Every target is a walkable cell next to the furniture, so pathfinding / collision / stations are untouched.
+func _life_options(w: Worker, m: Dictionary, out: Array) -> void:
+	var mid := w.maid_id
+	var after := mode == "offhours"
+	# she has something to say: walk over to the manager (only when the cafe is closed)
+	if after and not m.want_talk.is_empty() and not sought.has(mid):
+		var mg := manager()
+		var cc = _free_adjacent(w, [mg.cell])
+		if cc != null:
+			out.append({"id": "seek", "label": "去找店長", "cell": cc, "score": 3.0, "dur": 7.0})
+	# an argument that has been building up (never in front of customers)
+	if after:
+		for x in workers:
+			if x == w or x.kind != "maid" or x.job != null or Layout.manhattan(x.cell, w.cell) > 6:
+				continue
+			var fr := float(St.rel(s, mid, x.maid_id).friction)
+			var pk := St.pair_key(mid, x.maid_id)
+			if fr >= 45 and not argued.has(pk):
+				var cc = _free_adjacent(w, [x.cell])
+				if cc != null:
+					out.append({"id": "argue", "label": "找%s說清楚" % x.name, "cell": cc, "score": 1.2 + fr / 50.0, "dur": 6.0, "with": x.maid_id})
+	var fav := func(type: String) -> float:
+		return (0.9 if Life.likes(mid, "furn:" + type) else 0.0) - (0.6 if Life.dislikes(mid, "furn:" + type) else 0.0)
+	var spot := func(type: String):
+		for c in layout.furniture_cells(type):
+			for a in layout.adjacent_walkable([c]):
+				if _cell_free_for(w, a):
+					return a
+		return null
+	var c
+	c = spot.call("plush")
+	if c != null:
+		out.append({"id": "plush", "label": "抱一下大熊", "cell": c, "score": 0.1 + fav.call("plush") - (0.5 if not after else 0.0), "dur": 5.0})
+	c = spot.call("plant")
+	if c != null and (after or habit(w, "tidy") > 45):
+		out.append({"id": "water", "label": "替盆栽澆水", "cell": c, "score": 0.2 + habit(w, "tidy") / 60.0 + fav.call("plant"), "dur": 5.0, "habit": "tidy"})
+	c = spot.call("gramophone")
+	if c != null and after:
+		var mus := 0.6 if (Life.likes(mid, "music:jazz") or Life.likes(mid, "music:classical")) else 0.0
+		out.append({"id": "record", "label": "放一張黑膠唱片", "cell": c, "score": 0.1 + mus + fav.call("gramophone"), "dur": 8.0})
+	c = spot.call("display")
+	if c != null and habit(w, "tidy") > 30:
+		out.append({"id": "display", "label": "整理展示櫃", "cell": c, "score": 0.1 + habit(w, "tidy") / 50.0 + fav.call("display") - (0.4 if not after else 0.0), "dur": 6.0, "habit": "tidy"})
+	if after and not layout.stage_cells.is_empty():
+		var st: Vector2i = layout.stage_cells[0]
+		if _cell_free_for(w, st):
+			var perf := 0.6 if (Life.likes(mid, "act:stage") or Data.MAIDS[mid].growth == "idol") else 0.0
+			out.append({"id": "practice", "label": "在舞台上偷偷練習", "cell": st, "score": perf + float(m.skills.performance) / 150.0 - 0.3, "dur": 10.0})
+	if after:
+		for tb in layout.tables:
+			if tb.type != "sofa_table":
+				continue
+			var goals: Array = layout.table_goals(tb.id)
+			for g in goals:
+				if _cell_free_for(w, g):
+					var sl: float = (0.8 if has_trait(w, "laid_back") else 0.0) + float(m.fatigue) / 60.0 + fav.call("sofa_table")
+					out.append({"id": "nap", "label": "在沙發座打個盹", "cell": g, "score": sl - 0.3, "dur": 10.0})
+					break
+			break
+	# photo spot: two friends take a picture together
+	c = spot.call("photo")
+	if c != null and after:
+		for x in workers:
+			if x == w or x.kind != "maid" or x.job != null or not x.leisure.is_empty():
+				continue
+			if float(St.rel(s, mid, x.maid_id).close) >= 60 and float(St.rel(s, x.maid_id, mid).close) >= 55:
+				out.append({"id": "photo", "label": "和%s在拍照區合照" % x.name, "cell": c, "score": 0.8 + fav.call("photo"), "dur": 6.0, "with": x.maid_id})
+				break
 
 func _leisure_start(w: Worker, m: Dictionary, l: Dictionary) -> void:
 	_leisure_say(w, m, l)
@@ -2349,8 +2461,17 @@ func _leisure_say(w: Worker, m: Dictionary, l: Dictionary) -> void:
 			var r := St.rel(s, w.maid_id, other)
 			var topics_close := ["剛剛那位客人好可愛～", "等等一起吃宵夜？", "今天配合得不錯呢！", "妳的髮夾好好看。"]
 			var topics_cold := ["……今天客人多嗎？", "那個，盤子放這邊就好。", "嗯……"]
-			say(w, (topics_close if float(r.close) >= 55 else topics_cold)[rng.randi() % 3], 3)
-			St.rel_change(s, w.maid_id, other, "close", 0.8, "空檔聊天")
+			var sh: Array = r.shared
+			var xo = worker(other)
+			if not sh.is_empty() and float(r.close) >= 50 and rng.randf() < 0.4:
+				# reminiscing about something they went through together
+				say(w, "還記得嗎？%s……" % sh[rng.randi() % sh.size()].text, 4)
+				if xo != null:
+					say(xo, "當然記得！", 3)
+				St.rel_change(s, w.maid_id, other, "close", 1.0, "聊起以前的事")
+			else:
+				say(w, (topics_close if float(r.close) >= 55 else topics_cold)[rng.randi() % 3], 3)
+				St.rel_change(s, w.maid_id, other, "close", 0.8, "空檔聊天")
 		"read":
 			say(w, "（翻頁）……", 3)
 		"regular":
@@ -2374,6 +2495,50 @@ func _leisure_say(w: Worker, m: Dictionary, l: Dictionary) -> void:
 			maid_stats[w.maid_id]["concern_seen"] = int(maid_stats[w.maid_id].get("concern_seen", 0)) + 1
 		"tidy":
 			say(w, "擦乾淨了～", 2)
+		"seek":
+			sought[w.maid_id] = true
+			var mg := manager()
+			say(w, "店長，有空嗎？……" + String(m.want_talk.get("short", "")), 5)
+			say(mg, "（%s好像有話想說）" % w.name, 3)
+			note("💬 %s走過來找店長：「%s」（點她就可以聽她說）" % [w.name, m.want_talk.get("short", "")], "moment")
+		"argue":
+			var other: String = l.with
+			argued[St.pair_key(w.maid_id, other)] = true
+			var res := Life.argue(s, w.maid_id, other)
+			say(w, res.a_line, 4)
+			var xo = worker(other)
+			if xo != null:
+				say(xo, res.b_line, 4)
+			note(("🌙 " if res.ok else "⚡ ") + res.text, "moment" if res.ok else "warn")
+			s.moments.append({"day": int(s.day), "id": "argue_" + St.pair_key(w.maid_id, other), "text": res.text, "who": [w.maid_id, other]})
+		"plush":
+			m.mood = St.clampf100(float(m.mood) + 2)
+			say(w, "（抱住大熊）軟軟的～", 3)
+		"water":
+			say(w, "多喝一點水喔～", 3)
+		"record":
+			say(w, "（把唱針輕輕放下）", 3)
+			for x in workers:
+				if x.kind == "maid" and Layout.manhattan(x.cell, w.cell) <= 6:
+					var xm := maid(x.maid_id)
+					if Life.likes(x.maid_id, "music:jazz") or Life.likes(x.maid_id, "music:classical"):
+						xm.mood = St.clampf100(float(xm.mood) + 2)
+						if x != w:
+							say(x, "……這首歌，好好聽。", 3)
+		"display":
+			say(w, "排整齊了～", 2)
+		"practice":
+			_gain_exp(m, "performance", 2)
+			say(w, "（小聲地練習唱歌）♪", 4)
+		"nap":
+			m.fatigue = St.clampf100(float(m.fatigue) - 8)
+			say(w, "呼……（睡著了）", 4)
+		"photo":
+			var xo = worker(l.with)
+			say(w, "%s，過來一起拍！" % Data.MAIDS[l.with].name, 3)
+			if xo != null:
+				say(xo, "等等，我的頭髮……！", 3)
+			St.rel_change(s, w.maid_id, l.with, "close", 1.5, "一起拍照")
 		_:
 			if rng.randf() < 0.4:
 				say(w, lines.idle[rng.randi() % lines.idle.size()], 3)

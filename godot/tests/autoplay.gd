@@ -9,6 +9,9 @@ const Biz = preload("res://scripts/core/business.gd")
 const Settle = preload("res://scripts/core/settlement.gd")
 const Events = preload("res://scripts/core/events.gd")
 const Social = preload("res://scripts/core/social.gd")
+const Life = preload("res://scripts/core/life.gd")
+const Story = preload("res://scripts/core/story.gd")
+const SD = preload("res://scripts/core/story_data.gd")
 
 var s: Dictionary
 var log: Array = []
@@ -17,6 +20,11 @@ var day_reports: Array = []
 var max_job_age := 0.0
 var max_party_t := 0.0
 var commands := true
+var listen := true          # false = a player who never answers maids (autonomy test)
+var keep_promises := true
+var talks := 0
+var story := true          # start story chapters and train one maid a day like a player would
+var trained := 0
 
 func _init(seed_value: int) -> void:
 	s = St.new_game(seed_value)
@@ -27,6 +35,10 @@ func play_days(n: int) -> void:
 
 func play_day() -> void:
 	var d := int(s.day)
+	if story:
+		if Story.needs_intro(s):
+			Story.begin_chapter(s)
+		_train()
 	_explore()
 	_prepare()
 	_morning()
@@ -75,8 +87,10 @@ func play_day() -> void:
 			break
 		var res := Events.resolve(s, ev.id, (d + guard) % ev.choices.size())
 		log.append("  event %s -> %s" % [ev.title, res])
+	if listen:
+		_listen()
 	for m in St.active_maids(s):
-		if not m.concern.is_empty() and int(m.concern.get("age", 0)) >= 1:
+		if listen and not m.concern.is_empty() and int(m.concern.get("age", 0)) >= 1:
 			var opts := Social.options(s, m.id)
 			var pick: Dictionary = opts[d % opts.size()]
 			log.append("  concern %s %s -> %s: %s" % [m.id, m.concern.type, pick.id, Social.resolve(s, m.id, pick.id)])
@@ -108,6 +122,8 @@ func _explore() -> void:
 			if t.offer != "":
 				var e := World.accept_offer(s, t.offer)
 				log.append("  offer %s -> %s" % [t.offer, e if e != "" else "accepted"])
+	if listen:
+		_listen()
 	for mid in Data.MAIDS:
 		if s.flags.get("recruit_" + mid, false):
 			if World.hire_maid(s, mid) == "":
@@ -159,6 +175,8 @@ func _prepare() -> void:
 				m.role = "stage"
 	elif World.activity_requirement(s, "seasonal") == "" and d % 4 == 1:
 		World.set_activity(s, "seasonal")
+	if keep_promises:
+		_keep_promises()
 	# give the most tired maid a day off now and then
 	var tired = null
 	for m in St.active_maids(s):
@@ -170,8 +188,82 @@ func _prepare() -> void:
 			working += 1
 	if tired != null and working > 2 and tired.role != "stage":
 		tired.role = "off"
+	# a promised day off (checked after the tired one so the promise wins)
+	for p in s.promises:
+		if keep_promises and p.status == "open" and p.kind == "dayoff_on" and int(p.target) == d and _active(p.maid):
+			s.maids[p.maid].role = "off"
 
 func _morning() -> void:
 	var mo = Biz.new(s, "offhours")
 	for i in 120:
 		mo.update(0.25)
+
+func _active(mid: String) -> bool:
+	return mid in s.staff and not s.maids[mid].quit
+
+## A player who listens: promises when it is affordable, otherwise says "not yet".
+func _listen() -> void:
+	for m in St.active_maids(s):
+		var tv := Life.talk_view(s, m.id)
+		if tv.is_empty():
+			continue
+		var ids: Array = tv.options.map(func(o): return o.id)
+		var pick: String = ids[0]
+		if "promise" in ids:
+			var req: Dictionary = m.want_talk.want
+			var cost := 0.0
+			if req.kind == "furniture":
+				cost = float(Data.FURNITURE[req.type].price)
+			elif req.kind == "upgrade":
+				cost = float(Data.UPGRADES[req.id].price)
+			pick = "promise" if float(s.money) - cost > 3000 else "later"
+		talks += 1
+		log.append("  talk %s %s -> %s: %s" % [m.id, m.want_talk.topic, pick, Life.talk_resolve(s, m.id, pick)])
+
+## Do what was promised (buy, set music, menu, activity) when possible.
+func _keep_promises() -> void:
+	for p in s.promises:
+		if p.status != "open" or int(s.day) < int(p.from):
+			continue
+		var dd: Dictionary = p.data
+		match p.kind:
+			"furniture":
+				var have := 0
+				for f in s.furniture:
+					if f.type == dd.type:
+						have += 1
+				while have < int(dd.get("count", 1)) and _place(dd.type):
+					have += 1
+			"upgrade":
+				World.buy_upgrade(s, dd.id)
+			"music":
+				s.music = String(dd.get("key", "")).split(":")[-1]
+			"dish":
+				if not dd.dish in s.menu and World.dish_available(s, dd.dish):
+					if s.menu.size() >= Data.MAX_MENU:
+						s.menu.remove_at(0)
+					World.toggle_menu(s, dd.dish)
+			"activity":
+				if s.activity == "none" and World.activity_requirement(s, dd.act) == "":
+					World.set_activity(s, dd.act)
+			"decor":
+				World.set_decor(s)
+
+func _place(type: String) -> bool:
+	for c in [[3, 9], [14, 9], [13, 9], [1, 8], [16, 6], [1, 6], [16, 4], [13, 5], [3, 7], [1, 3], [8, 2]]:
+		if World.buy_furniture(s, type, c[0], c[1]) == "":
+			log.append("  promise furniture %s placed at %d,%d" % [type, c[0], c[1]])
+			return true
+	return false
+
+func _train() -> void:
+	var best = null
+	for m in St.active_maids(s):
+		if Story.can_train(s, m.id) == "" and (best == null or float(m.fatigue) < float(best.fatigue)):
+			best = m
+	if best == null:
+		return
+	var focus: Array = SD.GROWTH_FOCUS.get(Data.MAIDS[best.id].get("growth", ""), ["reception"])
+	var r := Story.train(s, best.id, focus[int(s.day) % focus.size()])
+	if r.ok:
+		trained += 1

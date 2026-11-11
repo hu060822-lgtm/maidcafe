@@ -4,7 +4,7 @@ extends RefCounted
 
 const Data = preload("res://scripts/core/data.gd")
 const SAVE_PATH := "user://maiden_parade_save.txt"
-const VERSION := 2
+const VERSION := 3
 
 ## Memory caps (short/medium/long separation, see docs).
 const CAP_RECENT_VISITS := 8
@@ -13,6 +13,9 @@ const CAP_REL_SHARED := 5
 const CAP_REL_LOG := 12
 const CAP_MOMENT_LOG := 40
 const CAP_HISTORY := 120
+const CAP_MAID_MEMORY := 14
+const CAP_CREL_MEMORY := 4
+const CAP_PROMISES := 30
 
 static func clampf100(v: float) -> float:
 	return clampf(v, 0.0, 100.0)
@@ -42,6 +45,13 @@ static func new_maid(id: String) -> Dictionary:
 		"concern_cooldown": 0,
 		"days_worked": 0,
 		"hired_day": 1,
+		# ---- Living Hearts: personal life
+		"bond": 35.0,             # trust in the manager (promises, listening, birthdays)
+		"memories": [],           # personal memories [{day, text, tag, with, weight}] (capped, weighted)
+		"want_talk": {},          # {topic, reason, day, data} -> she comes looking for the manager
+		"arc_stage": 0,           # personal story progress
+		"offday": {},             # today's day-off plan {spots: [loc per slot], with: maid id}
+		"likes_seen": {},         # tag -> last day she reacted to it (cooldown)
 	}
 
 static func new_relation() -> Dictionary:
@@ -73,6 +83,10 @@ static func new_customer(id: String) -> Dictionary:
 		"seat_counts": {},
 		"missed_habit_days": 0,
 		"log": [],                  # long-term milestones only
+		# ---- Living Hearts: customer life
+		"life": {"state": "", "until": -1, "note": ""},   # what is going on in their life right now
+		"arc_stage": 0,
+		"impressions": {},          # tag -> weight: what they think of the cafe (decays)
 	}
 
 static func new_game(seed_value: int = -1) -> Dictionary:
@@ -84,16 +98,19 @@ static func new_game(seed_value: int = -1) -> Dictionary:
 	var rel := {}
 	for a in Data.MAIDS:
 		for b in Data.MAIDS:
-			if a < b:
-				rel[pair_key(a, b)] = new_relation()
-	rel[pair_key("koharu", "shizuku")].close = 50.0
-	rel[pair_key("koharu", "shizuku")].trust = 45.0
+			if a != b:
+				rel[dir_key(a, b)] = new_relation()
+	# Koharu has looked after Shizuku since she joined; Shizuku leans on her even more.
+	rel[dir_key("koharu", "shizuku")].close = 50.0
+	rel[dir_key("koharu", "shizuku")].trust = 40.0
+	rel[dir_key("shizuku", "koharu")].close = 55.0
+	rel[dir_key("shizuku", "koharu")].trust = 50.0
 	var customers := {}
 	for id in Data.CUSTOMERS:
 		customers[id] = new_customer(id)
 	var crel := {}
 	for r in Data.CUSTOMER_RELATIONS:
-		crel[pair_key(r.a, r.b)] = {"type": r.type, "strength": 50.0, "co_visits": 0}
+		crel[pair_key(r.a, r.b)] = {"type": r.type, "strength": 50.0, "co_visits": 0, "memories": []}
 	var rng := RandomNumberGenerator.new()
 	rng.seed = seed_value
 	return {
@@ -127,7 +144,7 @@ static func new_game(seed_value: int = -1) -> Dictionary:
 		"upgrades": {"second_stove": false, "coffee_machine": false, "sofa": false, "aircon": false},
 		"equipment_wear": {"stove1": 0.0, "stove2": 0.0, "coffee": 0.0},
 		"partners": [],
-		"album": [{"day": 1, "date": Data.date_label(1), "title": "接手 Maiden Parade", "text": "在老商店街的一角，我接下了這間快撐不下去的女僕咖啡廳。小春、凜、雫決定留下來。", "who": ["koharu", "rin", "shizuku"], "image": ""}],
+		"album": [{"day": 1, "date": Data.date_label(1), "title": "接手 Maiden Parade", "text": "在老商店街的一角，我接下了這間快撐不下去的女僕咖啡廳。小春、凜、雫決定留下來。", "who": ["koharu", "rin", "shizuku"], "image": "", "key": "start", "cat": "cafe"}],
 		"flags": {},
 		"today_spend": {"ingredients": 0.0, "activity": 0.0, "promotion": 0.0, "furniture": 0.0},
 		"last_report": {},
@@ -139,6 +156,9 @@ static func new_game(seed_value: int = -1) -> Dictionary:
 		"weather": "sunny",
 		"street": {"residents": {}, "event": "", "new_shop": "", "street_popularity": 20.0},
 		"special_prep": {},          # preparations for tomorrow's special day
+		"promises": [],              # things the manager agreed to [{id, maid, kind, text, day, due, data, status}]
+		"decor": "",                 # seasonal decoration currently up ("" or a season key)
+		"story": {},                 # main chapters / heart ranks / training (story.gd fills the fields)
 		"debug_log": [],
 	}
 
@@ -164,32 +184,73 @@ static func active_maids(s: Dictionary) -> Array:
 			out.append(m)
 	return out
 
+## Directional relationship key: how `a` feels about `b`.
+static func dir_key(a: String, b: String) -> String:
+	return a + ">" + b
+
+## a's relationship toward b (each maid has her own view of every other maid).
 static func rel(s: Dictionary, a: String, b: String) -> Dictionary:
-	var k := pair_key(a, b)
+	var k := dir_key(a, b)
 	if not s.maid_rel.has(k):
 		s.maid_rel[k] = new_relation()
 	return s.maid_rel[k]
 
 ## Change a relationship dimension and keep the reason (observability).
-static func rel_change(s: Dictionary, a: String, b: String, dim: String, amount: float, reason: String) -> void:
+## mutual=true changes both directions (a shared experience); false only changes how `a` sees `b`.
+static func rel_change(s: Dictionary, a: String, b: String, dim: String, amount: float, reason: String, mutual := true) -> void:
 	var r := rel(s, a, b)
 	r[dim] = clampf100(float(r[dim]) + amount)
+	if mutual:
+		var r2 := rel(s, b, a)
+		r2[dim] = clampf100(float(r2[dim]) + amount)
 	if absf(amount) >= 1.0:
-		s.rel_log.append({"day": s.day, "a": a, "b": b, "dim": dim, "amount": snappedf(amount, 0.1), "reason": reason})
+		s.rel_log.append({"day": s.day, "a": a, "b": b, "dim": dim, "amount": snappedf(amount, 0.1), "reason": reason, "mutual": mutual})
 		while s.rel_log.size() > CAP_REL_LOG * 4:
 			s.rel_log.pop_front()
 
+## A shared experience is remembered by both.
 static func rel_share(s: Dictionary, a: String, b: String, text: String) -> void:
-	var r := rel(s, a, b)
-	r.shared.append({"day": s.day, "text": text})
-	while r.shared.size() > CAP_REL_SHARED:
-		r.shared.pop_front()
+	for r in [rel(s, a, b), rel(s, b, a)]:
+		var dup := false
+		for old in r.shared:
+			if old.text == text:
+				dup = true
+		if dup:
+			continue
+		r.shared.append({"day": s.day, "text": text})
+		while r.shared.size() > CAP_REL_SHARED:
+			r.shared.pop_front()
 
-static func add_album(s: Dictionary, title: String, text: String, who: Array = [], image: String = "") -> bool:
+## Personal memory of a maid. Low-weight memories are forgotten first when full.
+static func remember(s: Dictionary, mid: String, text: String, tag: String, with: Array = [], weight := 1.0) -> void:
+	var m: Dictionary = s.maids[mid]
+	for old in m.memories:
+		if old.text == text:
+			return
+	m.memories.append({"day": int(s.day), "text": text, "tag": tag, "with": with, "weight": weight})
+	while m.memories.size() > CAP_MAID_MEMORY:
+		var low := 0
+		for i in m.memories.size():
+			if float(m.memories[i].weight) < float(m.memories[low].weight):
+				low = i
+		m.memories.remove_at(low)
+
+## Album entries are deduplicated by `key` (defaults to the title).
+## cat: maid / pair / customer / street / cafe (guessed from `who` when empty).
+static func add_album(s: Dictionary, title: String, text: String, who: Array = [], image: String = "", key := "", cat := "") -> bool:
+	var k := key if key != "" else title
 	for a in s.album:
-		if a.title == title:
+		if a.get("key", a.title) == k:
 			return false
-	s.album.append({"day": s.day, "date": Data.date_label(s.day), "title": title, "text": text, "who": who, "image": image})
+	if cat == "":
+		cat = "cafe"
+		if who.size() == 1 and Data.MAIDS.has(who[0]):
+			cat = "maid"
+		elif who.size() == 2 and Data.MAIDS.has(who[0]) and Data.MAIDS.has(who[1]):
+			cat = "pair"
+		elif not who.is_empty() and Data.CUSTOMERS.has(who[0]):
+			cat = "customer"
+	s.album.append({"day": s.day, "date": Data.date_label(s.day), "title": title, "text": text, "who": who, "image": image, "key": k, "cat": cat})
 	s.flags["album_new"] = true
 	return true
 
@@ -219,15 +280,93 @@ static func serialize(s: Dictionary) -> String:
 
 static func deserialize(text: String) -> Dictionary:
 	var head := "MP%d:" % VERSION
+	if text.begins_with("MP2:"):
+		head = "MP2:"
 	if not text.begins_with(head):
 		return {}
 	var raw := Marshalls.base64_to_raw(text.substr(head.length()))
 	if raw.is_empty():
 		return {}
 	var v = bytes_to_var(raw)
-	if typeof(v) != TYPE_DICTIONARY or int(v.get("version", 0)) != VERSION:
+	if typeof(v) != TYPE_DICTIONARY:
 		return {}
+	if int(v.get("version", 0)) == 2:
+		migrate_v2(v)
+	if int(v.get("version", 0)) != VERSION:
+		return {}
+	fill_defaults(v)
 	return v
+
+## Content added after a save was made (new maids, customers, fields) gets default values.
+static func fill_defaults(v: Dictionary) -> void:
+	for id in Data.MAIDS:
+		var fresh := new_maid(id)
+		if not v.maids.has(id):
+			v.maids[id] = fresh
+			continue
+		for k in fresh:
+			if not v.maids[id].has(k):
+				v.maids[id][k] = fresh[k]
+	for a in Data.MAIDS:
+		for b in Data.MAIDS:
+			if a != b and not v.maid_rel.has(dir_key(a, b)):
+				v.maid_rel[dir_key(a, b)] = new_relation()
+	for id in Data.CUSTOMERS:
+		var fresh := new_customer(id)
+		if not v.customers.has(id):
+			v.customers[id] = fresh
+			continue
+		for k in fresh:
+			if not v.customers[id].has(k):
+				v.customers[id][k] = fresh[k]
+	if not v.has("story"):
+		v["story"] = {}
+	for k in ["promises", "decor"]:
+		if not v.has(k):
+			v[k] = [] if k == "promises" else ""
+
+## v2 -> v3: symmetric maid relations become two directional ones; new life fields get defaults.
+static func migrate_v2(v: Dictionary) -> void:
+	var rel := {}
+	for k in v.maid_rel:
+		var p: PackedStringArray = String(k).split("|")
+		if p.size() != 2:
+			continue
+		rel[dir_key(p[0], p[1])] = v.maid_rel[k].duplicate(true)
+		rel[dir_key(p[1], p[0])] = v.maid_rel[k].duplicate(true)
+	for a in Data.MAIDS:
+		for b in Data.MAIDS:
+			if a != b and not rel.has(dir_key(a, b)):
+				rel[dir_key(a, b)] = new_relation()
+	v.maid_rel = rel
+	for id in Data.MAIDS:
+		var fresh := new_maid(id)
+		if not v.maids.has(id):
+			v.maids[id] = fresh
+			continue
+		for k in fresh:
+			if not v.maids[id].has(k):
+				v.maids[id][k] = fresh[k]
+	for id in Data.CUSTOMERS:
+		var fresh := new_customer(id)
+		if not v.customers.has(id):
+			v.customers[id] = fresh
+			continue
+		for k in fresh:
+			if not v.customers[id].has(k):
+				v.customers[id][k] = fresh[k]
+	for k in v.cust_rel:
+		if not v.cust_rel[k].has("memories"):
+			v.cust_rel[k]["memories"] = []
+	for a in v.album:
+		if not a.has("key"):
+			a["key"] = a.title
+			a["cat"] = "cafe"
+	if not v.has("promises"):
+		v["promises"] = []
+	if not v.has("decor"):
+		v["decor"] = ""
+	v.version = 3
 
 static func save_game(s: Dictionary) -> void:
 	var f := FileAccess.open(SAVE_PATH, FileAccess.WRITE)

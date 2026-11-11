@@ -5,6 +5,8 @@ extends RefCounted
 const Data = preload("res://scripts/core/data.gd")
 const St = preload("res://scripts/core/state.gd")
 const Layout = preload("res://scripts/core/layout.gd")
+const LD = preload("res://scripts/core/life_data.gd")
+const Life = preload("res://scripts/core/life.gd")
 
 # ---------------------------------------------------------------- style
 static func style_scores(s: Dictionary) -> Dictionary:
@@ -45,6 +47,11 @@ static func style_scores(s: Dictionary) -> Dictionary:
 		"bright":
 			sc.cute += 0.8
 	sc.cute += minf(6.0, float(s.flags.get("costume_days", 0)) * 1.5 + float(s.flags.get("stage_days", 0)))
+	# seasonal decoration
+	if s.get("decor", "") != "" and LD.DECOR.has(s.decor):
+		var ds: Dictionary = LD.DECOR[s.decor].style
+		for k in ds:
+			sc[k] += float(ds[k])
 	if s.activity == "costume":
 		sc.cute += 4.0
 	return sc
@@ -241,6 +248,21 @@ static func set_activity(s: Dictionary, id: String, featured := "") -> String:
 	s.featured_dish = featured if id == "limited" else ""
 	return ""
 
+## Put up this season's decoration (taken down automatically when the season changes).
+static func set_decor(s: Dictionary) -> String:
+	var season := Data.season(int(s.day))
+	if s.get("decor", "") == season:
+		return "這一季的裝飾已經掛上了。"
+	var d: Dictionary = LD.DECOR[season]
+	if float(s.money) < float(d.price):
+		return "錢不夠。"
+	s.money = float(s.money) - float(d.price)
+	s.today_spend.furniture = float(s.today_spend.furniture) + float(d.price)
+	s.decor = season
+	St.add_album(s, "店裡的%s" % d.name, "%s大家一起動手佈置，小春說這樣客人一進門就會知道季節換了。" % d.desc, [], "pending",
+		"decor_%s_%d" % [season, int((int(s.day) - 1) / Data.YEAR_DAYS)], "cafe")
+	return ""
+
 static func birthday_maid(s: Dictionary) -> String:
 	var yd := ((int(s.day) - 1) % Data.YEAR_DAYS) + 1
 	for m in St.active_maids(s):
@@ -379,6 +401,8 @@ static func visit_location(s: Dictionary, loc: String, opt := "") -> Dictionary:
 		var r: Dictionary = Data.MAIDS[mid].get("recruit", {})
 		if r.is_empty() or mid in s.staff or r.location != loc:
 			continue
+		if r.has("requires") and not s.flags.get(r.requires, false):
+			continue
 		if visits >= int(r.visits) and float(s.popularity) >= float(r.popularity):
 			s.flags["recruit_" + mid] = true
 			L.append("✨ %s：%s" % [Data.MAIDS[mid].name, _recruit_line(mid)])
@@ -396,6 +420,14 @@ static func _recruit_line(mid: String) -> String:
 			return "「……妳是那間女僕咖啡廳的店長？我在找打工。我不太會笑，但我很會整理東西。」（可以招募）"
 		"kaede":
 			return "「欸！那間店在招人嗎？我跑得超快，送餐交給我！」（可以招募）"
+		"tsumugi":
+			return "（月見小姐身邊那個在縫布偶的女生抬起頭）「……那個，月見姐說妳的店需要人手。我會做一點針線活，也會照顧人。」（可以招募）"
+		"chinatsu":
+			return "（奏旁邊抱著吉他的女生）「學、學姊說妳的店願意聽完整首歌……我可以在那裡打工嗎？」（可以招募）"
+		"aoi":
+			return "（連鎖咖啡店門口，一個穿著制服的女生正在解開圍裙）「我辭職了。……妳是那間女僕咖啡廳的店長？我想泡讓人記得的咖啡。」（可以招募）"
+		"hiyori":
+			return "（花圃旁的長椅上，一個女生睡醒揉了揉眼睛）「嗯……咖啡廳啊～那裡可以慢慢來嗎？可以的話，我想去～」（可以招募）"
 	return "（可以招募）"
 
 static func hire_maid(s: Dictionary, mid: String) -> String:
@@ -403,13 +435,14 @@ static func hire_maid(s: Dictionary, mid: String) -> String:
 		return "已經是店裡的一員了。"
 	if not s.flags.get("recruit_" + mid, false):
 		return "還沒有機會邀請她。"
-	if s.staff.size() >= 5:
+	if s.staff.size() >= Data.MAX_STAFF:
 		return "店裡已經沒辦法再排更多人了。"
 	s.staff.append(mid)
 	var m: Dictionary = s.maids[mid]
 	m.hired_day = int(s.day)
 	m.quit = false
 	m.role = Data.MAIDS[mid].default_role
+	m.flags["want_next"] = int(s.day) + 3
 	s.flags.erase("recruit_" + mid)
 	St.add_album(s, "%s加入了" % Data.MAIDS[mid].name, Data.MAIDS[mid].intro, [mid])
 	return ""
@@ -427,7 +460,11 @@ static func _visit_cafe(s: Dictionary, opt: String, enc: Dictionary) -> void:
 	m.flags["manager_trust"] = float(m.flags.get("manager_trust", 30.0)) + 2.0
 	enc.title = "和%s聊天" % def.name
 	enc.maid = m.id
-	if not m.concern.is_empty() and not m.concern.get("revealed", false):
+	if not m.want_talk.is_empty():
+		var tv := Life.talk_view(s, m.id)
+		enc.lines.append_array(tv.lines)
+		enc["talk"] = m.id
+	elif not m.concern.is_empty() and not m.concern.get("revealed", false):
 		m.concern.revealed = true
 		enc.lines.append("%s：「%s」" % [def.name, m.concern.confide])
 		enc["concern"] = m.id
@@ -456,6 +493,9 @@ static func chat_line(s: Dictionary, mid: String) -> String:
 		if float(r.friction) >= 35 and (worst == "" or float(r.friction) > float(St.rel(s, mid, worst).friction)):
 			worst = o.id
 	var talks := int(m.flags.get("talks", 0))
+	var ml := Life.memory_line(s, mid, talks)
+	if ml != "":
+		return ml
 	if worst != "" and talks % 3 == 1:
 		return "%s：「……%s那邊，最近有點難配合。」" % [name, Data.MAIDS[worst].name]
 	if best != "" and talks % 3 == 2:
@@ -468,8 +508,12 @@ static func chat_line(s: Dictionary, mid: String) -> String:
 		"shizuku": ["雫：「我……我想變得能好好跟客人說話。」", "雫：「擦桌子的時候，客人跟我說了謝謝……」", "雫：「小春前輩教我笑的方法……像這樣？」"],
 		"yukino": ["雪乃：「書架的書，我按作者重新排過了。」", "雪乃：「花瓶的水，每天換比較好。」", "雪乃：「常來看書的那位客人……好像也喜歡同一個作家。」"],
 		"kaede": ["楓：「店長！今天我送了幾趟餐，妳猜？」", "楓：「慢吞吞的我真的受不了啦……不過我會忍耐的。」", "楓：「下次比賽誰先擦完桌子！」"],
+		"tsumugi": ["紬：「桌布的邊脫線了，我晚上帶回去補。」", "紬：「大家今天都有喝水嗎？」", "紬：「月見姐說，下次市集想放我做的小熊。」"],
+		"chinatsu": ["千夏：「客人點餐的聲音，其實有節奏喔。」", "千夏：「學姊今天在廣場唱了新歌……好想聽完整首。」", "千夏：「我、我今天有好好說『歡迎回來』了！」"],
+		"aoi": ["葵：「今天的豆子，烘得剛好。」", "葵：「這裡的客人會說『謝謝』。以前那間店，很少人這樣說。」", "葵：「咖啡要趁熱喝。……我是說妳，店長。」"],
+		"hiyori": ["日和：「今天的雲很好看喔～」", "日和：「忙的時候，深呼吸三次就好了～」", "日和：「沙發的位置，下午會曬到太陽～」"],
 	}
-	var arr: Array = lines[mid]
+	var arr: Array = lines.get(mid, ["%s：「今天也辛苦了。」" % name])
 	return arr[talks % arr.size()]
 
 static func _visit_park(s: Dictionary, enc: Dictionary) -> void:
@@ -505,12 +549,9 @@ static func _chance_encounter(s: Dictionary, loc: String, enc: Dictionary) -> vo
 	var ev: String = s.street.get("event", "")
 	if ev == "new_shop" and loc == "plaza":
 		L.append("廣場旁開了一間連鎖咖啡店，門口排著長長的隊伍……")
+	# maids on their day off are out living their own day
 	if loc in ["grocer", "general", "sweets", "plaza", "park"]:
-		for mid in s.staff:
-			var m: Dictionary = s.maids[mid]
-			if m.role == "off" and m.day_off_tomorrow == false and m.flags.get("off_today", false):
-				if (mid == "yukino" and loc == "general") or (mid == "koharu" and loc == "plaza") or (mid == "rin" and loc == "grocer"):
-					L.append("放假的%s也在這裡。%s" % [Data.MAIDS[mid].name, {"yukino": "她正在翻舊書。", "koharu": "她跟著音樂輕輕哼歌。", "rin": "她認真地比較著兩顆蛋。"}[mid]])
+		L.append_array(Life.offday_meet(s, loc))
 
 ## Talk with a street resident. Affinity grows; collaborations and info unlock.
 static func talk_resident(s: Dictionary, rid: String) -> Dictionary:
@@ -660,6 +701,15 @@ static func morning_briefing(s: Dictionary) -> Array:
 			out.append("⚠ %s最近似乎在考慮要不要繼續做下去……" % n)
 		if not m.concern.is_empty():
 			out.append("💭 " + String(m.concern.get("sign", "%s好像有心事。" % n)))
+		if not m.want_talk.is_empty():
+			out.append("💬 %s好像有話想跟店長說。（回店裡找她，或在店裡點她）" % n)
+		if m.role == "off" and not m.offday.is_empty():
+			out.append("☕ %s今天休假，好像會去%s。" % [n, Data.LOCATIONS[m.offday.loc].name.split("「")[0]])
+	out.append_array(Life.promises_due_today(s))
+	for cid in s.customers:
+		var c: Dictionary = s.customers[cid]
+		if c.known and c.life.state != "" and c.life.note != "" and int(s.day) - int(c.life.get("since", -99)) <= 2:
+			out.append("📖 %s：%s。" % [Data.CUSTOMERS[cid].name, c.life.note.split("。")[0]])
 	var bm := birthday_maid(s)
 	if bm != "":
 		out.append("🎂 今天是%s的生日！" % Data.MAIDS[bm].name)
